@@ -11,7 +11,7 @@ export function FriendPanel({ currentUser, handleUser, displayChat,refresh }) {
     useEffect(() => {
         if (!user) return;
         // console.log("hi===============",user);
-        fetch("http://localhost:3458/allFriends", {
+        fetch("https://cinesync-3k1z.onrender.com/allFriends", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: user.username })

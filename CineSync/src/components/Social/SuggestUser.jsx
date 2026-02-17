@@ -15,7 +15,7 @@ export default function SuggestUser({img,name,bio,isFriend}){
             friendname:name
           });
 
-        let val=await fetch("http://localhost:3458/sendRequest", {
+        let val=await fetch("https://cinesync-3k1z.onrender.com/sendRequest", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username :user.username,friendname:name }),

@@ -13,7 +13,7 @@ export default function InvitationGroup({onAcceptDone}) {
         
         try {
 
-            const req = await fetch("http://localhost:3458/reqFriends", {
+            const req = await fetch("https://cinesync-3k1z.onrender.com/reqFriends", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username: user.username })
@@ -30,7 +30,7 @@ export default function InvitationGroup({onAcceptDone}) {
 
     async function rejectInvitation(friendname) {
         try {
-            const reject = await fetch("http://localhost:3458/rejectRequest", {
+            const reject = await fetch("https://cinesync-3k1z.onrender.com/rejectRequest", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username: user.username, friendname: friendname })
@@ -49,7 +49,7 @@ export default function InvitationGroup({onAcceptDone}) {
         try {
             console.log(user.username);
             console.log(friendname);
-            const reject = await fetch("http://localhost:3458/acceptRequest", {
+            const reject = await fetch("https://cinesync-3k1z.onrender.com/acceptRequest", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username: user.username, friendname: friendname })

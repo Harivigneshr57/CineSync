@@ -6,7 +6,7 @@ export default function InviteFriends(){
     const [friends, setFriends] = useState([]);
     useEffect(() => {
         if (!user) return;
-        fetch("http://localhost:3458/allFriends", {
+        fetch("https://cinesync-3k1z.onrender.com/allFriends", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: localStorage.getItem('Username') })

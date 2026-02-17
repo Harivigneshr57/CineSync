@@ -39,7 +39,7 @@ export default function ConfigMovie({step,onStep,setCode}){
         }
     }
      function addRoom(){
-         fetch("http://localhost:3458/addRoom",{
+         fetch("https://cinesync-3k1z.onrender.com/addRoom",{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({username:user.username,room:room,audio:audio,video:video,reaction:reaction,chat:chat,game:game})

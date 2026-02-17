@@ -6,7 +6,7 @@ export default function SampleSingle() {
     async function fetMovie() {
         console.log("Hi");
         try {
-            const res = await fetch("/server/movies/getAllMovies");
+            const res = await fetch("https://cinesync-3k1z.onrender.com/getAllMovies");
             const data = await res.json();
             
         } catch (err) {
@@ -18,7 +18,7 @@ export default function SampleSingle() {
             <h2>Movie Player</h2>
             {/* <button onClick={fetMovie}>Click</button> */}
                 <video controls width="600">
-                    <source src="https://movies-video-development.zohostratus.in/parandhupo_1.mp4?versionId=01kh8h1x4zzp3fqtktncyb9rc0" type="video/mp4" />
+                    <source src="https://res.cloudinary.com/dsike2jgr/video/upload/v1771335888/Asuran_dosyjf.mp4" type="video/mp4" />
                 </video>
         </div>
     );

@@ -1,10 +1,8 @@
 import { useRef } from "react";
 import SingleMovieBottom from "./SingleMovieBottom";
 import SingleMovieTop from "./SingleMovieTop";
-import VideoControls from "./VideoControls";
+import VideoControls from "../GroupWatching/VideoControls";
 import "./singleMovie.css";
-// import captain from "./Wheels on the Bus.mp4";
-import captain from './Asuran.mp4';
 
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../Login-SignIn/UserContext";
@@ -29,9 +27,9 @@ export default function SinglePersonMovie() {
     // console.log("==============================");
 
     const videoMap = {
-        "CaptainAmerica:TheFirstAvenger":captain,
-        "TheAvengers":captain,
-        "Asuran":captain
+        "CaptainAmerica:TheFirstAvenger":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771335888/Asuran_dosyjf.mp4',
+        "TheAvengers":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771335888/Asuran_dosyjf.mp4',
+        "Asuran":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771335888/Asuran_dosyjf.mp4'
     }
 
     return (

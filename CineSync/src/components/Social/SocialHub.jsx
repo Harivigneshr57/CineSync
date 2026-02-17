@@ -34,7 +34,7 @@ export default function SocialHub() {
 
     async function rendermessage() {
         try {
-            const response = await fetch("http://localhost:3458/getmessage", {
+            const response = await fetch("https://cinesync-3k1z.onrender.com/getmessage", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

@@ -1,7 +1,6 @@
 import MovieCard from "./MovieCard";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../Login-SignIn/UserContext";
-import video from './Wheels on the Bus.mp4'
 export default function MainMovieDiv() {
     
     
@@ -9,7 +8,7 @@ export default function MainMovieDiv() {
     const [movies, setMovies] = useState([]);
     useEffect(() => {
         const fetmovie = async () => {
-            await fetch("http://localhost:3458/getAllMovies")
+            await fetch("https://cinesync-3k1z.onrender.com/getAllMovies")
                 .then((res) => {
                     return res.json();
                 }).then((data) => {
@@ -66,8 +65,7 @@ export default function MainMovieDiv() {
                             {movie.map((singleMovie,index) => {
                               return(
                                 
-                                <MovieCard url={video} key={index} title={singleMovie.title} image={movie} genre={singleMovie.Category_Name} year={singleMovie.year}></MovieCard>
-                                
+                                <MovieCard url={'https://res.cloudinary.com/dsike2jgr/video/upload/v1771335888/Asuran_dosyjf.mp4'} key={index} title={singleMovie.title} image={movie} genre={singleMovie.Category_Name} year={singleMovie.year}></MovieCard>
                                 
                                 )
                             })}

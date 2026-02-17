@@ -40,7 +40,7 @@ export default function SignIn() {
         let data;
         try {
           const response = await fetch(
-            "http://localhost:3458/signin",
+            "https://cinesync-3k1z.onrender.com/signin",
             {
               method: "POST",
               headers: {

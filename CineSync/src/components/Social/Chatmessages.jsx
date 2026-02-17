@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Ourmessage from "./Ourmessage";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3458");
+const socket = io("https://cinesync-3k1z.onrender.com");
 
 function Chatmeassages({ messageArray, setArray, currentUsers }) {
 
@@ -60,7 +60,7 @@ function Chatmeassages({ messageArray, setArray, currentUsers }) {
 
         try {
 
-            const response = await fetch("http://localhost:3458/savemessage", {
+            const response = await fetch("https://cinesync-3k1z.onrender.com/savemessage", {
 
                 method: "POST",
 

@@ -20,7 +20,7 @@ export default function TopBar() {
         const fetchData = async () => {
             try {
                 console.log("Fetching for:", user.username);
-                const usersRes = await fetch("http://localhost:3458/allUsers", {
+                const usersRes = await fetch("https://cinesync-3k1z.onrender.com/allUsers", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username: user.username })
@@ -32,7 +32,7 @@ export default function TopBar() {
     
                 console.log("Sending username:", user.username);
 
-                const friendsRes = await fetch("http://localhost:3458/allfriends", {
+                const friendsRes = await fetch("https://cinesync-3k1z.onrender.com/allfriends", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username: user.username })

@@ -1,0 +1,212 @@
+.movie-card:hover {
+    transform: scale(1.08);
+    z-index: 5;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+}
+
+.movie-card {
+    width: 18.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.3rem;
+    overflow: hidden;
+    height: 29rem;
+    background: var(--grey); 
+    border-radius: 1.1rem;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.poster {
+    overflow: hidden;
+    border-radius: 0.875rem;
+}
+
+
+
+.movie-card:hover .poster img {
+    transform: scale(1.12);
+}
+
+
+.movie-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 0.8rem 1rem;
+}
+
+
+.movie-meta h4 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-meta span {
+    font-size: 0.8rem;
+    opacity: 0.65;
+}
+
+
+
+#discoverContainer{
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+
+}
+
+#discoverNavBar {
+    width: 5rem;
+    flex-shrink: 0;
+}
+
+#discovermain {
+    width: 115rem;
+    background: transparent;  
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-left: 1.5rem;
+}
+
+
+#searchBarDiscover {
+    height: 14rem;
+    padding: 3rem 0 2rem;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin-top: 6rem;
+}
+
+#disSearch,
+#disSearchinput {
+    width: 42rem;
+    max-width: 90%;
+    padding: 1.2rem 1.5rem;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: white;
+    background: rgba(255,255,255,0.08);
+    border-radius: 1rem;
+    border: 1px solid rgba(255,255,255,0.15);
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+
+
+#movieitems {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    padding: 0 5rem;
+    gap: 5rem;
+    row-gap: 3.2rem;
+}
+
+.movieCat {
+    text-transform: capitalize;
+    color: white;
+    font-size: 2.3rem;
+    font-weight: 700;
+    padding-left: 5rem;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.posterimg {
+    width: 18.5rem;
+    height: 23.25rem;
+    transition: transform 0.4s ease;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+#join:hover{
+    color: #517692;
+}
+
+
+/* change */
+
+
+#disSearch:focus,
+#disSearchinput:focus {
+    border-color: #505861;
+    box-shadow: 0 0 0 3px rgba(30,144,255,0.35);
+}
+
+#catMovie {
+    margin-top: 3.5rem;
+    margin-bottom: 5.5rem;
+}
+.movie-card h4 {
+    color: white;
+}
+
+
+.movieCat::after {
+    content: "";
+    position: absolute;
+    left: 5rem;
+    bottom: -0.7rem;
+    width: 4rem;
+    height: 4px;
+    background: var(--major);
+    border-radius: 2px;
+}
+
+
+#socialTopBar1 h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+#socialTopBar1 i {
+    font-size: 2rem;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+#socialTopBar1 i:hover {
+    opacity: 1;
+        
+}
+
+
+
+
+
+
+#disTopBar{
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 3rem 2rem 7.5rem;
+    background: black;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    width: 100%;
+    position: fixed;
+    height: 6rem;
+}
+body {
+    background-color:var(--background) ;
+}
+
+#disTopBar i{
+    color: var(--white);
+}

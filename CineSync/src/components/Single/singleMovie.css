@@ -1,0 +1,116 @@
+#singleMoviePage {
+    width: 100%;
+    height: 100%;
+}
+
+#singleTop {
+    width: 100%;
+    height: 6rem;
+    background: linear-gradient(180deg, rgb(36, 35, 35), transparent);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#singleTop div {
+    width: 30%;
+    height: 100%;
+    gap: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#bg-video {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 0;
+
+}
+
+#video_control {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    font-size: 1.6rem;
+    color: #0c5e9c;
+}
+
+
+#content_single {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    z-index: 5;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+#vc {
+    width: 100%;
+    height: 13rem;
+}
+
+.time {
+    color: #0c5e9c;
+}
+
+
+#playback {
+    width: 80%;
+}
+
+#playback {
+    -webkit-appearance: none;
+    background-color: transparent;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+#playback::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 0.31rem;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+#playback::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: #0c5e9c;
+    position: relative;
+    bottom: 5px;
+}
+
+#singleBottomDiv:hover, #singleBottomDiv:focus-within{
+    height: 22rem;
+    
+}
+#singleBottomDiv {
+    transition: .4s all ease-in-out;
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+    height: 2rem;
+    padding: 1rem;
+    overflow-x: auto;
+}
+#singleBottomDiv::-webkit-scrollbar {
+    display: none;
+}
+
+ #singleTop {
+    color: white;
+    font-size: 2rem;
+}

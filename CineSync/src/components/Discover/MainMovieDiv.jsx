@@ -65,7 +65,7 @@ export default function MainMovieDiv() {
                             {movie.map((singleMovie,index) => {
                               return(
                                 
-                                <MovieCard url={'https://res.cloudinary.com/dsike2jgr/video/upload/v1771335888/Asuran_dosyjf.mp4'} key={index} title={singleMovie.title} image={movie} genre={singleMovie.Category_Name} year={singleMovie.year}></MovieCard>
+                                <MovieCard url={'https://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4'} key={index} title={singleMovie.title} image={movie} genre={singleMovie.Category_Name} year={singleMovie.year}></MovieCard>
                                 
                                 )
                             })}

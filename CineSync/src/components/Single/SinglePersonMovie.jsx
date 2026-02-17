@@ -27,9 +27,9 @@ export default function SinglePersonMovie() {
     // console.log("==============================");
 
     const videoMap = {
-        "CaptainAmerica:TheFirstAvenger":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771335888/Asuran_dosyjf.mp4',
-        "TheAvengers":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771335888/Asuran_dosyjf.mp4',
-        "Asuran":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771335888/Asuran_dosyjf.mp4'
+        "CaptainAmerica:TheFirstAvenger":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4',
+        "TheAvengers":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4',
+        "Asuran":'httpshttps://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4'
     }
 
     return (

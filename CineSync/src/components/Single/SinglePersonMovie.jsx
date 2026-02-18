@@ -54,7 +54,7 @@ export default function SinglePersonMovie() {
     return (
         <div id="singleMoviePage">
                <video id="bg-video" ref={videoRef} autoPlay muted >
-                <source src={videoMap[movie.title]}></source>
+                <source src={videoMap[movie.title]||'https://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4'}></source>
             </video>
             <div id="content_single">
             <SingleMovieTop movieName={movie.title}></SingleMovieTop>

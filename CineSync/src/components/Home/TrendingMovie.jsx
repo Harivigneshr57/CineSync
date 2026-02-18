@@ -5,7 +5,17 @@ import movie4 from "../../assets/Tmovie1.png";
 import movie6 from "../../assets/Thunivu.png"
 import movie5 from "../../assets/Master.png";
 import Trending from "./Trending";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../Login-SignIn/UserContext";
+import { useContext } from "react";
+
 export default function TrendingMovie(){
+    let nav = useNavigate();
+    const { changeMovie } = useContext(UserContext);
+    function single(title){
+        changeMovie("",title)
+        nav('/single');
+    }
     let arr = [
         [movie1,"Avengers"],[movie2,"SpiderMan"],[movie3,"KGF2"],[movie4,"Stranger Things"],[movie6,"Thunivu"],[movie5,"Master"]
     ]
@@ -15,7 +25,7 @@ export default function TrendingMovie(){
                 <h2>Trending Movies</h2>
                 <div className="trends">
                     {arr.map((a,i)=>{
-                        return <Trending arr={a} key={i}></Trending> 
+                        return <Trending arr={a} key={i} onClick={()=>single(a[1])}></Trending> 
                     })}
                 </div>
             </div>

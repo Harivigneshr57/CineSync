@@ -8,8 +8,17 @@ import movie7 from '../../assets/SooraraiPotru.png'
 import movie8 from '../../assets/VadaChennai.png'
 import movie9 from '../../assets/Thunivu.png'
 import Trending from './Trending'
+import { useNavigate } from 'react-router-dom'
+import { UserContext } from '../Login-SignIn/UserContext'
+import { useContext } from "react";
 
 export default function TamilBlockBustors(){
+  const { changeMovie } = useContext(UserContext);
+    let nav = useNavigate();
+    function single(title){
+        changeMovie("",title);
+        nav('/single');
+    }
     let arr = [
         [movie1,"Bigil"],[movie2,"KGF 2"],[movie3,"LEO"],[movie4,"Love Today"],[movie5,"Madharasi"],[movie6,"Master"],[movie7,"SooraraiPotru"],[movie8,'VadaChennai'],[movie9,"Thunivu"]
     ]
@@ -19,7 +28,7 @@ export default function TamilBlockBustors(){
                 <h2>Tamil Block Busters</h2>
                 <div className="trends">
                     {arr.map((a,i)=>{
-                        return <Trending arr={a} key={i}></Trending> 
+                        return <Trending arr={a} key={i} onClick={()=>single(a[1])}></Trending> 
                     })}
                 </div>
             </div>

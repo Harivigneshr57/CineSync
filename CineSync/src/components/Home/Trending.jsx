@@ -1,8 +1,8 @@
-export default function Trending({arr}){
+export default function Trending({arr,onClick}){
     return(
         <>
-            <div className="trending">
-                <div className="homeMovieContainer">
+            <div className="trending" onClick={onClick}>
+                <div className="homeMovieContainer" onClick={onClick}>
                     <img src={arr[0]} alt="" />
                 </div>
                 <h5>{arr[1]}</h5>

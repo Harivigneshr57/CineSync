@@ -81,7 +81,7 @@ export default function Login(){
             return;
         }
       
-        if (password.length < 6) {
+        if (password.trim().length < 6) {
             toast.error('Password Should Contain AtLeast 6 Char !!',toastErrorStyle)
             return;
         }

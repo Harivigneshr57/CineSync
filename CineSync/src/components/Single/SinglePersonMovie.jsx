@@ -23,8 +23,8 @@ export default function SinglePersonMovie() {
     console.log("==============================");
 
     const videoMap = {
-        "CaptainAmerica:TheFirstAvenger":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4',
-        "TheAvengers":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4',
+        "CaptainAmerica:TheFirstAvenger":'https://movies-video-development.zohostratus.in/Videos/Eleven.webm',
+        "TheAvengers":'https://movies-video-development.zohostratus.in/Parking.mp4',
         "Asuran":'httpshttps://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4',
         "Titanic":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4',
         "Thor:TheDarkWorld":'https://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4',

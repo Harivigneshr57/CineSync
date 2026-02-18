@@ -76,7 +76,7 @@ export default function Login(){
             toast.error('UserName Should Not Be Empty !!',toastErrorStyle)
             return;
         }
-        if(username.length < 5){
+        if(username.trim().length < 5){
             toast.error('UserName Should Contain AtLeast 5 Char !!')
             return;
         }

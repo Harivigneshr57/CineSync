@@ -700,11 +700,7 @@ app.post("/addRoom",(req,res)=>{
 
   async function getRoom(room,userID,chat,video,audio,reaction,game){
     let roomCode=1111;
-    roomCode=Math.floor(Math.random()*9999)+1000;
-    if(roomCode>=10000){
-      roomCode=roomCode%10;
-    }
-    
+    roomCode=Math.floor(Math.random()*9000)+1000;
   
     db.query('select * from Rooms where RoomCode =? and RoomStatus != ?',[roomCode,"End"],(err,result)=>{
       if(err){

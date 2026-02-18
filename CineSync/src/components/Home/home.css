@@ -10,10 +10,13 @@
     --white : #ffffff;
 }
 .home{
-    width: 100vh;
+    width: 100vw;
     position: relative;
 }
 
+.mainDiv {
+    width: 100%;
+}
 /* side bar */
 
 aside{
@@ -53,7 +56,7 @@ aside:hover .logo {
 .user-nav{
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
 }
 button:hover {
     color: var(--white);
@@ -84,21 +87,42 @@ aside  button{
 
 
 .bigMovieContainer{
-    width: 100vw;
-    height: 90vh;
-    background-repeat: no-repeat;
-    background-position: 90% 90%;
-    background-size: cover;
     display: flex;
     justify-content: start;
-    align-items: center;
-    padding: 10rem;
+    align-items: end;
+    padding-left: 5rem;
+    position: relative;
+    width: 100%;
+    mask: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 10%);
+
+
+    img {
+        width: 100%;
+        aspect-ratio: 16/9;
+        filter: brightness(0.8) ;
+    }
+    section {
+        position: absolute;
+        padding: 4vw;
+
+        .movieName {
+            h1 {
+                text-transform: uppercase;
+                font-size: clamp(2.5rem, 5.5vw, 5rem);
+            }
+        }
+
+        .movieDesc {
+            font-size: clamp(.5rem, 2vw, 1.25rem)
+        }
+    }
 }
 .bigMovieContainer section{
-    width: 32rem;
+    max-width: 32rem;
     display: flex;
+    justify-content: space-around;
     flex-direction: column;
-    gap: 2rem;
+    gap: 0.8rem;
 }
 
 .premieres{
@@ -108,13 +132,13 @@ aside  button{
 }
 .tonight{
     padding: .5rem .75rem;
-    background-color: #263037;
+    background-color: var(--background);
     color: var(--major);
-    border: 1px solid var(--major);
+    border: 1px solid var(--white);
     border-radius: .5rem ;
     opacity: .5;
     font-size: .75rem;
-    font-weight: 600;
+    font-weight: 900;
 }
 
 p{
@@ -122,8 +146,9 @@ p{
 }
 
 .movieDesc{
-    color: #BBC4CD;
+    color: rgba(255, 255, 255, 0.7);
     line-height: 1.5;
+    font-weight: 500;
 }
 
 #friendWatch{
@@ -202,7 +227,7 @@ h1{
 .trending{
     display: flex;
     flex-direction: column;
-    background-color: var(--grey);
+    background-color: var(--background);
     border-radius: 1rem;
     padding: .5rem;
     gap: 1rem;

@@ -49,7 +49,7 @@ export default function ConfigMovie({step,onStep,setCode}){
             console.log(data);
           if(data.message.includes("Already")){
             setconfirmDiv(false);
-            toast.error("Room Name Should Contain AtLeast 5 Char !!",toastErrorStyle)
+            toast.error("Another Room Exists in this Name : Change Room Name !!",toastErrorStyle)
 
           }
           else{

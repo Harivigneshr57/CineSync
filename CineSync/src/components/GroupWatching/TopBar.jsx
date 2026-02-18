@@ -7,10 +7,9 @@ export default function TopBar() {
           <span className="live-badge">LIVE</span>
         </div>
         <div className="headbuttons flex">
-            <Button><i class="fa-solid fa-gear"></i></Button>
+            <Button id={'settings'}><i class="fa-solid fa-gear"></i></Button>
             <Button id={'inviteRoom'}>Invite  <i class="fa-solid fa-user-plus"></i></Button>
         </div>
       </div>
     );
-  }
-  
+}

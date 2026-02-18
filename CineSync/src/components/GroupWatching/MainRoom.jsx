@@ -7,7 +7,7 @@ export default function MainRoom(){
         <>
             <div className="mainRoom">
                 <SideBar></SideBar>
-                <div className="mainDiv">
+                <div className="MainDiv">
                     <TopBar></TopBar>
                     <div className="content">
                         <MovieVideo></MovieVideo>

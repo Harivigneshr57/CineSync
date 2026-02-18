@@ -2,10 +2,12 @@ import bgImage from "../../assets/image.png";
 import Button from "./Button";
 import { UserContext } from "./UserContext";
 import toast from "react-hot-toast";
-import { useState ,useContext} from "react";
+import { useState ,useContext, useRef} from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Login(){
+
+    const ref = useRef(null);
 
     let navigate = useNavigate();
     function navigates(){
@@ -54,23 +56,29 @@ export default function Login(){
       
           if (data.message === "User already exists") {
             toast.error("UserName Already Taken !!", toastErrorStyle);
+            ref.current.disabled = false;
           } 
           else if (data.message === "Signup successful") {
             toast.success("SignUp Successful, you can SignIn !!", toastSuccessStyle);
             navigates();
+            ref.current.disabled = false;
           } 
           else {
             toast.error("Server Error !!", toastErrorStyle);
+            ref.current.disabled = false;
           }
       
         } catch (error) {
           toast.error("Network Error !!", toastErrorStyle);
+          ref.current.disabled = false;
+        
         }
       }      
       
        
 
     function loginCheck() {
+      ref.current.disabled = true;
       console.log('checking.........');
         if (username.length === 0) {
             toast.error('UserName Should Not Be Empty !!',toastErrorStyle)
@@ -98,7 +106,7 @@ export default function Login(){
                     <input type="text" placeholder="Enter Your UserName" id="loginName" style={{width:"30rem"}}  value={username} onChange={(e) => setName(e.target.value)}/>
                     <div className="loginPass flex">
                         <input type="password" placeholder="Enter Your Password" id="loginPassword" style={{width:"24rem"}} value={password} onChange={(e)=>{setPassword(e.target.value)}}/>
-                        <Button className="bigbutton" onClick={loginCheck} id="signUp">Sign Up</Button>
+                        <Button className="bigbutton" onClick={loginCheck} id="signUp" ref={ref}>Sign Up</Button>
                     </div>
                     <p>Ready to Start? Use for free</p>
                 </div>

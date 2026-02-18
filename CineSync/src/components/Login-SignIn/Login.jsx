@@ -17,6 +17,7 @@ export default function Login(){
     const [username, setName] = useState("");
     const [password, setPassword] = useState("");
     const {user,changeUser} = useContext(UserContext);
+    const [loading,setLoading] = useState(false);
     const toastErrorStyle = {
         style: {
           borderRadius: "1rem",
@@ -77,25 +78,68 @@ export default function Login(){
       
        
 
-    function loginCheck() {
-      ref.current.disabled = true;
-      console.log('checking.........');
-        if (username.length === 0) {
-            toast.error('UserName Should Not Be Empty !!',toastErrorStyle)
-            return;
-        }
-        if(username.trim().length < 5){
-            toast.error('UserName Should Contain AtLeast 5 Char !!')
-            return;
+      function loginCheck() {
+
+        if(loading)
+        return;
+
+        // USERNAME VALIDATION
+        if (!username.trim()) {
+          toast.error("Username should not be empty");
+          return;
         }
       
-        if (password.trim().length < 6) {
-            toast.error('Password Should Contain AtLeast 6 Char !!',toastErrorStyle)
-            return;
+        if (username.length < 5 || username.length > 20) {
+          toast.error("Username must be between 5 and 20 characters");
+          return;
         }
-      console.log('signup called ... ');
+      
+        if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(username)) {
+          toast.error("Username must start with a letter and contain only letters, numbers, or underscore");
+          return;
+        }
+      
+        // PASSWORD VALIDATION
+        if (!password.trim()) {
+          toast.error("Password should not be empty");
+          return;
+        }
+      
+        if (password.length < 8) {
+          toast.error("Password must be at least 8 characters long");
+          return;
+        }
+      
+        if (/\s/.test(password)) {
+          toast.error("Password should not contain spaces");
+          return;
+        }
+      
+        if (!/[A-Z]/.test(password)) {
+          toast.error("Password must contain at least one uppercase letter");
+          return;
+        }
+      
+        if (!/[a-z]/.test(password)) {
+          toast.error("Password must contain at least one lowercase letter");
+          return;
+        }
+      
+        if (!/[0-9]/.test(password)) {
+          toast.error("Password must contain at least one number");
+          return;
+        }
+      
+        if (!/[!@#$%^&*]/.test(password)) {
+          toast.error("Password must contain at least one special character (!@#$%^&*)");
+          return;
+        }
+      
+        // If everything passes
+        setLoading(true);  // use state, not ref
         signup();
       }
+      
 
     return(
         <>
@@ -106,7 +150,7 @@ export default function Login(){
                     <input type="text" placeholder="Enter Your UserName" id="loginName" style={{width:"30rem"}}  value={username} onChange={(e) => setName(e.target.value)}/>
                     <div className="loginPass flex">
                         <input type="password" placeholder="Enter Your Password" id="loginPassword" style={{width:"24rem"}} value={password} onChange={(e)=>{setPassword(e.target.value)}}/>
-                        <Button className="bigbutton" onClick={loginCheck} id="signUp" ref={ref}>Sign Up</Button>
+                        <Button className="bigbutton" onClick={loginCheck} disabled={loading} id="signUp" ref={ref}>Sign Up</Button>
                     </div>
                     <p>Ready to Start? Use for free</p>
                 </div>

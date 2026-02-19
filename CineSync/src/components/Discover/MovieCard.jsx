@@ -1,11 +1,4 @@
-import { useContext, useState } from "react";
-import { UserContext } from "../Login-SignIn/UserContext";
-import { useNavigate } from "react-router-dom";
-
-export default function MovieCard({ url, title, genre, year, setOverview, setOverviewMovie }) {
-  const { changeMovie } = useContext(UserContext);
-  const navigate = useNavigate();
-
+export default function MovieCard({ url, title, genre, year, setOverview, setOverviewMovie, video, lead, director, description, rating }) {
   function overview() {
       setOverview(true);
       setOverviewMovie({
@@ -13,13 +6,18 @@ export default function MovieCard({ url, title, genre, year, setOverview, setOve
         title:title,
         genre:genre,
         year:year,
+        video:video,
+        director:director,
+        lead:lead,
+        description:description,
+        rating:rating
       })
   }
 
   return (
     <div onClick={overview} className="movie-card">
         <div className="poster" onClick={overview}>
-            <img src={url} alt="rendering ......" />
+            <img src={url} alt="rendering ......" onClick={overview}/>
         </div>
     </div>
   );

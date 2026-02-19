@@ -100,7 +100,7 @@ export default function BigMovie() {
             Watch with Friends
           </Button>
           <Button icon={<i className="fa-solid fa-play"></i>} id="soloPlay" onClick={()=>single(currentMovie.url,currentMovie.title)}>
-            play
+            Play
           </Button>
         </div>
       </section>

@@ -10,7 +10,7 @@
     --white : #ffffff;
 }
 .home{
-    width: 100vw;
+    width: 100%;
     position: relative;
 }
 
@@ -184,7 +184,7 @@ aside  button{
     padding: 5rem 10rem;
     background-color: #06090B;
     color: var(--white);
-    width: 100vw;
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 3rem;
@@ -194,6 +194,7 @@ aside  button{
     display: flex;
     gap: 3rem;
     overflow-x: auto;
+    scrollbar-width: none;
     scroll-behavior: smooth;
     padding-bottom: 0.5rem;
 }

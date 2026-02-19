@@ -2,13 +2,16 @@ import SearchBar from "./SearchBar"
 import TopDisBar from "./TopDisBar"
 import MainMovieDiv from "./MainMovieDiv"
 import './discover.css'
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import SideBar from "../Home/SideBar"
+import Button from "../Login-SignIn/Button"
 
 
 export default function Discover(){
     const myRef = useRef(null);
     const myRef2 = useRef(null);
+    const [overview,setOverview] = useState(false);
+    const [overviewMovie,setOverviewMovie] = useState({});
 
     const handleScroll = () => {
       // alert("rdxtfgyvhb");
@@ -27,9 +30,46 @@ export default function Discover(){
             <div id="discovermain">
                 <TopDisBar handleScroll={handleScroll}></TopDisBar>    
                 <SearchBar ref={myRef} ref2={myRef2}></SearchBar>
-                <MainMovieDiv></MainMovieDiv>
-            </div>    
-        </div>       
+                <MainMovieDiv overview={overview} setOverview={setOverview} overviewMovie={overviewMovie} setOverviewMovie={setOverviewMovie}></MainMovieDiv>
+            </div> 
+        </div>  
+        <div className="overviewContainer flex" style={overview?{display:"flex"}:{display:"none"}}>
+                <div className="flex">
+                    <img src={overviewMovie.url} alt="" />
+                    <div className="overviev">
+                        <h1>{overviewMovie.title}</h1>
+                        <div className="aboutMovie">
+                            <div className="ratings">
+                              <i class="fa-solid fa-star"></i>
+                              {overviewMovie.rating}
+                            </div>
+                            <div className="horizonLine"></div>
+                            <h3>{overviewMovie.year}</h3>
+                            <div className="horizonLine"></div>
+                            <h3>{overviewMovie.genre}</h3>
+                        </div>
+                        <div className="contents">
+                          <h6>overview</h6>
+                          <h5>{overviewMovie.description}</h5>
+                        </div>
+                        <div className="peoples">
+                          <div className="director">
+                            <h6>DIRECTOR</h6>
+                            <h3>{overviewMovie.director}</h3>
+                          </div>
+                          <div className="lead">
+                            <h6>LEADCAST</h6>
+                            <h3>{overviewMovie.lead}</h3>
+                          </div>
+                        </div>
+                        <div className="playButtons">
+                            <Button><i class="fa-solid fa-play"></i> Play Now</Button>
+                            <Button><i class="fa-solid fa-people-group"></i> Host Party</Button>
+                            <Button><i class="fa-regular fa-heart"></i></Button>
+                        </div>
+                    </div>
+                </div>
+            </div>        
         </>
     )
 }

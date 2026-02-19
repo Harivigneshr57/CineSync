@@ -1,10 +1,8 @@
 import MovieCard from "./MovieCard";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../Login-SignIn/UserContext";
-export default function MainMovieDiv() {
-    const [overview,setOverview] = useState(false);
+export default function MainMovieDiv({overview,setOverview,overviewMovie,setOverviewMovie}) {
     const [movies, setMovies] = useState([]);
-    const [overviewMovie,setOverviewMovie] = useState({});
     useEffect(() => {
         const fetmovie = async () => {
             await fetch("https://cinesync-3k1z.onrender.com/getAllMovies")
@@ -64,7 +62,7 @@ export default function MainMovieDiv() {
                             {movie.map((singleMovie,index) => {
                                 console.log(singleMovie.movie_poster,singleMovie.title,singleMovie);
                               return(
-                                <MovieCard url={singleMovie.movie_poster} key={index} title={singleMovie.title} image={movie} genre={singleMovie.Category_Name} year={singleMovie.year} setOverview={setOverview} setOverviewMovie={setOverviewMovie}></MovieCard>
+                                <MovieCard video={singleMovie.movie_url} url={singleMovie.movie_poster} key={index} title={singleMovie.title} image={movie} genre={singleMovie.Category_Name} year={singleMovie.year} setOverview={setOverview} setOverviewMovie={setOverviewMovie} description={singleMovie.overview} rating={singleMovie.rating} director={singleMovie.director} lead={singleMovie.lead_cast}></MovieCard>
                                 )
                             })}
 
@@ -74,10 +72,6 @@ export default function MainMovieDiv() {
                     )
                 })
             }
-            <div className="overviewContainer" style={overview?{display:"flex"}:{display:"none"}}>
-                <img src="" alt="" />
-                <div className="overview"></div>
-            </div>
         </>
     )
 }

@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import EndGame from "../../assets/EndGame.png";
-import Premalu from "../../assets/Premalu.png";
-import OhMyKadavule from "../../assets/Oh My Kadavule.png";
-import MiddleClass from "../../assets/MiddleClass.png";
-import Thor from "../../assets/Thor1.png";
+import EndGame from "../../assets/homepage/EndGame.png";
+import Premalu from "../../assets/homepage/Premalu.png";
+import OhMyKadavule from "../../assets/homepage/Oh My Kadavule.png";
+import MiddleClass from "../../assets/homepage/MiddleClass.png";
+import Thor from "../../assets/homepage/Thor1.png";
 import Button from "../Login-SignIn/Button";
 import { UserContext } from "../Login-SignIn/UserContext";
 

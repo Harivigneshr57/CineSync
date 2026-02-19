@@ -543,7 +543,9 @@ app.get("/getAllMovies", (req, res) => {
       m.overview,
       m.rating,
       m.year,
-      c.Category_Name
+      c.Category_Name,
+      m.movie_poster,
+      m.movie_url
     FROM Movies m
     INNER JOIN MovieCategoryRelation mc 
       ON m.ROWID = mc.movie_id

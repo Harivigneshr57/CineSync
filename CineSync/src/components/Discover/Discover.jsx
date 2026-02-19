@@ -7,7 +7,6 @@ import SideBar from "../Home/SideBar"
 
 
 export default function Discover(){
-
     const myRef = useRef(null);
     const myRef2 = useRef(null);
 

@@ -2,10 +2,9 @@ import MovieCard from "./MovieCard";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../Login-SignIn/UserContext";
 export default function MainMovieDiv() {
-    
-    
-
+    const [overview,setOverview] = useState(false);
     const [movies, setMovies] = useState([]);
+    const [overviewMovie,setOverviewMovie] = useState({});
     useEffect(() => {
         const fetmovie = async () => {
             await fetch("https://cinesync-3k1z.onrender.com/getAllMovies")
@@ -59,14 +58,13 @@ export default function MainMovieDiv() {
                 categorizedArray.map((movie, index) => {
                     return(
                       (movie.length>0?(
-                        <div id="catMovie" key={index}>
+                    <div id="catMovie" key={index}>
                         <h1 class="movieCat">{movie[0].Category_Name}</h1>
                         <div id="movieitems">
                             {movie.map((singleMovie,index) => {
+                                console.log(singleMovie.movie_poster,singleMovie.title,singleMovie);
                               return(
-                                
-                                <MovieCard url={'https://res.cloudinary.com/dsike2jgr/video/upload/v1771347813/Captain_America_Lifts_Thor_s_Hammer_Mjolnir_Scene_-_AVENGERS_4_ENDGAME_2019_Movie_CLIP_4K_720p60_dtynvl.mp4'} key={index} title={singleMovie.title} image={movie} genre={singleMovie.Category_Name} year={singleMovie.year}></MovieCard>
-                                
+                                <MovieCard url={singleMovie.movie_poster} key={index} title={singleMovie.title} image={movie} genre={singleMovie.Category_Name} year={singleMovie.year} setOverview={setOverview} setOverviewMovie={setOverviewMovie}></MovieCard>
                                 )
                             })}
 
@@ -76,6 +74,10 @@ export default function MainMovieDiv() {
                     )
                 })
             }
+            <div className="overviewContainer" style={overview?{display:"flex"}:{display:"none"}}>
+                <img src="" alt="" />
+                <div className="overview"></div>
+            </div>
         </>
     )
 }

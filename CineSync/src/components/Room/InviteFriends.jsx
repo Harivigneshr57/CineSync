@@ -12,7 +12,7 @@ export default function InviteFriends(props) {
     useEffect(() => {
         if (!user) return;
 
-        fetch("http://localhost:3458/allFriends", {
+        fetch("https://cinesync-3k1z.onrender.com/allFriends", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: localStorage.getItem('Username') })
@@ -36,7 +36,7 @@ export default function InviteFriends(props) {
 
         try {
 
-            const response = await fetch("http://localhost:3458/sendInvitation", {
+            const response = await fetch("https://cinesync-3k1z.onrender.com/sendInvitation", {
 
                 method: "POST",
 

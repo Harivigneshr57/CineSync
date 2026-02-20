@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Ourmessage from "./Ourmessage";
-import { io } from "socket.io-client";
 
-const socket = io("https://cinesync-3k1z.onrender.com");
+import { socket } from "../Home/socket";
+
 
 function Chatmeassages({ messageArray, setArray, currentUsers }) {
 

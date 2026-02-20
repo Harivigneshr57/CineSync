@@ -40,7 +40,7 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode }) {
         }
     }
     async function addRoom() {
-        let res = await fetch("http://localhost:3458/addRoom", {
+        let res = await fetch("https://cinesync-3k1z.onrender.com/addRoom", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username:user.username, room: room, audio: audio, video: video, reaction: reaction, chat: chat, game: game })
@@ -68,7 +68,7 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode }) {
     }
 
     function addToRoom(roomName) {
-        fetch("http://localhost:3458/addToRoom", {
+        fetch("https://cinesync-3k1z.onrender.com/addToRoom", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

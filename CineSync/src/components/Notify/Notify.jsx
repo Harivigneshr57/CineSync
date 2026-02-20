@@ -61,7 +61,7 @@ export default function Notify() {
                         timestamp = hours + "h";
                     }
 
-                    return <Notification roomName={rooms.room_name} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} ></Notification>
+                    return <Notification key={i} roomName={rooms.room_name} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} ></Notification>
                 })}
             </div>
         </div>

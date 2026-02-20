@@ -503,23 +503,49 @@ io.on("connection", (socket) => {
 
   socket.on("addtoserver", (username) => {
 
-      users[username] = socket.id;
+    users[username] = socket.id;
+    console.log(users);
 
   });
 
   socket.on("one2one", (message, friend, username) => {
 
-      const friendSocket = users[friend];
+    const friendSocket = users[friend];
 
-      if (friendSocket) {
+    if (friendSocket) {
 
-          io.to(friendSocket).emit(
-              "privatemessage",
-              message,
-              username
-          );
+      io.to(friendSocket).emit(
+        "privatemessage",
+        message,
+        username
+      );
+    }
+  });
+
+  socket.on('joinRoom', (roomName,username) => {
+    let friend =username;
+    socket.join(roomName);
+    console.log(username+` joined room: ${roomName}`);
+    socket.to(roomName).emit("newJoin",friend);
+  });
+
+  socket.on('sendMessageInsideRoom', (room,msg) => {
+    io.to(room).emit('messageFromRoom', msg);
+  });
+
+  socket.on("disconnect", () => {
+
+    for (let user in users) {
+
+      if (users[user] === socket.id) {
+        console.log("User disconnected: " + user);
+        delete users[user];
+
+        break;
 
       }
+
+    }
 
   });
 
@@ -529,23 +555,7 @@ io.on("connection", (socket) => {
     if (friend) {
       io.to(friend).emit("sendingInvite", room_name, movie_name, sender_name);
     }
-  });
-
-  socket.on("disconnect", () => {
-
-      for (let user in users) {
-
-          if (users[user] === socket.id) {
-
-              delete users[user];
-
-              break;
-
-          }
-
-      }
-
-  });
+  })
 
 });
 

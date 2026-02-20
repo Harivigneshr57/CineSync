@@ -16,8 +16,8 @@ export const UserProvider = ({ children }) => {
     function changeRoomDetail(arrayOfRooms){
         setRoomDetails(arrayOfRooms);
     }
-    function changeRoomDetail(arrayOfRooms){
-        setRoomDetails(arrayOfRooms);
+    function changeMovieImage(movie_img,title){
+        setMovieImg({movie_img,title});
     }
     useEffect(() => {
         changeUser();

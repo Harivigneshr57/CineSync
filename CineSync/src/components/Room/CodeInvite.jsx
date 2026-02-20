@@ -40,10 +40,10 @@ export default function InviteCode({code}){
             <h6>INVITE BY CODE</h6>
             <div className="code">
                 <div className="inputs flex">
-                    <input type="number" max={1} ref={inputOne} readOnly value={digit[0]} />
-                    <input type="number" max={1} ref={inputTwo} readOnly value={digit[1]}/>
-                    <input type="number" max={1} ref={inputThree} readOnly value={digit[2]}/>
-                    <input type="number" max={1} ref={inputFour} readOnly value={digit[3]}/>
+                    <input type="number" max={1} ref={inputOne} readOnly value={digit[3]} />
+                    <input type="number" max={1} ref={inputTwo} readOnly value={digit[2]}/>
+                    <input type="number" max={1} ref={inputThree} readOnly value={digit[1]}/>
+                    <input type="number" max={1} ref={inputFour} readOnly value={digit[0]}/>
                 </div>
                 <Button id={'copy'} icon={<i class="fa-solid fa-copy"></i>} onClick={copy}> Copy Code</Button>
                 <p>Share this Four Digit Code with Friends.</p>

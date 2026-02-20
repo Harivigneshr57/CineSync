@@ -1,0 +1,177 @@
+.waitingRoomMain {
+    height: 100vh;
+    background-color: #171a1b;
+    margin-left: 3.7%;
+    color: white;
+    display: flex;
+}
+
+.lobby-members {
+    border-left: 1px solid #292828;
+    width: 23rem;
+    height: 100vh;
+    background-color: #121214;
+    padding: 2rem;
+}
+
+.conMem {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.memberDiv {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    border-radius: 21px;
+}
+
+img.memberImg {
+    width: 4rem;
+    background: dimgray;
+    padding: 4px;
+    border: 7px solid dimgray;
+    border-radius: 35px;
+}
+
+p.nameval {
+    font-size: large;
+    margin-bottom: 0.4rem;
+}
+
+p.statusval {
+    color: rgb(83, 120, 149);
+}
+
+.isInvite {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 0.5rem;
+}
+
+.plus {
+    font-size: xx-large;
+    color: #727375;
+    border-radius: 54px;
+    width: 62px;
+    height: 62px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 200;
+    border: 1px dashed #808080;
+}
+
+.waitingMain {
+    width: 55%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.lobbyChat {
+    width: 30%;
+    border-left: 1px solid #292828;
+    background-color: #141414;
+}
+
+#iamReady {
+    padding: 1.6rem;
+    width: 20rem;
+    border: none;
+    background: rgb(83, 120, 149);
+    color: white;
+    font-weight: 800;
+    border-radius: 6px;
+    font-size: medium;
+    letter-spacing: 5px;
+}
+
+hr {
+    width: 5rem;
+    border: none;
+    height: 1px;
+    background: rgb(83, 120, 149);
+}
+
+.chatInputContainer {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 12px 16px;
+    width: 82%;
+    margin: 1rem;
+    display: flex;
+    align-items: center;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+}
+
+.chatInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.chatInputContainer:focus-within {
+    border: 1px solid rgb(141, 137, 137);
+}
+
+.sendBtn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #5c6b8a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: x-large;
+}
+
+.sendBtn:hover {
+    color: #4da6ff;
+    border: none;
+}
+
+.lobbyPTag {
+    padding: 2.3rem;
+    padding-left: 2rem;
+    letter-spacing: 3px;
+    font-weight: 800;
+}
+
+.lobbyItag {
+    margin-right: 1rem;
+    font-size: x-large;
+    color: rgb(83, 120, 149);
+}
+
+.lobbyChatBox {
+    height: 54rem;
+    background: black;
+}
+
+.lobbbyPTag {
+    padding:2rem;
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    font-size: larger;
+    font-weight: 500;
+    border-bottom: 1px solid gray;
+}
+
+#lobbyChatBox {
+    height: 81vh;
+}
+
+.lobbyChat {
+    width: 31%;
+    background-color: #141414;
+    height: 100vh;
+}

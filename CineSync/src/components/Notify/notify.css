@@ -1,0 +1,185 @@
+#notificationMain {
+    width: 96%;
+    margin-left: 4.5%;
+    height: 100vh;
+}
+
+.notTitle {
+    display: flex;
+    width: 100%;
+    height: 8rem;
+    justify-content: space-between;
+    padding: 3rem;
+    align-items: center;
+    border-bottom: 1px solid gray;
+}
+
+.clear {
+    font-size: large;
+    font-weight: 500;
+    cursor: pointer;
+    width: 7rem;
+    height: 2rem;
+    background-color: var(--major);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.5rem;
+}
+ 
+ .clear:hover{
+    color:var(--major);
+    border: 1px solid var(--major);
+    background-color: var(--background);
+} 
+
+
+/* 
+.notificatinDiv {
+    width: 45%;
+    margin: 2rem;
+    display: flex;
+    height: 16rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.4em;
+    border-radius: 11px;
+    border: 1px solid #403f3f;
+} */
+
+.notOwner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 17rem;
+    gap: 2rem;
+}
+
+.notOwner img {
+    width: 3rem;
+}
+
+h3.roomNameNot {
+    color: white;
+    margin-left: 2rem;
+}
+
+/* // */
+
+.notTitle {
+    display: flex;
+    width: 100%;
+    height: 8rem;
+    justify-content: space-between;
+    padding: 3rem;
+    align-items: center;
+    border-bottom: 1px solid gray;
+}
+
+.notificatinDiv {
+    width: 46%;
+    margin: 2rem;
+    display: flex;
+    height: 17rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.4em;
+    border-radius: 11px;
+    border: 1px solid #403f3f;
+}
+
+.notDetail {
+    width: 84%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
+}
+
+.notDet {
+    width: 100%;
+    height: 11rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.notDetLeft {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.notOwner.notOwner {
+    display: flex;
+    align-items: center;
+    width: 14rem;
+    gap: 2rem;
+    margin-left: 10%;
+}
+
+.notOwner img {
+    width: 3rem;
+}
+
+h3.roomNameNot {
+    color: white;
+    margin-left: 10%;
+    font-size: xx-large;
+}
+
+.movieTitleNot {
+    color: rgb(109 193 254);
+    margin-left: 10%;
+}
+
+.timeStamp {
+    padding: 0.5rem;
+    height: 2rem;
+    width: 3rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    letter-spacing: 4px;
+    color: rgb(85 159 213);
+}
+
+.buttonDiv {
+    width: 100%;
+    height: 3rem;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.joinNot {
+    width: 70%;
+    font-size: medium;
+    color: white;
+    background: #5a83a3;
+    padding: 0rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border: none;
+    border-radius: 6px;
+}
+
+.declineNot {
+    width: 20%;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    border-radius: 7px;
+    font-size: medium;
+    font-weight: 500;
+}
+
+.notOwner img {
+    border: 2px solid var(--major);
+    border-radius: 50%;
+    width: 3.5rem;
+    height: 3.5rem;
+}
+
+#notMain {
+    display: flex;
+    flex-wrap: wrap;
+}

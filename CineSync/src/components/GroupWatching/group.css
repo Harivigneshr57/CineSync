@@ -1,332 +1,332 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+.roomWatch{
+    width: 100%;
+
+    /* TOP BAR */
+
+    .topBar{
+      width: 96%;
+      margin-left: 4%;
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--grey);
+
+      h5{
+        font-style: italic;
+        font-weight: 600;
+        font-size: 2rem;
+        color: var(--white);
+      }
+
+      .topButtons{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+
+        #roomInInvite{
+          background-color: var(--major);
+          padding: .6rem 2rem;
+          color: var(--white);
+          font-weight: 600;
+          font-size: 1.2rem;
+          border: 1px solid var(--white);
+          border-radius: .25rem;
+        }
+
+        #roomInInvite:hover{
+          filter: brightness(1.3);
+        }
+
+        #roomExit{
+          background-color: var(--background);
+          color: red;
+          border: 1px solid red;
+          padding: .6rem 2rem;
+          border-radius: .25rem;
+          font-weight: 600;
+          font-size: 1.2rem;
+          font-style: italic;
+        }
+
+        #roomExit:hover{
+          background-color: red;
+          color: var(--white);
+        }
+      }
+    }
+
+    /* VIDEO AREA */
+
+    .videoArea{
+      width: 96%;
+      margin-left: 4%;
+      height: 92vh;
+      position: relative;
+
+      video{
+        width: 100%;
+        height: 100%;
+      }
+    }
+
   }
 
-  :root{
-    --blur : rgb(0 0 0 / 0.4);
-  }
+ /* ================= VIDEO CONTROLS ================= */
+
+.videoControls {
+  width: 80%;
+  flex-direction: column;
+  position: absolute;
+  bottom: 5%;
+  gap: 1rem;
+  left: 10%;
+  height: 10%;
+  border-radius: .3rem;
+  background-color: rgb(36 35 35 / 70%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#mainIp{
+  width: 100%;
+  height: 6.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+#volumeIp{
+  width: 40%;
+  height: 18%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.volume-slider::-webkit-slider-thumb {
+
+  appearance: none;
   
-  .MainRoom {
-    display: flex;
-    height: 100vh;
-    background: var(--background);
-    color: var(--white);
-  }
+  width: 1px;
   
-  .MainDiv {
-    display: flex;
-    flex-direction: column;
-    margin-left: 4vw;
-  }
+  height: 1px;
   
-  .content {
-    flex: 1;
-    display: flex;
-  }
+  border-radius: 50%;
   
-  /* TOP BAR */
+  background:var(--major);
   
-  .topbar {
-    height: 4rem;
-    width: 100%;
-    padding: 0 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--background);
-  }
+  cursor: pointer;
   
-  .live-badge {
-    background-color: var(--grey);
-    padding: .5rem 1rem;
-    font-size: 12px;
-    border-radius: 1rem;
-    margin-top: 5px;
-    font-weight: 600;
-    color: var(--white);
-    border: 1px solid var(--white);
-  }
-  
-    #settings {
-    background-color: #000000;
-    color: var(--white);
-    border: .2px solid var(--white);
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    font-weight: 600;
-  }
-  
-  .headbuttons > :nth-child(2) {
-    background-color: var(--bg);
-    border: .2px solid var(--white);
-    color: var(--white);
-    padding: .75rem 1.5rem;
-    border-radius: .5rem;
-    font-size: 1rem;
-    font-weight: 600;
-  }
-  
-  .headbuttons{
-    gap: 1rem;
-    animation: fromRight 1.5s ease forwards;
-  }
-  
-  .left{
-    gap: 1rem;
-  }
-  
-  /* VIDEO */
-  
-  .video-area {
-    position: relative;
-    background-color: var(--background);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 94vh;
   }
 
-  .room-video{
-    width: 100%;
-    z-index: 0;
-    height: 100%;
-  }
 
-  #roomMovie{
-    width: 100%;
-    height: 100%;
+
+.top-progress::-webkit-slider-thumb {
+
+  appearance: none;
+  
+  position: absolute;
+
+  width: 1px;
+  
+  height: 1px;
+  
+  border-radius: 50%;
+  
+  background:var(--major);
+
+  cursor: pointer;
+  
   }
   
-  .video-image {
-    width: 70%;
-    border-radius: 8px;
-  }
-  
-  /* FLOATING CONTROLS */
-  .controls-wrapper {
-    position: absolute;
-    bottom: 20px;
-    width: 90%;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: sans-serif;
-  }
-  
-  /* TOP THIN PROGRESS LINE */
   .top-progress {
-    width: 100%;
-    appearance: none;
-    height: 4px;
-    border-radius: 4px;
-    background: #2a2a2a;
-    margin-bottom: 10px;
-    cursor: pointer;
-  }
   
-  .top-progress::-webkit-slider-thumb {
-    appearance: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #4da3ff;
-    cursor: pointer;
-  }
-  
-  /* MAIN BAR */
-  .controls-bar {
-    background: #0d0d0d;
-    border-radius: 18px;
-    padding: 14px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
-  }
-  
-  /* LEFT SECTION */
-  .left-controls {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .play-btn {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: none;
-    background: #2d4f6c;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  
-  .play-btn:hover {
-    transform: scale(1.05);
-  }
-  
-  .volume-icon {
-    color: white;
-  }
-  
-  .volume-slider {
-    width: 80px;
-    appearance: none;
-    height: 3px;
-    background: #333;
-    border-radius: 4px;
-  }
-  
-  .volume-slider::-webkit-slider-thumb {
-    appearance: none;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-  }
-  
-  /* TIME CENTER */
-  .time-display {
-    color: #cfcfcf;
-    font-size: 14px;
-  }
-  
-  /* RIGHT SECTION */
-  .right-controls {
-    display: flex;
-    gap: 15px;
-  }
-  
-  .icon-btn {
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-    transition: 0.2s;
-  }
-  
-  .icon-btn:hover {
-    opacity: 0.7;
-  }
-  
-  /* REACTION FLOATING PILL */
-  .reaction-pill {
     position: absolute;
-    top: -45px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #121212;
-    padding: 8px 18px;
-    border-radius: 30px;
-    display: flex;
-    gap: 10px;
-    font-size: 18px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.6);
-  }
-  
-  
-  
-  /* RIGHT PANEL */
-  
-  .right-panel {
-    width: 30vw;
-    background-color:var(--background);
-    border-left: 1px solid var(--border);
-    display: none;
-    flex-direction: column;
-  }
-  
-  /* CHAT */
 
-  .room-chat{
     width: 100%;
+  
+    appearance: none;
+  
     height: 100%;
-  }
   
-  .roomChat-icon{
-    padding: 1rem;
-    width: 5rem;
-    height: 5rem;
-    color: var(--white);
-    background-color: var(--major);
-    font-size: 2rem;
-    position: absolute;
-    right: 2rem;
-    bottom: 2.5rem;
-    border-radius: 50%;
-    border: 1px solid var(--white);
-  }
+    border-radius: 4px;
   
-  .roomChat-icon:hover{
-    cursor: pointer;
-  }
-  /* CHAT INPUT */
+  background: transparent;
   
-  .chat-input {
+  cursor: pointer;
+    
+  z-index: 1;
+  
+  border: none;
+  
+  }
+  .volume-slider {
+  
+    width: 95%;
+   
+   appearance: none;
+    
+   height: 100%;
+   
+   border-radius: 4px;
+   
+   background: transparent;
+   
+   cursor: pointer;
+   
+   position: relative;
+   
+   z-index: 1;
+   
+   border: none;
+   
+   }
+  
+  #backColorDiv {
+  
+   width: 95%;
+  
+   position: absolute;
+
+    height: 100%;
+  
+    z-index: 0;
+  
+    border-radius: 10px;
+  
+  }
+
+  #volColorDiv {
+  
+    width: 100%;
+    
+   height: 100%;
+   
+   position: absolute;
+      
+   z-index: 0;
+   
+   border-radius: 10px;
+   
+   }
+  
+  
+
+.otherControls{
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+
+  .leftSide{
     display: flex;
-    padding: 12px;
-    border-top: 1px solid var(--border);
-  }
-  
-  .chat-input input {
-    flex: 1;
-    background: #1e293b;
-    border: none;
-    padding: 10px;
-    border-radius: 8px;
-    color: white;
-  }
-  
-  .chat-input button {
-    margin-left: 8px;
-    background: var(--major);
-    border: none;
-    padding: 0 16px;
-    border-radius: 8px;
-    color: white;
-  }
-  
-  /* PARTICIPANTS */
-  
-  .participants {
-    padding: 16px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-  }
-  
-  .participants-header {
-    font-size: 12px;
-    color: #94a3b8;
-    margin-bottom: 12px;
-  }
-  
-  .participant {
-    display: flex;
+    gap: 1rem;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 12px;
+    p{
+      color: var(--white);
+      font-style: italic;
+      font-size: 1rem;
+    }
+    #pause,#forward,#backward{
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background-color: var(--background);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--white);
+      color: var(--white);
+      transition: all .4s ease-in-out;
+    }
+    #pause:hover,#forward:hover,#backward:hover{
+      background-color: var(--major);
+      transition: all .4s ease-in-out;
+    }
+    .volume{
+      display: flex;
+      position: relative;
+      width: 15rem;
+      height: 2.5rem;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      .vol{
+        font-size: 1.2rem;
+        color: var(--white);
+      }
+    }
+    .callOptions{
+      display: flex;
+      gap: 1rem;
+
+      #audio,#video{
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        background-color: var(--major);
+        color: var(--white);
+        font-size: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--white);
+      }
+    }
   }
-  
-  .participant .avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #334155;
-    margin-right: 10px;
+
+  .rightSide{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    #roomChats{
+      border: 1px solid var(--white);
+      padding: .5rem 1rem;
+      color: var(--white);
+      background-color:  rgb(36 35 35 / 70%);
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: .25rem;
+      transition: all .4s ease-in-out;
+    }
+    #roomParticipants{
+      border: 1px solid var(--white);
+      padding: .35rem .75rem;
+      color: var(--white);
+      background-color:  rgb(36 35 35 / 70%);
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: .25rem;      transition: all .4s ease-in-out;
+      transition: all .4s ease-in-out;
+    }
+    #roomChats:hover{
+      background-color: var(--major);
+      transition: all .4s ease-in-out;
+    }
+    #roomParticipants:hover{
+      background-color: var(--major);
+      transition: all .4s ease-in-out;
+    }
+    .horizontaline{
+      height: 2rem;
+      width: 3px;
+      background-color: var(--white);
+    }
+    .fa-expand,.fa-compress{
+      color: var(--white);
+      font-size: 1.5rem;
+      transition: all .4s ease-in-out;
+    }
+    .fa-expand:hover,.fa-compress:hover{
+      color: var(--major);
+      transition: all .4s ease-in-out;
+      cursor: pointer;
+    }
   }
-  
-  .status.online {
-    color: #22c55e;
-    font-size: 12px;
-  }
-  
-  .status.away {
-    color: #f59e0b;
-    font-size: 12px;
-  }
-  
+}

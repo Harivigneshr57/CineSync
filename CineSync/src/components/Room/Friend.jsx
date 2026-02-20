@@ -1,6 +1,6 @@
 import Button from "../Login-SignIn/Button"
 import def from "../../assets/onnapak.png";
-export default function Friend({arr}){
+export default function Friend({arr,handleFriend}){
     // let onlineUsers;
     // fetch('http://localhost:3458/users')
     // .then((res)=>{
@@ -31,7 +31,7 @@ export default function Friend({arr}){
                         <p></p>
                     </div>
                 </div>
-                <Button id={'invite'}>Invite</Button>
+                <Button id={'invite'} onClick={()=>handleFriend(arr.username)}>Invite</Button>
             </div>
         </>
     )

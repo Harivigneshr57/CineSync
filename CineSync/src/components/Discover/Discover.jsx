@@ -21,6 +21,10 @@ export default function Discover(){
         myRef2.current.focus();
       }
     };
+
+    function close(){
+      setOverview(false);
+    }
   
   
     return(
@@ -63,11 +67,12 @@ export default function Discover(){
                           </div>
                         </div>
                         <div className="playButtons">
-                            <Button><i class="fa-solid fa-play"></i> Play Now</Button>
-                            <Button><i class="fa-solid fa-people-group"></i> Host Party</Button>
-                            <Button><i class="fa-regular fa-heart"></i></Button>
+                            <Button id="playSolo"><i class="fa-solid fa-play"></i> Play Now</Button>
+                            <Button id='host'><i class="fa-solid fa-people-group"></i> Host Party</Button>
+                            <Button id='like'><i class="fa-regular fa-heart"></i></Button>
                         </div>
                     </div>
+                    <Button id='close'onClick={close}><i class="fa-solid fa-xmark"></i></Button>
                 </div>
             </div>        
         </>

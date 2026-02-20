@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import SingleMovieBottom from "./SingleMovieBottom";
 import SingleMovieTop from "./SingleMovieTop";
-import VideoControls from "../GroupWatching/VideoControls";
+import VideoControls from "./VideoControls";
 import "./singleMovie.css";
 
 import { useContext, useEffect, useState } from "react";

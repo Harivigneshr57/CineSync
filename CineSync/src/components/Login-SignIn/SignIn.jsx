@@ -68,8 +68,8 @@ export default function SignIn() {
           }
           if(data.message == "Login successful"){
             localStorage.setItem('Username',data.username)
-            changeUser(data.id,data.username,data.bio);
-            toast.success("Login Successful !!",toastSuccessStyle)
+            toast.success("Login Successful !!",toastSuccessStyle);
+            changeUser();
             home();
           }
           else{

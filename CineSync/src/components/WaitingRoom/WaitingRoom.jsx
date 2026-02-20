@@ -1,0 +1,109 @@
+import { useState, useEffect } from "react";
+import SideBar from "../Home/SideBar";
+import LobbyChat from "./LobbyChat";
+import Lobbymembers from "./Lobbymembers";
+import WaitingMain from "./WaitingMain";
+import "./waitingroom.css";
+import { socket } from "../Home/socket";
+
+export default function WaitingRoom() {
+    const [connectedmemebers, setConnectedMemebers] = useState([]);
+    useEffect(() => {
+        socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
+    }, [])
+
+    useEffect(() => {
+
+        async function initRoom() {
+
+            try {
+
+                const joinRes = await fetch("http://localhost:3458/addToRoom", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        roomname: localStorage.getItem("Roomname"),
+                        username: localStorage.getItem("Username"),
+                        Role: "member",
+                        status: 0
+                    })
+                });
+
+                const joinData = await joinRes.json();
+
+                if (joinData.message !== "Joined successfully") {
+                    console.log("DB join failed");
+                    return;
+                }
+
+                console.log("DB join success");
+
+                socket.emit(
+                    "joinRoom",
+                    localStorage.getItem("Roomname"),
+                    localStorage.getItem("Username")
+                );
+
+                const response = await fetch("http://localhost:3458/getAllParticipants", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        roomName: localStorage.getItem("Roomname"),
+                        userName: localStorage.getItem("Username")
+                    })
+                });
+
+                const data = await response.json();
+
+                setConnectedMemebers(data.allmembers || []);
+
+            } catch (err) {
+
+                console.log(err);
+
+            }
+
+        }
+
+        initRoom();
+
+        socket.on("newJoin", (friend) => {
+
+            setConnectedMemebers(prev => {
+
+                const exists = prev.some(
+                    member => member.username === friend
+                );
+
+                if (exists) return prev;
+
+                return [
+                    ...prev,
+                    {
+                        username: friend,
+                        status: "Not Ready"
+                    }
+                ];
+
+            });
+
+        });
+
+        return () => {
+
+            socket.off("newJoin");
+
+        };
+
+    }, []);
+    return <>
+        <SideBar></SideBar>
+        <div className="waitingRoomMain">
+            <Lobbymembers connectedmemebers={connectedmemebers}></Lobbymembers>
+            <WaitingMain></WaitingMain>
+            <LobbyChat></LobbyChat>
+        </div>
+    </>
+}

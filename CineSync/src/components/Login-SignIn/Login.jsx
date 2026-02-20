@@ -11,7 +11,7 @@ export default function Login(){
 
     let navigate = useNavigate();
     function navigates(){
-        navigate("/signIn");
+        navigate("/home");
     }
 
     const [username, setName] = useState("");
@@ -61,6 +61,8 @@ export default function Login(){
           } 
           else if (data.message === "Signup successful") {
             toast.success("SignUp Successful, you can SignIn !!", toastSuccessStyle);
+            localStorage.setItem("Username",data.username);
+            changeUser();
             navigates();
             ref.current.disabled = false;
           } 

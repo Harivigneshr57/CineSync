@@ -5,22 +5,26 @@ import InviteMovie from "./InviteMovie";
 import SelectMovie from "./SelectMovie";
 import SelectedMovie from "./SelectedMovie";
 import './room.css';
-export default function Room(){
-    const [step,setStep] = useState(1);
-    const [code,setCode]=useState("");
-    const [movie,setMovie] = useState({});
-    function onSetMovie(movie){
+import HostView from "../WaitingRoom/Hostview";
+export default function Room() {
+    const [step, setStep] = useState(1);
+    const [code, setCode] = useState("");
+    const [movie, setMovie] = useState({});
+    const [room, setRoom] = useState('');
+
+    function onSetMovie(movie) {
         setMovie(movie);
     }
-    function onSetStep(step){
+    function onSetStep(step) {
         setStep(step);
     }
     return (
         <>
             <div id="room" className="flex">
                 <SideBar></SideBar>
-                {step==1?<SelectMovie onStep={onSetStep} onMovie={onSetMovie} step={step} movie={movie}></SelectMovie>:step==2?<ConfigMovie setCode={setCode} onStep={setStep} step={step}></ConfigMovie>:<InviteMovie code={code} onStep={setStep} step={step}></InviteMovie>}
-                <SelectedMovie movie={movie}></SelectedMovie>
+                {step == 1 ? <SelectMovie onStep={onSetStep} onMovie={onSetMovie} step={step} movie={movie}></SelectMovie> : step == 2 ? <ConfigMovie setRoom={setRoom} room={room} setCode={setCode} onStep={setStep} step={step}></ConfigMovie> : <InviteMovie room={room} movie={movie} code={code} onStep={setStep} step={step}></InviteMovie>}
+                {step == 3 ? <HostView></HostView> : <SelectedMovie movie={movie}></SelectedMovie>}
+
             </div>
         </>
     )

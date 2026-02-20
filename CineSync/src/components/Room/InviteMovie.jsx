@@ -3,7 +3,7 @@ import InviteCode from "./CodeInvite"
 import InviteFriends from "./InviteFriends"
 import Button from "../Login-SignIn/Button"
 import { useNavigate } from "react-router-dom"
-export default function InviteMovie({code,onStep,step}  ){
+export default function InviteMovie({code,onStep,step,movie,room}  ){
     const navigate = useNavigate();
     function nav(){
         navigate("/discover");   
@@ -19,7 +19,7 @@ export default function InviteMovie({code,onStep,step}  ){
                 <Stage step={step}></Stage>
                 <div className="configurations">
                     <InviteCode code={code}></InviteCode>
-                    <InviteFriends></InviteFriends>
+                    <InviteFriends movie={movie} room={room} code={code}></InviteFriends>
                 </div>
                 <Button id={'start'}>Start Watch Party <i class="fa-solid fa-caret-right"></i></Button>
             </div>

@@ -12,7 +12,8 @@ import { UserProvider } from "./components/Login-SignIn/UserContext.jsx";
 import SinglePersonMovie from "./components/Single/SinglePersonMovie.jsx";
 import RoomType from "./components/Room/RoomType.jsx";
 import Room from "./components/Room/Room.jsx";
-import MainRoom from './components/GroupWatching/MainRoom.jsx';
+import WaitingRoom from './components/WaitingRoom/WaitingRoom.jsx';
+import Notify from './components/Notify/Notify.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -31,7 +32,8 @@ createRoot(document.getElementById('root')).render(
           <Route path="/single" element={<SinglePersonMovie />} />
           <Route path="/room" element={<RoomType />} />
           <Route path="/createRoom" element={<Room />} />
-          <Route path='/mainRoom' element={<MainRoom />}></Route>
+          <Route path="/waitingRoom" element={<WaitingRoom/>}></Route>
+          <Route path="/notification" element={<Notify/>}></Route>
         </Routes>
 
       </BrowserRouter>

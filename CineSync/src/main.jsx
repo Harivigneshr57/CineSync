@@ -14,6 +14,7 @@ import RoomType from "./components/Room/RoomType.jsx";
 import Room from "./components/Room/Room.jsx";
 import WaitingRoom from './components/WaitingRoom/WaitingRoom.jsx';
 import Notify from './components/Notify/Notify.jsx';
+import MainRoom from './components/GroupWatching/RoomWatch.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -34,7 +35,8 @@ createRoot(document.getElementById('root')).render(
           <Route path="/createRoom" element={<Room />} />
           <Route path="/waitingRoom" element={<WaitingRoom/>}></Route>
           <Route path="/notification" element={<Notify/>}></Route>
-        </Routes>
+          <Route path='/mainRoom' element={<MainRoom></MainRoom>}></Route>
+        </Routes> 
 
       </BrowserRouter>
     </UserProvider>

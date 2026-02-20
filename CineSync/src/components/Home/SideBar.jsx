@@ -18,6 +18,9 @@ export default function SideBar(){
     function room(){
         navigate("/room")
     }
+    function notify(){
+        navigate("/notification")
+    }
     return(
         <>
         <aside>
@@ -31,7 +34,7 @@ export default function SideBar(){
                 <Button icon={<i class="fa-solid fa-door-open"></i> } onClick={room}>Room</Button>
             </div>
             <div className="user-nav">
-                <Button icon={<i class="fa-solid fa-bell"></i>}>Notify</Button>
+                <Button icon={<i class="fa-solid fa-bell"></i>} onClick={notify}>Notify</Button>
                 <Button icon={<i class="fa-solid fa-circle-user"></i>} onClick={profile}>Profile</Button>
             </div>
         </aside>

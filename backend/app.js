@@ -69,13 +69,19 @@ app.post("/signin", async (req, res) => {
 
     return res.status(200).json({
       message: "Login successful",
-      id: user.ROWID,
       username: user.username,
-      bio: user.bio,
     });
   });
 });
 
+app.get("/userId", async (req,res)=>{
+  try{
+
+  }
+  catch(error){
+
+  }
+})
   app.post("/signup", async (req, res) => {
     console.log('fetch working.....');
     try {
@@ -117,7 +123,8 @@ app.post("/signin", async (req, res) => {
           }
   
           return res.status(201).json({
-            message: "Signup successful"
+            message: "Signup successful",
+            username: username
           });
         });
       });
@@ -731,3 +738,4 @@ app.post("/addRoom",(req,res)=>{
     })  
     return roomCode
   }
+  

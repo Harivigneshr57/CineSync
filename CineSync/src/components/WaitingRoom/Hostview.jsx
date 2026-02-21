@@ -16,7 +16,7 @@ export default function HostView() {
     
         socket.emit("joinRoom", room, username);
     
-        fetch("http://localhost:3458/getAllParticipants", {
+        fetch("https://cinesync-3k1z.onrender.com/getAllParticipants", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

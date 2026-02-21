@@ -529,10 +529,9 @@ io.on("connection", (socket) => {
     socket.to(roomName).emit("newJoin",friend);
   });
 
-  socket.on('sendMessageInsideRoom', (room,msg) => {
-    io.to(room).emit('messageFromRoom', msg);
+  socket.on('sendMessageInsideRoom', (room, msgObj) => {
+    socket.to(room).emit("messageFromRoom", msgObj);
   });
-
   socket.on("disconnect", () => {
 
     for (let user in users) {

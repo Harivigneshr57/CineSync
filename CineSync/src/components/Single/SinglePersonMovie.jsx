@@ -3,7 +3,6 @@ import SingleMovieBottom from "./SingleMovieBottom";
 import SingleMovieTop from "./SingleMovieTop";
 import VideoControls from "./VideoControls";
 import "./singleMovie.css";
-import wheels from "./Wheels on the Bus.mp4";
 
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../Login-SignIn/UserContext";
@@ -35,7 +34,6 @@ export default function SinglePersonMovie() {
     // console.log("==============================");
 
     const videoMap = {
-        "TheAvengers": wheels,
         "CaptainAmerica:TheFirstAvenger": './Captain America : The First Avenger.mp4'
     }
 

@@ -915,3 +915,51 @@ app.post("/getRoomName",(req,res)=>{
     }
   })
 });
+
+
+
+app.post("/editProfile",(req,res)=>{
+  const{oldname,image,name,bio}=req.body;
+
+  let userID=0;
+  let isNotExist=false;
+  
+  db.query("SELECT ROWID FROM users WHERE username=?", [oldname], (err, userResult) => {
+
+    if (err) return res.status(500).json({ error: err });
+    if (!userResult.length)
+        return res.json({ error: "User not found" });
+
+    userID = userResult[0].ROWID;
+    console.log(userID);
+  })
+  db.query("SELECT ROWID FROM users WHERE username=?", [name], (err, userResult) => {
+
+    if (err) return res.status(500).json({ error: err });
+    if (userResult.length){
+      return res.json({ error: "User already exist, please choose another name" });
+      
+    }
+    else{
+      console.log("User is unique")
+      isNotExist=true;
+      const alterQuery='update users set image=?, username=? ,bio=? where ROWID=?'
+    db.query(alterQuery,[image,name,bio,userID],(err,userResult)=>{
+      if(err) return res.status(500).json({error:err});
+      if (!userResult.length) return res.json({ error: "User not found" });
+      return res.json({message:userID});
+    })
+    }
+  })
+  // const insertQuery=`update users set image=?,username`
+  
+})
+app.post("/getMyProfile",(req,res)=>{
+  const{username,user_id}=req.body;
+  db.query("Select bio, image,username from users where username=? and ROWID=?",[username,user_id],(err,userResult)=>{
+    if(err) return res.status(500).json({error:err});
+    if (!userResult.length) return res.json({ error: "User not found" });
+    return res.json({message:userResult});
+  });
+
+})

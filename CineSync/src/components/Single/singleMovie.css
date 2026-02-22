@@ -1,116 +1,309 @@
 #singleMoviePage {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 #singleTop {
-    width: 100%;
-    height: 6rem;
-    background: linear-gradient(180deg, rgb(36, 35, 35), transparent);
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-#singleTop div {
-    width: 30%;
-    height: 100%;
-    gap: 4rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width: 100%;
+  height: 6rem;
+  background: linear-gradient(180deg, rgb(36, 35, 35), transparent);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 #bg-video {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    z-index: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 0;
 
 }
 
 #video_control {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    font-size: 1.6rem;
-    color: #0c5e9c;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  font-size: 1.6rem;
+  color: #0c5e9c;
 }
 
 
 #content_single {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    z-index: 5;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  z-index: 5;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
 }
 
 #vc {
-    width: 100%;
-    height: 13rem;
+  width: 100%;
+  height: 13rem;
 }
 
 .time {
-    color: #0c5e9c;
+  color: #0c5e9c;
 }
 
 
 #playback {
-    width: 80%;
+  width: 80%;
 }
 
 #playback {
-    -webkit-appearance: none;
-    background-color: transparent;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  -webkit-appearance: none;
+  background-color: transparent;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
 }
 
 #playback::-webkit-slider-runnable-track {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 0.31rem;
-    background-color: rgba(255, 255, 255, 0.5);
+  -webkit-appearance: none;
+  width: 100%;
+  height: 0.31rem;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 #playback::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 50%;
-    background-color: #0c5e9c;
-    position: relative;
-    bottom: 5px;
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: #0c5e9c;
+  position: relative;
+  bottom: 5px;
 }
 
-#singleBottomDiv:hover, #singleBottomDiv:focus-within{
-    height: 22rem;
-    
+#singleBottomDiv:hover,
+#singleBottomDiv:focus-within {
+  height: 22rem;
+
 }
+
 #singleBottomDiv {
-    transition: .4s all ease-in-out;
-    width: 100%;
-    display: flex;
-    gap: 1rem;
-    height: 2rem;
-    padding: 1rem;
-    overflow-x: auto;
-}
-#singleBottomDiv::-webkit-scrollbar {
-    display: none;
+  transition: .4s all ease-in-out;
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  height: 2rem;
+  padding: 1rem;
+  overflow-x: auto;
 }
 
- #singleTop {
-    color: white;
-    font-size: 2rem;
+#singleBottomDiv::-webkit-scrollbar {
+  display: none;
+}
+
+#singleTop {
+  color: white;
+  font-size: 2rem;
+}
+
+
+
+.top-progress::-webkit-slider-thumb {
+  appearance: none;
+  width: 1px;
+  height: 1px;
+  border-radius: 50%;
+  background: var(--major);
+  cursor: pointer;
+}
+
+/* MAIN BAR */
+.controls-bar {
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* LEFT SECTION */
+.left-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.play-btn {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+  background: black;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.play-btn:hover {
+  transform: scale(1.05);
+}
+
+.volume-icon {
+  color: white;
+}
+
+
+
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  position: relative;
+  z-index: 4;
+}
+
+/* TIME CENTER */
+.time-display {
+  color: #cfcfcf;
+  font-size: 14px;
+}
+
+.right-controls {
+  display: flex;
+  width: 16%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.icon-btn {
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.icon-btn:hover {
+  opacity: 0.7;
+}
+
+i {
+  cursor: pointer;
+}
+
+#backColorDiv {
+  width: 97%;
+  height: 8px;
+  position: absolute;
+  top: 14%;
+  z-index: 0;
+  left: 1.6em;
+  border-radius: 10px;
+}
+
+
+.top-progress {
+  width: 100%;
+  appearance: none;
+  height: 8px;
+  border-radius: 4px;
+  background: transparent;
+  margin-bottom: 10px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  border: none;
+}
+
+.speedDropDownContainer {
+  position: absolute;
+  right: 0;
+  top: -9rem;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 9px 0;
+  border-radius: 5px;
+  width: 5rem;
+  z-index: 10;
+}
+
+.singleSpeedval {
+  padding: 5px 10px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.singleSpeedval:hover {
+  background: var(--major);
+}
+
+#singleTop div {
+  width: 100%;
+  height: 100%;
+  gap: 2rem;
+  display: flex;
+  align-items: center;
+  margin-left: 9rem;
+}
+
+.left-controls p {
+  padding: 0.81rem;
+  height: 3rem;
+  width: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: small;
+  border: none;
+  background-color: black;
+}
+
+.left-controls p:hover {
+  transform: scale(1.05);  
+}
+
+.controls-wrapper {
+  border-radius:10px;
+  position: absolute;
+  bottom:20px;
+  width: 90%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: sans-serif;
+  background-color: rgb(0 0 0 / 70%);
+}
+
+.volume-icon {
+  color: white;
+  font-size: x-large;
+  cursor: pointer;
+}
+.volume-slider {
+  width: 100%;
+  appearance: none;
+  border-radius:4px;
+  background: transparent;
+  margin-bottom:0px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  border:1px solid;
+}
+.volume-fill {
+  width: 70%;
+  height:5px;
+  position: absolute;
+  top: 40%;
+  z-index: 0;
+  left:1.6em;
+}
+.fa-clock {
+  color: white;
+  font-size: x-large;
 }

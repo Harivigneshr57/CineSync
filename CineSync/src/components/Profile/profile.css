@@ -1,7 +1,6 @@
 .page {
-  background-color: var(--background) ;
+  background-color: var(--background);
   min-height: 100vh;
-  padding: 2rem;
   color: var(--white);
   user-select: none;
   display: flex;
@@ -79,6 +78,7 @@
 }
 
 .poster {
+  height: 22.25rem;
   background-color: #222;
   border-radius: 0.875rem;
   overflow: hidden;
@@ -196,3 +196,134 @@ span {
   border: 1px solid var(--major);
 }
 
+.edit-profile-tab {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  backdrop-filter: blur(13px);
+  z-index: 7777;
+}
+
+.profile-edit-form {
+  width: 31rem;
+  padding: 3rem;
+  background-color: #111827;
+  border-radius: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border: 1px solid #1f2937;
+}
+
+.profile-edit-save {
+  /* background-color: var(--major);
+  font-size: 1.5rem;
+  color: white;
+  border-radius: 1rem;
+  border: 0;
+  padding: 0.6rem 0rem; */
+
+  background-color: var(--major);
+  font-size: 1.1rem;
+  color: var(--white);
+  border: 1px solid var(--white);
+  border-radius: .5rem;
+  padding: 1rem 2rem;
+  font-weight: 600;
+}
+
+.profile-edit-cancel {
+  font-size: 1.3rem;
+  background-color: black;
+  color: var(--major);
+  border: 1px solid var(--major);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.profile-edit-form input {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+}
+
+#bio {
+  max-height: 8rem;
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  color: white;
+  max-width: 100%;
+  min-width: 100%;
+  border-radius: 10px;
+  min-height: 4rem;
+  padding: 1.25rem;
+  font-size: 1rem;
+}
+
+#name:focus {
+  border: 2px solid #5a83a3;
+  outline: none;
+}
+
+.profile-edit-form .bio:focus {
+  border: 2px solid #5a83a3;
+  outline: none;
+}
+
+#bio:focus {
+  border: 2px solid #5a83a3;
+  outline: none;
+}
+
+.inputspace {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+/* .profile-edit-cancel:hover {
+  border: 0;
+} */
+
+/* .profile-edit-save:hover {
+  border: 0;
+  box-shadow: 0 0 0.7rem #5a83a3;
+} */
+
+
+.profile-edit-imageholder {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  border: 6px solid #5a83a3;
+  background-image: url(/src/assets/onnapak.png);
+  background-position: center;
+  background-size: cover;
+}
+
+.profile-edit-image-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 2rem;
+}
+
+.change-profile-image{
+  width: 5.5rem;
+  height: 1.62rem;
+  display: flex;
+  padding: 0px;
+}
+
+.change-profile-image button{
+  background-color:red;
+}
+
+.profile-section h3{
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  max-width: 10rem;
+  text-wrap-mode: nowrap;
+}

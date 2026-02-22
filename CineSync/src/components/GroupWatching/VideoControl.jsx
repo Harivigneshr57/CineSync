@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Button from "../Login-SignIn/Button";
 
-export default function VideoControl({ reference, references }) {
+export default function VideoControl({ reference, references,chat,setChat }) {
 
     function toggleFullscreen() {
         if (!document.fullscreenElement) {
@@ -102,6 +102,10 @@ export default function VideoControl({ reference, references }) {
     setvideoVol(newVolume * 100);
     setMute(newVolume === 0);
   }
+
+  function roomChat(){
+    setChat(true);
+  }
   return (
     <div className="videoControls">
 
@@ -193,7 +197,7 @@ export default function VideoControl({ reference, references }) {
         </div>
 
         <div className="rightSide">
-          <Button id={"roomChats"}>
+          <Button id={"roomChats"} onClick={roomChat} style={chat?{background:"var(--major)"}:{background:"var(--background)"}}>
             <i className="fa-solid fa-message"></i> Chat
           </Button>
           <Button id={"roomParticipants"}>

@@ -601,20 +601,24 @@ app.get("/getAllMovies", (req, res) => {
 app.get("/getAllMovie", (req, res) => {
 
   const sql = `
-    SELECT 
-      m.ROWID,
-      m.title,
-      m.overview,
-      m.rating,
-      m.year,
-      c.Category_Name,
-      m.movie_poster,
-      m.movie_url,
-      m.lead_cast,
-      m.director
-    FROM Movies m
-    INNER JOIN MovieCategoryRelation mc 
-      ON m.ROWID = mc.movie_id
+  SELECT 
+  m.ROWID,
+  m.title,
+  m.overview,
+  m.rating,
+  m.year,
+  GROUP_CONCAT(c.Category_Name SEPARATOR ', ') AS Category_Name,
+  m.movie_poster,
+  m.movie_url,
+  m.lead_cast,
+  m.director
+FROM Movies m
+INNER JOIN MovieCategoryRelation mc 
+  ON m.ROWID = mc.movie_id
+INNER JOIN Category c 
+  ON c.ROWID = mc.category_id
+GROUP BY m.ROWID
+ORDER BY m.title;
   `;
 
   db.query(sql, (err, result) => {

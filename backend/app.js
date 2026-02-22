@@ -598,6 +598,43 @@ app.get("/getAllMovies", (req, res) => {
   });
 });
 
+app.get("/getAllMovie", (req, res) => {
+
+  const sql = `
+    SELECT 
+      m.ROWID,
+      m.title,
+      m.overview,
+      m.rating,
+      m.year,
+      c.Category_Name,
+      m.movie_poster,
+      m.movie_url,
+      m.lead_cast,
+      m.director
+    FROM Movies m
+    INNER JOIN MovieCategoryRelation mc 
+      ON m.ROWID = mc.movie_id
+  `;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log("Join Query Error:", err);
+      return res.status(500).json({
+        message: "Failed to fetch movies",
+        error: err
+      });
+    }
+
+    console.log(result);
+
+    return res.status(200).json({
+      message: "Movies retrieved successfully",
+      movies: result
+    });
+  });
+});
+
 
 app.post("/addRoom", async (req, res) => {
   try {

@@ -25,7 +25,7 @@ export default function SelectedMovie({movie}){
     return(
         <>
             <div className="selectedMovie" style={{backgroundImage : `url(${movie.image})`}} >
-                <p>• {movie.genre} • {movie.duration} </p>
+                <p>• {movie.genre} • {movie.year} </p>
                 <h1>{movie.title.toUpperCase()}</h1>
                 <h6>{movie.description}</h6>
                 <hr />

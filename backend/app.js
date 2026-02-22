@@ -898,3 +898,20 @@ app.post("/addToRoom",(req,res)=>{
   })
 
 })
+
+app.post("/getRoomName",(req,res)=>{
+  let getroomnamequery = `SELECT RoomName from Rooms where RoomCode = ?`;
+  let {roomCode}  = req.body;
+  db.query(getroomnamequery,[roomCode],(err,result)=>{
+    if(!err){
+      return res.json({
+        roomname : result
+      })
+    }
+    else{
+      return res.json({
+        error:err
+      })
+    }
+  })
+});

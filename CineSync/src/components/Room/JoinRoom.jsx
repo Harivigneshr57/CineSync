@@ -1,27 +1,106 @@
 import { useRef, useState } from 'react'
 import Button from '../Login-SignIn/Button';
-export default function JoinRoom(){
+import { socket } from '../Home/socket';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+
+export default function JoinRoom() {
     let inputOne = useRef(null);
     let inputTwo = useRef(null);
     let inputThree = useRef(null);
     let inputFour = useRef(null);
     let button = useRef(null);
+    const navigate = useNavigate();
+
+    const toastErrorStyle = {
+        style: {
+            borderRadius: "1rem",
+            background: "var(--error)",
+            color: "white",
+            fontWeight: 600,
+            minWidth: "26rem",
+        },
+        iconTheme: {
+            fontWeight: 600,
+            secondary: "var(--white)",
+        },
+    };
+    const toastSuccessStyle = {
+        style: {
+            borderRadius: "1rem",
+            background: "#16A34A",
+            color: "white",
+            fontWeight: 600
+        },
+        iconTheme: {
+            primary: "white",
+            secondary: "#16A34A"
+        }
+    };
+
+
+    async function joinRoom() {
+        let roomcode = inputOne.current.value + "" + inputTwo.current.value + "" + inputThree.current.value + "" + inputFour.current.value
+        console.log(roomcode);
+
+        if (roomcode.length == 4) {
+
+            let data;
+            try {
+                const response = await fetch(
+                    "https://cinesync-3k1z.onrender.com/getRoomName",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            roomCode: roomcode
+                        })
+                    }
+                )
+                    .then(res => res.json())
+                    .then(dat => data = dat);
+                console.log("Room Name " + data.roomname.length);
+
+                if (data.roomname.length) {
+                    console.log(data.roomname[0].RoomName);
+                    toast.success("You joined the room", toastSuccessStyle);
+                    // socket.emit("joinRoom", data.roomname[0].RoomName, localStorage.getItem("Username"));
+                    localStorage.setItem("Roomname",data.roomname[0].RoomName);
+                    navigate("/waitingRoom");
+                }
+                else {
+                    toast.error("Room code atleast contain 4 numbers", toastErrorStyle);
+                }
+            } catch (err) {
+                toast.error('Server Error, Try Later !!', toastErrorStyle)
+            }
+        }
+        else {
+            toast.error("Room code atleast contain 4 numbers", toastErrorStyle);
+        }
+
+    }
+
+
+
     return (
         <>
-        <div className="joinRoom flex">
-            <div className="joinTime flex">
-                <i className="fa-solid fa-key"></i>
+            <div className="joinRoom flex">
+                <div className="joinTime flex">
+                    <i className="fa-solid fa-key"></i>
+                </div>
+                <h1>Join a Room</h1>
+                <p>Enter the 4-digit code to enter room</p>
+                <div className="inputs flex">
+                    <input type="number" max={1} ref={inputOne} onChange={() => inputTwo.current.focus()} />
+                    <input type="number" max={1} ref={inputTwo} onChange={() => inputThree.current.focus()} />
+                    <input type="number" max={1} ref={inputThree} onChange={() => inputFour.current.focus()} />
+                    <input type="number" max={1} ref={inputFour} onChange={() => button.current.focus()} />
+                </div>
+                <Button id={"joinRoom"} ref={button} onClick={() => { joinRoom() }}>Join Room</Button>
             </div>
-            <h1>Join a Room</h1>
-            <p>Enter the 4-digit code to enter room</p>
-            <div className="inputs flex">
-                <input type="number" max={1} ref={inputOne} onChange={()=>inputTwo.current.focus()} />
-                <input type="number" max={1} ref={inputTwo} onChange={()=>inputThree.current.focus()}/>
-                <input type="number" max={1} ref={inputThree} onChange={()=>inputFour.current.focus()}/>
-                <input type="number" max={1} ref={inputFour} onChange={()=>button.current.focus()}/>
-            </div>
-            <Button id={"joinRoom"} ref={button}>Join Room</Button>
-        </div>
         </>
     )
 }

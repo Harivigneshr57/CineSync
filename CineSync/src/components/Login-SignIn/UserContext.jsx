@@ -7,6 +7,7 @@ export const UserProvider = ({ children }) => {
     const [movie,setMovie]=useState({});
     const [movieImg,setMovieImg]=useState({movie_img:"",title:""});
     const [roomDetails, setRoomDetails] = useState([]);
+    const [roomVideo,setRoomVideo] = useState({video:''})
     async function changeUser(){
         setUser({username:localStorage.getItem('Username')});
     }
@@ -34,7 +35,9 @@ export const UserProvider = ({ children }) => {
             changeMovie,
             movieImg,
             changeMovieImage,
-            changeRoomDetail
+            changeRoomDetail,
+            roomVideo,
+            setRoomVideo
         }}>
             {children}
         </UserContext.Provider>

@@ -570,11 +570,11 @@ io.on("connection", (socket) => {
     socket.broadcast.to(room).emit("updateSeek", time);
   });
 
-  socket.on("sendInvite", (room_name, sender_name, movie_name, receiver_name) => {
+  socket.on("sendInvite", (room_name, sender_name, movie_name, receiver_name,video,image) => {
     let friend = users[receiver_name];
     console.log(users, " Send Invite");
     if (friend) {
-      io.to(friend).emit("sendingInvite", room_name, movie_name, sender_name);
+      io.to(friend).emit("sendingInvite", room_name, movie_name, sender_name,video,image);
     }
   })
 
@@ -819,11 +819,11 @@ async function getRoom(room, userID, chat, video, audio, reaction, game) {
 }
 
 app.post("/sendInvitation", (req, res) => {
-  let { room_name, sender_name, reciever_name, movie_name } = req.body;
+  let { room_name, sender_name, reciever_name, movie_name,video,image } = req.body;
 
-  let savenotification = "INSERT INTO RoomInvitations (sender_name, receiver_name,room_name,movie_name) VALUES (?,?,?,?);";
+  let savenotification = "INSERT INTO RoomInvitations (sender_name, receiver_name,room_name,movie_name,video,image) VALUES (?,?,?,?);";
 
-  db.query(savenotification, [sender_name, reciever_name, room_name, movie_name], (err, result) => {
+  db.query(savenotification, [sender_name, reciever_name, room_name, movie_name, video,image], (err, result) => {
     if (err) {
       console.log("Error while inserting notification", err);
       return res.json({

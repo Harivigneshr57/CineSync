@@ -1,26 +1,29 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Madharasi from "../../assets/images/Madharasi.png";
 import Onnapak from "../../assets/onnapak.png";
 import {socket} from "../Home/socket";
+import { UserContext } from "../Login-SignIn/UserContext";
 import { useNavigate } from "react-router-dom";
-export default function Notification({roomName, ownerName,movieName,moviestatus,timeStamp}){
+export default function Notification({roomName, ownerName,movieName,moviestatus,timeStamp,image,video}){
     const [currentRoom ,setcurrentRoom] = useState("");
+    const {setRoomVideo} = useContext(UserContext);
     let nav =useNavigate();
 
     function declineinvitation(){
 
     }
 
-    function acceptInvitation(room){
+    function acceptInvitation(room,video){
         console.log("The room user want to join: "+room);
         localStorage.setItem("Roomname",room);
+        setRoomVideo(video);
         nav("/waitingRoom");
     }
 
     return(
         <>
         <div className="notificatinDiv">
-            <img className="notImage" src={Madharasi} alt="Movie Image"></img>
+            <img className="notImage" src={image} alt="Movie Image"></img>
             <div className="notDetail">
                 <div className="notDet">
                     <div className="notDetLeft">
@@ -34,7 +37,7 @@ export default function Notification({roomName, ownerName,movieName,moviestatus,
                     <p className="timeStamp">{timeStamp}</p>
                 </div>
                 <div className="buttonDiv">
-                    <button className="joinNot" onClick={()=>{acceptInvitation(roomName)}}>Join Room</button>
+                    <button className="joinNot" onClick={()=>{acceptInvitation(roomName,video)}}>Join Room</button>
                     <button className="declineNot" onClick={()=>{declineinvitation}} >Decline</button>
                 </div>
             </div>

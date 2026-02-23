@@ -17,13 +17,15 @@ export default function Notify() {
     }
 
     useEffect(()=>{
-        socket.on("sendingInvite",(room_name,movie_name,sender_name)=>{
+        socket.on("sendingInvite",(room_name,movie_name,sender_name,video,image)=>{
             setRoomDetails(prev => [
                 {
                     room_name,
                     sender_name,
                     movie_name,
-                    timestamp:"2026-02-18T04:55:24.000Z"
+                    timestamp:"2026-02-18T04:55:24.000Z",
+                    video,
+                    image
                 },
                 ...prev,
             ]);
@@ -61,7 +63,7 @@ export default function Notify() {
                         timestamp = hours + "h";
                     }
 
-                    return <Notification key={i} roomName={rooms.room_name} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} ></Notification>
+                    return <Notification key={i} roomName={rooms.room_name} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} image={image} video={video}></Notification>
                 })}
             </div>
         </div>

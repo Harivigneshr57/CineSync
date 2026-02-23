@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { socket } from "../Home/socket";
 import VideoControl from "./VideoControl";
+import { UserContext } from "../Login-SignIn/UserContext";
 
 export default function VideoArea({ reference, references, chat, setChat }) {
-
+    const {roomVideo} = useContext(UserContext);
     const isRemoteSeek = useRef(false);
     const roomName = localStorage.getItem("Roomname");
 
@@ -45,7 +46,7 @@ export default function VideoArea({ reference, references, chat, setChat }) {
                 autoPlay
                 controls={false}
                 onSeeked={() => emitSeek(reference.current.currentTime)}
-                src="https://movies-video-development.zohostratus.in/Videos/Oh My Kadavule (2020) Tamil 720p HDRip 1.3GB.mkv"
+                src={roomVideo}
             />
 
             <VideoControl

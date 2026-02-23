@@ -4,7 +4,7 @@ export const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState({username:""});
-    const [movie,setMovie]=useState({movie_url:"",title:""});
+    const [movie,setMovie]=useState({});
     const [movieImg,setMovieImg]=useState({movie_img:"",title:""});
     const [roomDetails, setRoomDetails] = useState([]);
     async function changeUser(){
@@ -27,6 +27,7 @@ export const UserProvider = ({ children }) => {
         <UserContext.Provider value={{ 
             user,
             movie,
+            setMovie,
             roomDetails,
             setRoomDetails,     
             changeUser,

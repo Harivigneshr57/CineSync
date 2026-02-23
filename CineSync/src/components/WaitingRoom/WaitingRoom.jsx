@@ -5,12 +5,15 @@ import Lobbymembers from "./Lobbymembers";
 import WaitingMain from "./WaitingMain";
 import "./waitingroom.css";
 import { socket } from "../Home/socket";
+import { useNavigate } from "react-router-dom";
 
 export default function WaitingRoom() {
     const [connectedmemebers, setConnectedMemebers] = useState([]);
-    useEffect(() => {
-        socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
-    }, [])
+    const navigate = useNavigate();
+
+    // useEffect(() => {
+    //     socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
+    // }, [])
 
     useEffect(() => {
 
@@ -18,7 +21,7 @@ export default function WaitingRoom() {
 
             try {
 
-                const joinRes = await fetch("https://cinesync-3k1z.onrender.com/addToRoom", {
+                const joinRes = await fetch("http://localhost:3458/addToRoom", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -44,7 +47,7 @@ export default function WaitingRoom() {
                     localStorage.getItem("Username")
                 );
 
-                const response = await fetch("https://cinesync-3k1z.onrender.com/getAllParticipants", {
+                const response = await fetch("http://localhost:3458/getAllParticipants", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -92,12 +95,20 @@ export default function WaitingRoom() {
         });
 
         return () => {
-
             socket.off("newJoin");
-
         };
 
     }, []);
+    useEffect(() => {
+        socket.on("partystarted", () => {
+            console.log("Party started received");
+            navigate("/mainRoom");
+        });
+        return () => {
+            socket.off("partystarted");
+        };
+    }, []);
+
     return <>
         <SideBar></SideBar>
         <div className="waitingRoomMain">

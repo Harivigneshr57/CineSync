@@ -25,6 +25,7 @@ export default function SelectedMovie({movie}){
     return(
         <>
             <div className="selectedMovie" style={{backgroundImage : `url(${movie.image})`}} >
+                <div>
                 <p>• {movie.genre} • {movie.year} </p>
                 <h1>{movie.title.toUpperCase()}</h1>
                 <h6>{movie.description}</h6>
@@ -42,6 +43,7 @@ export default function SelectedMovie({movie}){
                         <p>RATING</p>
                         <i class="fa-solid fa-star"></i>  {movie.rating}/10
                     </div>
+                </div>
                 </div>
             </div>
         </>

@@ -125,7 +125,6 @@ input[type="number"]::-webkit-outer-spin-button {
     margin-right: 1rem;
 }                           
 .stage{
-    width: 70%;
     display: flex;
     gap: 2rem;
     align-items: center;
@@ -159,7 +158,16 @@ input[type="number"]::-webkit-outer-spin-button {
     flex-direction: column;
     justify-content: end;
     padding: 2rem;
+}
+.selectedMovie > div{
+    width: 100%;
+    height: fit-content;
     gap: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #0000006e;
+    padding: 1rem;
+    border-radius: 1rem;
 }
 #configuration{
     background-color: var(--major);

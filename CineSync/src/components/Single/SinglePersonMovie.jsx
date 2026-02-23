@@ -33,17 +33,13 @@ export default function SinglePersonMovie() {
 
     // console.log("==============================");
 
-    const videoMap = {
-        "CaptainAmerica:TheFirstAvenger": './Captain America : The First Avenger.mp4'
-    }
-
     console.log(movie);
     return (
         // <h1>Hii</h1>
         // <SampleSingle></SampleSingle>
         <div onMouseMove={()=>setControls(true)} id="singleMoviePage">
             <video id="bg-video" ref={videoRef} autoPlay>
-                <source src={videoMap[movie.title] || wheels}></source>
+                <source src={movie.video}></source>
             </video>
             <div style={{display:controls?"flex":"none"}} id="content_single">
                 <SingleMovieTop movieName={movie.title}></SingleMovieTop>

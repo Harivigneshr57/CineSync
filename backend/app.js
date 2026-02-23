@@ -548,6 +548,11 @@ io.on("connection", (socket) => {
 
   });
 
+  socket.on("Startparty", (room) => {
+    console.log("Party started in:", room);
+    io.to(room).emit("partystarted");
+  });
+
   socket.on("sendInvite", (room_name, sender_name, movie_name, receiver_name) => {
     let friend = users[receiver_name];
     console.log(users, " Send Invite");

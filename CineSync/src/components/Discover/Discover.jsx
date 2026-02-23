@@ -2,9 +2,11 @@ import SearchBar from "./SearchBar"
 import TopDisBar from "./TopDisBar"
 import MainMovieDiv from "./MainMovieDiv"
 import './discover.css'
-import { useRef, useState } from "react"
+import { useContext, useRef, useState } from "react"
 import SideBar from "../Home/SideBar"
 import Button from "../Login-SignIn/Button"
+import { UserContext } from "../Login-SignIn/UserContext"
+import { useNavigate } from "react-router-dom"
 
 
 export default function Discover(){
@@ -12,6 +14,8 @@ export default function Discover(){
     const myRef2 = useRef(null);
     const [overview,setOverview] = useState(false);
     const [overviewMovie,setOverviewMovie] = useState({});
+    const {movie,setMovie} = useContext(UserContext);
+    let nav = useNavigate(null);
 
     const handleScroll = () => {
       // alert("rdxtfgyvhb");
@@ -21,6 +25,11 @@ export default function Discover(){
         myRef2.current.focus();
       }
     };
+
+    function solo(movie){
+      setMovie(movie)
+      nav('/single');
+    }
 
     function close(){
       setOverview(false);
@@ -67,7 +76,7 @@ export default function Discover(){
                           </div>
                         </div>
                         <div className="playButtons">
-                            <Button id="playSolo"><i class="fa-solid fa-play"></i> Play Now</Button>
+                            <Button id="playSolo" onClick={()=>solo(overviewMovie)}><i class="fa-solid fa-play"></i> Play Now</Button>
                             <Button id='host'><i class="fa-solid fa-people-group"></i> Host Party</Button>
                             <Button id='like'><i class="fa-regular fa-heart"></i></Button>
                         </div>

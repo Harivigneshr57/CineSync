@@ -42,23 +42,17 @@ export default function SelectMovies({ onMovie }) {
     getMovies();
   }, []);
 
-  /* ---------------- UI ---------------- */
   return (
     <div id="selectMovieContainer">
       {movies.map((movie,i )=> (
         <div key={i} onClick={() => select(movie)}>
-          <div
-            className="movie"
-            style={{
+          <img src={movie.image}             style={{
               backgroundImage: `url(${movie.image})`,
               border:
                 selectedMovieId === movie.id
                   ? "2px dashed white"
                   : "none",
-            }}
-          ></div>
-
-          <h3>{movie.title}</h3>
+            }} alt="" />
         </div>
       ))}
     </div>

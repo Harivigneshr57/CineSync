@@ -50,12 +50,12 @@ export default function SuggestUser({img,name,bio,isFriend}){
         }).then((res)=>res.json())
         .then((data)=>{
             if(data.message ==="Request already sent"){
-                toast.success('Request Already Sent!!');
+                toast.success('Request Already Sent!!',toastSuccessStyle);
             }
             else{
                 setSend(false);
             }    
-            toast.success('Request Sent Successfully!!')
+            toast.success('Request Sent Successfully!!',toastSuccessStyle)
             
             console.log(data)})
         .catch((err)=>console.log(err));

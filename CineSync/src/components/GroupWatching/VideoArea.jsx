@@ -1,31 +1,61 @@
+import { useEffect, useRef } from "react";
+import { socket } from "../Home/socket";
 import VideoControl from "./VideoControl";
-export default function VideoArea({reference,references, chat,setChat}){
-    return(
-        <>
-            <div className="videoArea" ref={references} style={chat?{width:'76%'}:{width:'96%'}}>
-                <video ref={reference} src='https://movies-video-development.zohostratus.in/Videos/Eleven.webm' autoPlay></video>
-                <VideoControl reference={reference} references={references}  setChat={setChat} chat={chat} ></VideoControl>
-            </div>
-        </>
-    )
+
+export default function VideoArea({ reference, references, chat, setChat }) {
+
+    const isRemoteSeek = useRef(false);
+    const roomName = localStorage.getItem("Roomname");
+
+    function emitSeek(time) {
+
+        if (isRemoteSeek.current) {
+            isRemoteSeek.current = false;
+            return;
+        }
+
+        socket.emit("VideoSeek", {
+            room: roomName,
+            time: time
+        });
+    }
+
+    useEffect(() => {
+
+        socket.on("updateSeek", (time) => {
+
+            isRemoteSeek.current = true;
+
+            reference.current.currentTime = time;
+        });
+
+        return () => socket.off("updateSeek");
+
+    }, []);
+
+    return (
+        <div
+            className="videoArea"
+            ref={references}
+            style={chat ? { width: '76%' } : { width: '96%' }}
+        >
+
+            <video
+                ref={reference}
+                autoPlay
+                controls={false}
+                onSeeked={() => emitSeek(reference.current.currentTime)}
+                src="https://movies-video-development.zohostratus.in/Videos/Oh My Kadavule (2020) Tamil 720p HDRip 1.3GB.mkv"
+            />
+
+            <VideoControl
+                reference={reference}
+                references={references}
+                setChat={setChat}
+                chat={chat}
+                emitSeek={emitSeek}
+            />
+
+        </div>
+    );
 }
-
-// gardians of the galaxy
-
-// Hey sinamika
-
-// Hi nanna
-
-// 12th Fail
-
-// Maara
-
-// Asuran
-
-// Meiazhagan
-
-// Paranthu Poo
-
-// Madharasi
-
-// Aan Pavam Pollathathu

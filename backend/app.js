@@ -821,7 +821,7 @@ async function getRoom(room, userID, chat, video, audio, reaction, game) {
 app.post("/sendInvitation", (req, res) => {
   let { room_name, sender_name, reciever_name, movie_name,video,image } = req.body;
 
-  let savenotification = "INSERT INTO RoomInvitations (sender_name, receiver_name,room_name,movie_name,video,image) VALUES (?,?,?,?);";
+  let savenotification = "INSERT INTO RoomInvitations (sender_name, receiver_name,room_name,movie_name,video,image) VALUES (?,?,?,?,?,?);";
 
   db.query(savenotification, [sender_name, reciever_name, room_name, movie_name, video,image], (err, result) => {
     if (err) {

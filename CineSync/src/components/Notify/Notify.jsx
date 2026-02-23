@@ -19,13 +19,13 @@ export default function Notify() {
     useEffect(()=>{
         socket.on("sendingInvite",(room_name,movie_name,sender_name)=>{
             setRoomDetails(prev => [
-                ...prev,
                 {
                     room_name,
                     sender_name,
                     movie_name,
                     timestamp:"2026-02-18T04:55:24.000Z"
-                }
+                },
+                ...prev,
             ]);
         });
 

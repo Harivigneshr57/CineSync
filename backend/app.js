@@ -827,23 +827,28 @@ app.post("/getInvitations", (req, res) => {
     return res.status(400).json({ error: "Username is required" });
   }
 
-  let getNotification = `Select sender_name,room_name,movie_name,created_at from RoomInvitations where receiver_name = ?`;
+  let getNotification = `
+    SELECT sender_name, room_name, movie_name, created_at
+    FROM RoomInvitations
+    WHERE receiver_name = ?
+    ORDER BY created_at DESC
+  `;
+
   try {
     db.query(getNotification, [username], (err, result) => {
       if (err) {
-        return res.json({
-          error: err
-        })
+        return res.json({ error: err });
       }
+
       return res.json({
         allnotification: result
-      })
-    })
-  }
-  catch (err) {
+      });
+    });
+  } catch (err) {
     return res.status(500).json({ error: "error in server" });
   }
-})
+});
+
 
 
 app.post("/declineInvitation", (req, res) => {

@@ -4,11 +4,19 @@ import InviteFriends from "./InviteFriends"
 import Button from "../Login-SignIn/Button"
 import { useNavigate } from "react-router-dom";
 import { socket } from "../Home/socket";
+import { UserContext } from "../Login-SignIn/UserContext";
+import { useContext } from "react";
 
 export default function InviteMovie({ code, onStep, step, movie, room }) {
+    const {setRoomVideo} = useContext(UserContext);
     const navigate = useNavigate();
     function nav() {
         navigate("/discover");
+    }
+
+    function started(movie){
+        setRoomVideo(movie);
+        navigateToMainRoom()
     }
 
     function navigateToMainRoom() {
@@ -29,7 +37,7 @@ export default function InviteMovie({ code, onStep, step, movie, room }) {
                     <InviteCode code={code}></InviteCode>
                     <InviteFriends movie={movie} room={room} code={code}></InviteFriends>
                 </div>
-                <Button id={'start'} onClick={() => { navigateToMainRoom()}}>Start Watch Party <i class="fa-solid fa-caret-right"></i></Button>
+                <Button id={'start'} onClick={() => {started(movie.video)}}>Start Watch Party <i class="fa-solid fa-caret-right"></i></Button>
             </div>
         </>
     )

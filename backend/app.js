@@ -506,11 +506,11 @@ let users = {};
 
 io.on("connection", (socket) => {
 
-  socket.on("addtoserver", (username) => {
+  console.log("Connected:", socket.id);
 
+  socket.on("addtoserver", (username) => {
     users[username] = socket.id;
     console.log(users);
-
   });
 
   socket.on("one2one", (message, friend, username) => {
@@ -518,7 +518,6 @@ io.on("connection", (socket) => {
     const friendSocket = users[friend];
 
     if (friendSocket) {
-
       io.to(friendSocket).emit(
         "privatemessage",
         message,
@@ -527,42 +526,36 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on('joinRoom', (roomName,username) => {
-    let friend =username;
+  socket.on("joinRoom", (roomName, username) => {
+
     socket.join(roomName);
-    console.log(username+` joined room: ${roomName}`);
-    socket.to(roomName).emit("newJoin",friend);
+
+    console.log(username + " joined room:", roomName);
+
+    const room = io.sockets.adapter.rooms.get(roomName);
+
+    const usersInRoom = room
+      ? [...room].filter(id => id !== socket.id)
+      : [];
+
+    socket.emit("all-users", usersInRoom);
+
+    socket.to(roomName).emit("user-joined", socket.id);
   });
 
   socket.on('sendMessageInsideRoom', (room, msgObj) => {
     socket.to(room).emit("messageFromRoom", msgObj);
   });
-  socket.on("disconnect", () => {
-
-    for (let user in users) {
-
-      if (users[user] === socket.id) {
-        console.log("User disconnected: " + user);
-        delete users[user];
-
-        break;
-
-      }
-
-    }
-
-  });
 
   socket.on("Startparty", (room) => {
-    console.log("Party started in:", room);
     io.to(room).emit("partystarted");
   });
 
-  socket.on("VideoPaused", (roomname, username) => {
+  socket.on("VideoPaused", (roomname) => {
     socket.broadcast.to(roomname).emit("pauseTheVideo");
   });
-  
-  socket.on("VideoPlayed", (roomname, username) => {
+
+  socket.on("VideoPlayed", (roomname) => {
     socket.broadcast.to(roomname).emit("playTheVideo");
   });
 
@@ -570,16 +563,58 @@ io.on("connection", (socket) => {
     socket.broadcast.to(room).emit("updateSeek", time);
   });
 
-  socket.on("sendInvite", (room_name, sender_name, movie_name, receiver_name,video,image) => {
-    let friend = users[receiver_name];
-    console.log(users, " Send Invite");
-    if (friend) {
-      io.to(friend).emit("sendingInvite", room_name, movie_name, sender_name,video,image);
+  socket.on("sendInvite",
+    (room_name, sender_name, movie_name, receiver_name, video, image) => {
+
+      let friend = users[receiver_name];
+
+      if (friend) {
+        io.to(friend).emit(
+          "sendingInvite",
+          room_name,
+          movie_name,
+          sender_name,
+          video,
+          image
+        );
+      }
+  });
+
+  socket.on("offer", data => {
+    socket.to(data.to).emit("offer", {
+      ...data,
+      from: socket.id
+    });
+  });
+
+  socket.on("answer", data => {
+    socket.to(data.to).emit("answer", {
+      ...data,
+      from: socket.id
+    });
+  });
+
+  socket.on("ice-candidate", data => {
+    socket.to(data.to).emit("ice-candidate", {
+      ...data,
+      from: socket.id
+    });
+  });
+
+  socket.on("disconnect", () => {
+
+    for (let user in users) {
+      if (users[user] === socket.id) {
+        console.log("User disconnected:", user);
+        delete users[user];
+        break;
+      }
     }
-  })
+
+    socket.broadcast.emit("user-disconnected", socket.id);
+  });
 
 });
-
 app.get("/getAllMovies", (req, res) => {
 
   const sql = `

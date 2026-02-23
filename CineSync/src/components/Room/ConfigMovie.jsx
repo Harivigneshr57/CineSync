@@ -9,13 +9,13 @@ import toast from "react-hot-toast";
 import { data } from "react-router-dom";
 import { socket } from "../Home/socket";
 
-export default function ConfigMovie({ setRoom, room, step, onStep, setCode, confirmDiv,setconfirmDiv}) {
+export default function ConfigMovie({ setRoom, room, step, onStep, setCode, confirmDiv,setconfirmDiv,image}) {
     const [audio, setAudio] = useState(false);
     const [video, setVideo] = useState(false);
     const [reaction, setReaction] = useState(false);
     const [chat, setChat] = useState(false);
     const [game, setGame] = useState(false);
-    const { user } = useContext(UserContext);
+    const { user,changeMovieImage} = useContext(UserContext);
     const toastErrorStyle = {
         style: {
             borderRadius: "1rem",
@@ -39,6 +39,8 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode, conf
         }
     }
     async function addRoom() {
+        {console.log(image);}
+        changeMovieImage(image);
         let res = await fetch("https://cinesync-3k1z.onrender.com/addRoom", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

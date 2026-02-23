@@ -845,7 +845,7 @@ app.post("/getInvitations", (req, res) => {
   }
 
   let getNotification = `
-    SELECT sender_name, room_name, movie_name, created_at
+    SELECT sender_name, room_name, movie_name, created_at,video,image
     FROM RoomInvitations
     WHERE receiver_name = ?
     ORDER BY created_at DESC

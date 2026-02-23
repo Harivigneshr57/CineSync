@@ -9,13 +9,12 @@ import toast from "react-hot-toast";
 import { data } from "react-router-dom";
 import { socket } from "../Home/socket";
 
-export default function ConfigMovie({ setRoom, room, step, onStep, setCode }) {
+export default function ConfigMovie({ setRoom, room, step, onStep, setCode, confirmDiv,setconfirmDiv}) {
     const [audio, setAudio] = useState(false);
     const [video, setVideo] = useState(false);
     const [reaction, setReaction] = useState(false);
     const [chat, setChat] = useState(false);
     const [game, setGame] = useState(false);
-    const [confirmDiv, setconfirmDiv] = useState(false);
     const { user } = useContext(UserContext);
     const toastErrorStyle = {
         style: {
@@ -106,11 +105,11 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode }) {
                 </div>
                 <Button id='inviteFriends' onClick={check}>Continue to Invite Friends    <i class="fa-solid fa-arrow-right"></i></Button>
             </div>
-            <div style={{ display: confirmDiv ? "block" : "none" }} id="confirmation">
+            <div style={{ display: confirmDiv ? "flex" : "none" }} id="confirmation">
                 <p>Do you want to confirm movie ?</p>
                 <div style={{ display: "flex" }} className="confirm">
-                    <button onClick={() => setconfirmDiv(false)}>No,I want to edit movie</button>
-                    <button onClick={() => addRoom()}>Yes, Confirm</button>
+                    <button id="no" onClick={() => setconfirmDiv(false)}>No,I want to edit movie</button>
+                    <button id="yes" onClick={() => addRoom()}>Yes, Confirm</button>
                 </div>
             </div>
         </>

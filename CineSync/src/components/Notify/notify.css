@@ -4,24 +4,15 @@
     height: 100vh;
 }
 
-.notTitle {
-    display: flex;
-    width: 100%;
-    height: 8rem;
-    justify-content: space-between;
-    padding: 3rem;
-    align-items: center;
-    border-bottom: 1px solid gray;
-}
 
 .clear {
-    font-size: large;
+    font-size: normal;
     font-weight: 500;
     cursor: pointer;
-    width: 7rem;
-    height: 2rem;
+    padding: 1rem 2rem; 
     background-color: var(--major);
     color: white;
+    border: 1px solid var(--white);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -69,11 +60,10 @@ h3.roomNameNot {
 .notTitle {
     display: flex;
     width: 100%;
-    height: 8rem;
     justify-content: space-between;
-    padding: 3rem;
+    padding: 1rem;
     align-items: center;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid var(--border);
 }
 
 .notificatinDiv {

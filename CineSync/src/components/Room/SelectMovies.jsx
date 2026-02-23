@@ -31,6 +31,7 @@ export default function SelectMovies({ onMovie }) {
           cast: movie.lead_cast,
           rating: movie.rating,
           year: movie.year,
+          video:movie.movie_url
         }));
 
         setMovies(formatted); 

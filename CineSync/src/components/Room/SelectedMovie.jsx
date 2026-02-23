@@ -6,7 +6,7 @@ import LoveToday from '../../assets/LoveToday.png';
 import Master from '../../assets/Master.png';
 import SpiderMan from '../../assets/SpiderMan.png';
 import Thunivu from '../../assets/Thunivu.png';
-export default function SelectedMovie({movie}){
+export default function SelectedMovie({movie,confirmDiv}){
     if(movie.image==undefined){
         return(
             <>
@@ -24,7 +24,13 @@ export default function SelectedMovie({movie}){
     }
     return(
         <>
-            <div className="selectedMovie" style={{backgroundImage : `url(${movie.image})`}} >
+            <div
+  className="selectedMovie"
+  style={{
+    backgroundImage: `url(${movie.image})`,
+    filter: confirmDiv ? "blur(10px)" : "none"
+  }}
+>
                 <div>
                 <p>• {movie.genre} • {movie.year} </p>
                 <h1>{movie.title.toUpperCase()}</h1>

@@ -39,7 +39,7 @@ export default function Notify() {
         <div id="notificationMain">
             <SideBar></SideBar>
             <div className="notTitle">
-                <pre><h2><i class="fa-solid fa-arrow-left"></i>    Watch party Invites</h2></pre>
+                <h2>Watch party Invites</h2>
                 <p className="clear">Clear All</p>
             </div>
 

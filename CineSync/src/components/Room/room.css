@@ -359,3 +359,35 @@ input[type="number"]::-webkit-outer-spin-button {
 .char p{
     margin-bottom: 1rem;
 }
+#confirmation{
+    position: absolute;
+    z-index: 9;
+    background-color: rgba(0, 0, 0, 0.658);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+    border-radius: .5rem;
+}
+#confirmation > p{
+    color: var(--major);
+    font-size: 1.5rem;
+}
+.confirm{
+    display: flex;
+    gap: 1rem;
+}
+#no{
+    padding: 1rem 2rem;
+    background: var(--grey);
+    color: var(--white);
+    font-weight: 600;
+    border: 1px solid var(--white);
+}
+#yes{
+    padding: 1rem 2rem;
+    background: var(--major);
+    color: var(--white);
+    font-weight: 600;
+    border: 1px solid var(--white);
+}

@@ -23,9 +23,9 @@ const io = new Server(server, {
     origin: "*",
     methods: ["GET", "POST"]
   },
-  path: "/socket.io",
   transports: ["polling", "websocket"]
 });
+
 
   
 server.listen(port, (err) => {

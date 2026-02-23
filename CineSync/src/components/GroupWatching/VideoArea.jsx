@@ -3,7 +3,7 @@ export default function VideoArea({reference,references, chat,setChat}){
     return(
         <>
             <div className="videoArea" ref={references} style={chat?{width:'76%'}:{width:'96%'}}>
-                <video ref={reference} src='https://movies-video-development.zohostratus.in/Videos/Oh My Kadavule (2020) Tamil 720p HDRip 1.3GB.mkv' autoPlay></video>
+                <video ref={reference} src='https://movies-video-development.zohostratus.in/Videos/Eleven.webm' autoPlay></video>
                 <VideoControl reference={reference} references={references}  setChat={setChat} chat={chat} ></VideoControl>
             </div>
         </>

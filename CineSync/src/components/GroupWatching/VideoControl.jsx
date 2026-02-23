@@ -1,17 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Button from "../Login-SignIn/Button";
+import { socket } from "../Home/socket";
 
-export default function VideoControl({ reference, references,chat,setChat }) {
+export default function VideoControl({reference, references,chat,setChat,emitSeek}) {
 
-    function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            references.current.requestFullscreen();
-            setFullScreen(false);
-        } else {
-            document.exitFullscreen();
-            setFullScreen(true);
-        }
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      references.current.requestFullscreen();
+      setFullScreen(false);
+    } else {
+      document.exitFullscreen();
+      setFullScreen(true);
     }
+  }
 
   function formatTime(timevalue) {
     if (!timevalue || !isFinite(timevalue)) {
@@ -22,22 +23,35 @@ export default function VideoControl({ reference, references,chat,setChat }) {
     const min = Math.floor((timevalue % 3600) / 60);
     const sec = Math.floor(timevalue % 60);
 
-    return `${hour}:${min < 10 ? "0" : ""}${min}:${
-      sec < 10 ? "0" : ""
-    }${sec}`;
+    return `${hour}:${min < 10 ? "0" : ""}${min}:${sec < 10 ? "0" : ""
+      }${sec}`;
   }
 
   const [currentTime, setCurrentTime] = useState("00:00:00");
   const [duration, setDuration] = useState("00:00:00");
   const [videoRange, setVideoRange] = useState(0);
-  const [pause, setPause] = useState(true);
+  const [play, setPlay] = useState(true);
   const [mute, setMute] = useState(false);
   const [videoVol, setvideoVol] = useState(75);
-  const [fullscreens,setFullScreen] = useState(true);
+  const [fullscreens, setFullScreen] = useState(true);
 
   useEffect(() => {
     const video = reference.current;
     if (!video) return;
+
+    socket.on("pauseTheVideo", () => {
+      console.log("Remote pause received");
+
+      video.pause();
+      setPlay(false);
+    });
+
+    socket.on("playTheVideo", () => {
+      console.log("Remote play received");
+
+      video.play();
+      setPlay(true);
+    });
 
     function updateTime() {
       if (!video.duration) return;
@@ -57,6 +71,8 @@ export default function VideoControl({ reference, references,chat,setChat }) {
     return () => {
       video.removeEventListener("timeupdate", updateTime);
       video.removeEventListener("loadedmetadata", loaded);
+      socket.off("pauseTheVideo");
+      socket.off("playTheVideo");
     };
   }, [reference]);
 
@@ -64,11 +80,25 @@ export default function VideoControl({ reference, references,chat,setChat }) {
     const video = reference.current;
     if (!video) return;
 
-    setPause(prev => {
-      if (prev) video.pause();
-      else video.play();
-      return !prev;
-    });
+    if (!video.paused) {
+      video.pause();
+      setPlay(false);
+
+      socket.emit(
+        "VideoPaused",
+        localStorage.getItem("Roomname"),
+        localStorage.getItem("Username")
+      );
+    } else {
+      video.play();
+      setPlay(true);
+
+      socket.emit(
+        "VideoPlayed",
+        localStorage.getItem("Roomname"),
+        localStorage.getItem("Username")
+      );
+    }
   }
 
   function forward() {
@@ -82,11 +112,13 @@ export default function VideoControl({ reference, references,chat,setChat }) {
   }
 
   function movementOfRange(e) {
+
     const video = reference.current;
     if (!video || !video.duration) return;
-
     const value = e.target.value;
-    video.currentTime = (value / 100) * video.duration;
+    const newTime = (value / 100) * video.duration;
+    video.currentTime = newTime;
+    emitSeek(newTime);
     setVideoRange(value);
   }
 
@@ -103,9 +135,32 @@ export default function VideoControl({ reference, references,chat,setChat }) {
     setMute(newVolume === 0);
   }
 
-  function roomChat(){
+  function roomChat() {
     setChat(true);
   }
+
+  const isRemoteSeek = useRef(false);
+
+  function handleSeek() {
+    if (isRemoteSeek.current) {
+      isRemoteSeek.current = false;
+      return;
+    }
+    socket.emit("seek", {
+      room: roomName,
+      time: videoRef.current.currentTime
+    });
+  }
+
+  useEffect(() => {
+    socket.on("seek", (time) => {
+      isRemoteSeek.current = true;
+      videoRef.current.currentTime = time;
+    });
+
+    return () => socket.off("seek");
+
+  }, []);
   return (
     <div className="videoControls">
 
@@ -140,7 +195,7 @@ export default function VideoControl({ reference, references,chat,setChat }) {
           </Button>
 
           <Button id={"pause"} onClick={pauses}>
-            {pause ? (
+            {play ? (
               <i className="fa-solid fa-pause"></i>
             ) : (
               <i className="fa-solid fa-play"></i>
@@ -197,14 +252,14 @@ export default function VideoControl({ reference, references,chat,setChat }) {
         </div>
 
         <div className="rightSide">
-          <Button id={"roomChats"} onClick={roomChat} style={chat?{background:"var(--major)"}:{background:"var(--background)"}}>
+          <Button id={"roomChats"} onClick={roomChat} style={chat ? { background: "var(--major)" } : { background: "var(--background)" }}>
             <i className="fa-solid fa-message"></i> Chat
           </Button>
           <Button id={"roomParticipants"}>
             <i class="fa-solid fa-people-group"></i> Video
           </Button>
           <div className="horizontaline"></div>
-          {fullscreens?<i class="fa-solid fa-expand" onClick={toggleFullscreen}></i>:<i class="fa-solid fa-compress" onClick={toggleFullscreen}></i>}
+          {fullscreens ? <i class="fa-solid fa-expand" onClick={toggleFullscreen}></i> : <i class="fa-solid fa-compress" onClick={toggleFullscreen}></i>}
         </div>
       </div>
     </div>

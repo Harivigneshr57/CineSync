@@ -25,7 +25,7 @@ export default function Friend({arr,handleFriend}){
         <>
             <div className="friend">
                 <div className="aboutFriend">
-                    <img src={arr.image?arr.users.image:def} alt="" />
+                    <img src={def} alt="" />
                     <div className="nameOfFriend">
                         <h3>{arr.username}</h3>
                         <p></p>

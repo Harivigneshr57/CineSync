@@ -3,8 +3,9 @@ const bcrypt = require("bcryptjs");
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const port = 3458;
+const port = process.env.PORT || 3458;
 const app = express();
+app.set("trust proxy", 1); 
 const db = require("./db/database");
 const e = require("express");
 const {Server} = require('socket.io');
@@ -18,10 +19,14 @@ app.use(cors({
 
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin: "*"
-    }
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  },
+  path: "/socket.io",
+  transports: ["polling", "websocket"]
 });
+
   
 server.listen(port, (err) => {
     if (err) {
@@ -551,6 +556,18 @@ io.on("connection", (socket) => {
   socket.on("Startparty", (room) => {
     console.log("Party started in:", room);
     io.to(room).emit("partystarted");
+  });
+
+  socket.on("VideoPaused", (roomname, username) => {
+    socket.broadcast.to(roomname).emit("pauseTheVideo");
+  });
+  
+  socket.on("VideoPlayed", (roomname, username) => {
+    socket.broadcast.to(roomname).emit("playTheVideo");
+  });
+
+  socket.on("VideoSeek", ({ room, time }) => {
+    socket.broadcast.to(room).emit("updateSeek", time);
   });
 
   socket.on("sendInvite", (room_name, sender_name, movie_name, receiver_name) => {

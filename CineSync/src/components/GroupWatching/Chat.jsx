@@ -1,6 +1,9 @@
 import Button from "../Login-SignIn/Button";
 import WaitingRoomMessages from "../WaitingRoom/WaitingRoomMessages";
+import { UserContext } from "../Login-SignIn/UserContext";
+import { useContext } from "react";
 export default function Chat({setmessage, chat, setChat, allmessages ,chatBoxRef,sendMessageToRoom}) {
+    const {roomName} = useContext(UserContext);
     function close() {
         setChat(false);
     }
@@ -8,7 +11,7 @@ export default function Chat({setmessage, chat, setChat, allmessages ,chatBoxRef
         <>
             <div className="roomChats" style={chat ? { display: "block" } : { display: "none" }}>
                 <div className="roomHead">
-                    <h2>ROOM NAME</h2>
+                    <h2>{roomName}</h2>
                     <Button><i class="fa-solid fa-xmark" onClick={close}></i></Button>
                 </div>
                 <div className="roomBody">

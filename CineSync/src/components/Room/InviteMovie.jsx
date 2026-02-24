@@ -8,14 +8,16 @@ import { UserContext } from "../Login-SignIn/UserContext";
 import { useContext } from "react";
 
 export default function InviteMovie({ code, onStep, step, movie, room }) {
-    const {setRoomVideo} = useContext(UserContext);
+    const {setRoomVideo,setMovieName,setRoomName} = useContext(UserContext);
     const navigate = useNavigate();
     function nav() {
         navigate("/discover");
     }
 
-    function started(movie){
+    function started(movie,title){
         setRoomVideo(movie);
+        setMovieName(title);
+        setRoomName(localStorage.getItem('Roomname'));
         navigateToMainRoom()
     }
 
@@ -37,7 +39,7 @@ export default function InviteMovie({ code, onStep, step, movie, room }) {
                     <InviteCode code={code}></InviteCode>
                     <InviteFriends movie={movie} room={room} code={code}></InviteFriends>
                 </div>
-                <Button id={'start'} onClick={() => {started(movie.video)}}>Start Watch Party <i class="fa-solid fa-caret-right"></i></Button>
+                <Button id={'start'} onClick={() => {started(movie.video,movie.title)}}>Start Watch Party <i class="fa-solid fa-caret-right"></i></Button>
             </div>
         </>
     )

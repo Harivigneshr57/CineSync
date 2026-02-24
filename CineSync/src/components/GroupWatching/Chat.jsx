@@ -11,7 +11,7 @@ export default function Chat({setmessage, chat, setChat, allmessages ,chatBoxRef
         <>
             <div className="roomChats" style={chat ? { display: "block" } : { display: "none" }}>
                 <div className="roomHead">
-                    <h2>{localStorage.getItem('RoomName')}</h2>
+                    <h2>{localStorage.getItem('Roomname')}</h2>
                     <Button><i class="fa-solid fa-xmark" onClick={close}></i></Button>
                 </div>
                 <div className="roomBody">

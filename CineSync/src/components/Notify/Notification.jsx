@@ -16,6 +16,7 @@ export default function Notification({roomName, ownerName,movieName,moviestatus,
     function acceptInvitation(room,video,movie){
         console.log("The room user want to join: "+room);
         localStorage.setItem("Roomname",room);
+        console.log(video)
         changeRoomVideo(video);
         localStorage.setItem('MovieName',movie);
         setRoomName(room);

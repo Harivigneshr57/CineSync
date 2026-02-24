@@ -77,6 +77,7 @@ export default function JoinRoom() {
                     toast.error("No Rooms Exist in this code !!", toastErrorStyle);
                 }
             } catch (err) {
+                console.log(err);
                 toast.error('Server Error, Try Later !!', toastErrorStyle)
             }
         }

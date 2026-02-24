@@ -19,6 +19,7 @@ export default function Notification({roomName, ownerName,movieName,moviestatus,
         console.log(video)
         changeRoomVideo(video);
         localStorage.setItem('MovieName',movie);
+        localStorage.setItem('movieVideo',video);
         setRoomName(room);
         setMovieName(movie);
         nav("/waitingRoom");

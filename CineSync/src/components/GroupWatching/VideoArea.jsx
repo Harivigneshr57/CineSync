@@ -4,7 +4,7 @@ import VideoControl from "./VideoControl";
 import { UserContext } from "../Login-SignIn/UserContext";
 
 export default function VideoArea({ reference, references, chat, setChat }) {
-    const {roomVideo} = useContext(UserContext);
+    const roomVideo = localStorage.getItem('movieVideo'); 
     const isRemoteSeek = useRef(false);
     const roomName = localStorage.getItem("Roomname");
 

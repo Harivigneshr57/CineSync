@@ -5,7 +5,7 @@ export const UserContext = createContext(null);
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState({username:""});
     const [movie,setMovie]=useState({});
-    const [movieImg,setMovieImg]=useState({movie_img:"",title:""});
+    const [movieImg,setMovieImg]=useState({movie_img:""});
     const [roomDetails, setRoomDetails] = useState([]);
     const [roomVideo,setRoomVideo] = useState({video:''})
     async function changeUser(){
@@ -18,7 +18,10 @@ export const UserProvider = ({ children }) => {
         setRoomDetails(arrayOfRooms);
     }
     function changeMovieImage(movie_img){
-        setMovieImg({movie_img});
+        setMovieImg({movie_img:movie_img});
+    }
+    function changeRoomVideo(video){
+        setRoomVideo({video:video})
     }
     useEffect(() => {
         changeUser();
@@ -37,7 +40,8 @@ export const UserProvider = ({ children }) => {
             changeMovieImage,
             changeRoomDetail,
             roomVideo,
-            setRoomVideo
+            setRoomVideo,
+            changeRoomVideo
         }}>
             {children}
         </UserContext.Provider>

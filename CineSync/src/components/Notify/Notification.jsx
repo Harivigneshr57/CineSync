@@ -6,7 +6,7 @@ import { UserContext } from "../Login-SignIn/UserContext";
 import { useNavigate } from "react-router-dom";
 export default function Notification({roomName, ownerName,movieName,moviestatus,timeStamp,image,video}){
     const [currentRoom ,setcurrentRoom] = useState("");
-    const {setRoomVideo} = useContext(UserContext);
+    const {changeRoomVideo} = useContext(UserContext);
     let nav =useNavigate();
 
     function declineinvitation(){
@@ -16,7 +16,7 @@ export default function Notification({roomName, ownerName,movieName,moviestatus,
     function acceptInvitation(room,video){
         console.log("The room user want to join: "+room);
         localStorage.setItem("Roomname",room);
-        setRoomVideo(video);
+        changeRoomVideo(video);
         nav("/waitingRoom");
     }
 

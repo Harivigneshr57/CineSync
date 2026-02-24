@@ -1030,7 +1030,7 @@ app.post("/getRoomName", (req, res) => {
 
   const query = `
     SELECT 
-      r.RoomName,
+      r.RoomName as roomname,
       m.movie_url,
       m.movie_poster
     FROM Rooms r

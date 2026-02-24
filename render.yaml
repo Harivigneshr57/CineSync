@@ -2,12 +2,9 @@ services:
   - type: web
     name: cinesync
     runtime: static
-
     rootDir: CineSync
-
     buildCommand: npm install && npm run build
     staticPublishPath: dist
-
     routes:
       - type: rewrite
         source: /*

@@ -502,16 +502,23 @@ app.post("/getmessage", (req, res) => {
   });
 });
 
-let users = {};
+let users = {};        
+let socketUsers = {};
 
 io.on("connection", (socket) => {
 
   console.log("Connected:", socket.id);
 
+
+
   socket.on("addtoserver", (username) => {
+
     users[username] = socket.id;
-    console.log(users);
+    socketUsers[socket.id] = username;
+
+    console.log("Active users:", users);
   });
+
 
   socket.on("one2one", (message, friend, username) => {
 
@@ -526,11 +533,12 @@ io.on("connection", (socket) => {
     }
   });
 
+
   socket.on("joinRoom", (roomName, username) => {
 
     socket.join(roomName);
 
-    console.log(username + " joined room:", roomName);
+    console.log(`${username} joined ${roomName}`);
 
     const room = io.sockets.adapter.rooms.get(roomName);
 
@@ -543,7 +551,8 @@ io.on("connection", (socket) => {
     socket.to(roomName).emit("user-joined", socket.id);
   });
 
-  socket.on('sendMessageInsideRoom', (room, msgObj) => {
+
+  socket.on("sendMessageInsideRoom", (room, msgObj) => {
     socket.to(room).emit("messageFromRoom", msgObj);
   });
 
@@ -552,24 +561,25 @@ io.on("connection", (socket) => {
   });
 
   socket.on("VideoPaused", (roomname) => {
-    socket.broadcast.to(roomname).emit("pauseTheVideo");
+    socket.to(roomname).emit("pauseTheVideo");
   });
 
   socket.on("VideoPlayed", (roomname) => {
-    socket.broadcast.to(roomname).emit("playTheVideo");
+    socket.to(roomname).emit("playTheVideo");
   });
 
   socket.on("VideoSeek", ({ room, time }) => {
-    socket.broadcast.to(room).emit("updateSeek", time);
+    socket.to(room).emit("updateSeek", time);
   });
 
-  socket.on("sendInvite",
+  socket.on(
+    "sendInvite",
     (room_name, sender_name, movie_name, receiver_name, video, image) => {
 
-      let friend = users[receiver_name];
+      const friendSocket = users[receiver_name];
 
-      if (friend) {
-        io.to(friend).emit(
+      if (friendSocket) {
+        io.to(friendSocket).emit(
           "sendingInvite",
           room_name,
           movie_name,
@@ -578,37 +588,49 @@ io.on("connection", (socket) => {
           image
         );
       }
-  });
+    }
+  );
 
-  socket.on("offer", data => {
+
+  socket.on("offer", (data) => {
+
+    if (!data?.to) return;
+
     socket.to(data.to).emit("offer", {
-      ...data,
+      offer: data.offer,
       from: socket.id
     });
   });
 
-  socket.on("answer", data => {
+  socket.on("answer", (data) => {
+
+    if (!data?.to) return;
+
     socket.to(data.to).emit("answer", {
-      ...data,
+      answer: data.answer,
       from: socket.id
     });
   });
 
-  socket.on("ice-candidate", data => {
+  socket.on("ice-candidate", (data) => {
+
+    if (!data?.to) return;
+
     socket.to(data.to).emit("ice-candidate", {
-      ...data,
+      candidate: data.candidate,
       from: socket.id
     });
   });
 
   socket.on("disconnect", () => {
 
-    for (let user in users) {
-      if (users[user] === socket.id) {
-        console.log("User disconnected:", user);
-        delete users[user];
-        break;
-      }
+    const username = socketUsers[socket.id];
+
+    if (username) {
+      delete users[username];
+      delete socketUsers[socket.id];
+
+      console.log("User disconnected:", username);
     }
 
     socket.broadcast.emit("user-disconnected", socket.id);

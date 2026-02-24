@@ -24,32 +24,27 @@ export default function SelectedMovie({movie,confirmDiv}){
     }
     return(
         <>
-            <div
-  className="selectedMovie"
-  style={{
-    backgroundImage: `url(${movie.image})`,
-    filter: confirmDiv ? "blur(10px)" : "none"
-  }}
->
+            <div className="selectedMovie">
+                <img src={movie.image} alt={movie.image} />
                 <div>
-                <p>• {movie.genre} • {movie.year} </p>
-                <h1>{movie.title.toUpperCase()}</h1>
-                <h6>{movie.description}</h6>
-                <hr />
-                <div className="char">
-                    <div className="director">
-                        <p>DIRECTER</p>
-                        <h5>{movie.director}</h5>
+                    <p>• {movie.genre} • {movie.year} </p>
+                    <h1>{movie.title.toUpperCase()}</h1>
+                    <h6>{movie.description}</h6>
+                    <hr />
+                    <div className="char">
+                        <div className="director">
+                            <p>DIRECTER</p>
+                            <h5>{movie.director}</h5>
+                        </div>
+                        <div className="leadCast">
+                            <p>LEAD CAST</p>
+                            <h5>{movie.cast}</h5>
+                        </div>
+                        <div className="rating">
+                            <p>RATING</p>
+                            <i class="fa-solid fa-star"></i>  {movie.rating}/10
+                        </div>
                     </div>
-                    <div className="leadCast">
-                        <p>LEAD CAST</p>
-                        <h5>{movie.cast}</h5>
-                    </div>
-                    <div className="rating">
-                        <p>RATING</p>
-                        <i class="fa-solid fa-star"></i>  {movie.rating}/10
-                    </div>
-                </div>
                 </div>
             </div>
         </>

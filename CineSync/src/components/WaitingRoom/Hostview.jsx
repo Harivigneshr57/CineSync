@@ -46,11 +46,11 @@ export default function HostView() {
                 if (exists) return prev;
     
                 return [
+                    ...prev,
                     {
                         username: username,
                         status: "Not Ready"
-                    },
-                    ...prev
+                    }
                 ];
     
             });

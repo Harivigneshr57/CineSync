@@ -61,6 +61,9 @@ export default function JoinRoom() {
                 )
                     .then(res => res.json())
                     .then(dat => data = dat);
+                    console.log(data.movie_url,data.movie_poster);
+                    localStorage.setItem('MovieImage',data.movie_poster);
+                    localStorage.setItem('movieVideo',data.movie_url);
                 console.log("Room Name " + data.roomname.length);
 
                 if (data.roomname.length) {
@@ -71,7 +74,7 @@ export default function JoinRoom() {
                     navigate("/waitingRoom");
                 }
                 else {
-                    toast.error("Room code atleast contain 4 numbers", toastErrorStyle);
+                    toast.error("No Rooms Exist in this code !!", toastErrorStyle);
                 }
             } catch (err) {
                 toast.error('Server Error, Try Later !!', toastErrorStyle)

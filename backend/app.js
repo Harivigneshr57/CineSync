@@ -1024,21 +1024,33 @@ app.post("/addToRoom",(req,res)=>{
 
 })
 
-app.post("/getRoomName",(req,res)=>{
-  let getroomnamequery = `SELECT RoomName from Rooms where RoomCode = ?`;
-  let {roomCode}  = req.body;
-  db.query(getroomnamequery,[roomCode],(err,result)=>{
-    if(!err){
-      return res.json({
-        roomname : result
-      })
+app.post("/getRoomName", (req, res) => {
+
+  const { roomCode } = req.body;
+
+  const query = `
+    SELECT 
+      r.RoomName,
+      m.movie_url,
+      m.movie_poster
+    FROM Rooms r
+    JOIN Movies m
+      ON r.movie_id = m.ROWID
+    WHERE r.RoomCode = ?
+  `;
+
+  db.query(query, [roomCode], (err, result) => {
+
+    if (err) {
+      return res.json({ error: err });
     }
-    else{
-      return res.json({
-        error:err
-      })
+
+    if (result.length === 0) {
+      return res.json({ message: "Room not found" });
     }
-  })
+
+    res.json(result[0]);
+  });
 });
 
 

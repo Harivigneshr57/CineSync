@@ -9,6 +9,7 @@ export default function Participants({ roomName, username }) {
 
   const [remoteStreams, setRemoteStreams] = useState([]);
 
+  /* ================= ICE CONFIG ================= */
 
   const pcConfig = {
     iceServers: [
@@ -16,79 +17,134 @@ export default function Participants({ roomName, username }) {
     ]
   };
 
+  /* ================= START ================= */
 
   useEffect(() => {
     start();
+
+    // ✅ cleanup listeners when component unmounts
+    return () => {
+      socket.off("all-users");
+      socket.off("user-joined");
+      socket.off("offer");
+      socket.off("answer");
+      socket.off("ice-candidate");
+
+      Object.values(peersRef.current).forEach(pc => pc.close());
+    };
   }, []);
 
+  /* ================= MAIN START ================= */
+
   async function start() {
+    try {
+      // get camera + mic
+      localStream.current =
+        await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
 
-    localStream.current =
-      await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
+      if (localVideo.current) {
+        localVideo.current.srcObject = localStream.current;
+      }
+
+      // join socket room
+      socket.emit("joinRoom", roomName, username);
+
+      /* ---------- EXISTING USERS ---------- */
+      socket.on("all-users", users => {
+        users.forEach(id => createPeer(id, true));
       });
 
-    localVideo.current.srcObject = localStream.current;
-
-    socket.emit("joinRoom", roomName, username);
-
-    socket.on("all-users", users => {
-      users.forEach(id => createPeer(id, true));
-    });
-
-    socket.on("user-joined", id => {
-      createPeer(id, false);
-    });
-
-    socket.on("offer", async data => {
-
-      const pc = createPeer(data.from, false);
-
-      await pc.setRemoteDescription(data.offer);
-
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-
-      socket.emit("answer", {
-        answer,
-        to: data.from
+      /* ---------- NEW USER JOIN ---------- */
+      socket.on("user-joined", id => {
+        createPeer(id, false);
       });
-    });
 
-    socket.on("answer", async data => {
-      await peersRef.current[data.from]
-        .setRemoteDescription(data.answer);
-    });
+      /* ---------- RECEIVE OFFER ---------- */
+      socket.on("offer", async data => {
 
-    socket.on("ice-candidate", async data => {
-      await peersRef.current[data.from]
-        .addIceCandidate(data.candidate);
-    });
+        let pc = peersRef.current[data.from];
+
+        // ✅ create only if not exists
+        if (!pc) {
+          pc = createPeer(data.from, false);
+        }
+
+        await pc.setRemoteDescription(
+          new RTCSessionDescription(data.offer)
+        );
+
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+
+        socket.emit("answer", {
+          answer,
+          to: data.from
+        });
+      });
+
+      /* ---------- RECEIVE ANSWER ---------- */
+      socket.on("answer", async data => {
+        const pc = peersRef.current[data.from];
+        if (pc) {
+          await pc.setRemoteDescription(
+            new RTCSessionDescription(data.answer)
+          );
+        }
+      });
+
+      /* ---------- ICE CANDIDATE ---------- */
+      socket.on("ice-candidate", async data => {
+        const pc = peersRef.current[data.from];
+
+        if (pc && data.candidate) {
+          await pc.addIceCandidate(
+            new RTCIceCandidate(data.candidate)
+          );
+        }
+      });
+
+    } catch (err) {
+      console.error("Media error:", err);
+    }
   }
 
+  /* ================= CREATE PEER ================= */
 
   function createPeer(userId, initiator) {
+
+    // ✅ prevent duplicate peer
+    if (peersRef.current[userId]) {
+      return peersRef.current[userId];
+    }
 
     const pc = new RTCPeerConnection(pcConfig);
     peersRef.current[userId] = pc;
 
+    // add local tracks
     localStream.current.getTracks().forEach(track =>
       pc.addTrack(track, localStream.current)
     );
 
+    /* ---------- REMOTE STREAM ---------- */
     pc.ontrack = e => {
       setRemoteStreams(prev => {
 
         if (prev.find(p => p.id === userId)) return prev;
 
-        return [...prev, {
-          id: userId,
-          stream: e.streams[0]
-        }];
+        return [
+          ...prev,
+          {
+            id: userId,
+            stream: e.streams[0]
+          }
+        ];
       });
     };
 
+    /* ---------- ICE ---------- */
     pc.onicecandidate = e => {
       if (e.candidate) {
         socket.emit("ice-candidate", {
@@ -98,23 +154,24 @@ export default function Participants({ roomName, username }) {
       }
     };
 
+    /* ---------- OFFER (INITIATOR) ---------- */
     if (initiator) {
-      pc.createOffer().then(offer => {
-        pc.setLocalDescription(offer);
-
-        socket.emit("offer", {
-          offer,
-          to: userId
+      pc.createOffer()
+        .then(offer => pc.setLocalDescription(offer))
+        .then(() => {
+          socket.emit("offer", {
+            offer: pc.localDescription,
+            to: userId
+          });
         });
-      });
     }
 
     return pc;
   }
 
+  /* ================= VIDEO COMPONENT ================= */
 
   function Video({ stream }) {
-
     const ref = useRef(null);
 
     useEffect(() => {
@@ -123,9 +180,16 @@ export default function Participants({ roomName, username }) {
       }
     }, [stream]);
 
-    return <video ref={ref} autoPlay />;
+    return (
+      <video
+        ref={ref}
+        autoPlay
+        playsInline
+      />
+    );
   }
 
+  /* ================= UI ================= */
 
   return (
     <div className="roomParticipants">
@@ -136,8 +200,15 @@ export default function Participants({ roomName, username }) {
 
       <div className="participantsBody">
 
-        <video ref={localVideo} autoPlay muted />
+        {/* Local Video */}
+        <video
+          ref={localVideo}
+          autoPlay
+          muted
+          playsInline
+        />
 
+        {/* Remote Videos */}
         {remoteStreams.map(user => (
           <Video key={user.id} stream={user.stream} />
         ))}

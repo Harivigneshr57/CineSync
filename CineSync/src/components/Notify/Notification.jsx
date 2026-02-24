@@ -39,7 +39,7 @@ export default function Notification({roomName, ownerName,movieName,moviestatus,
                     <p className="timeStamp">{timeStamp}</p>
                 </div>
                 <div className="buttonDiv">
-                    <button className="joinNot" onClick={()=>{acceptInvitation(roomName,video,movie)}}>Join Room</button>
+                    <button className="joinNot" onClick={()=>{acceptInvitation(roomName,video,roomName)}}>Join Room</button>
                     <button className="declineNot" onClick={()=>{declineinvitation}} >Decline</button>
                 </div>
             </div>

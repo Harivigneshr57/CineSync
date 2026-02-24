@@ -721,7 +721,7 @@ ORDER BY m.title;
 
 app.post("/addRoom", async (req, res) => {
   try {
-    const { username, room, audio, video, reaction, chat, game } = req.body;
+    const { username, room, audio, video, reaction, chat, game, movieId } = req.body;
 
     if (!username) {
       return res.status(400).json({ message: "User not found" });
@@ -753,7 +753,7 @@ app.post("/addRoom", async (req, res) => {
       });
     }
 
-    const roomCode = await createRoom(room, userID, chat, video, audio, reaction, game);
+    const roomCode = await createRoom(room, userID, chat, video, audio, reaction, game, movieId);
 
     return res.status(200).json({
       message: "Room added successfully",
@@ -776,7 +776,7 @@ function queryAsync(sql, values) {
 }
 
 
-async function createRoom(room, userID, chat, video, audio, reaction, game) {
+async function createRoom(room, userID, chat, video, audio, reaction, game,movie_id) {
   let roomCode;
   let exists = true;
 
@@ -792,8 +792,8 @@ async function createRoom(room, userID, chat, video, audio, reaction, game) {
   }
 
   await queryAsync(
-    "insert into Rooms(RoomName,RoomCode,OwnerID,Chat,VideoCall,Audiocall,Emoji,PredictionGame) values(?,?,?,?,?,?,?,?)",
-    [room, roomCode, userID, chat, video, audio, reaction, game]
+    "insert into Rooms(RoomName,RoomCode,OwnerID,Chat,VideoCall,Audiocall,Emoji,PredictionGame,movie_id) values(?,?,?,?,?,?,?,?,?)",
+    [room, roomCode, userID, chat, video, audio, reaction, game, movie_id]
   );
 
   return roomCode;

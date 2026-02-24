@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { data } from "react-router-dom";
 import { socket } from "../Home/socket";
 
-export default function ConfigMovie({ setRoom, room, step, onStep, setCode, confirmDiv,setconfirmDiv,image}) {
+export default function ConfigMovie({ setRoom, room, step, onStep, setCode, confirmDiv,setconfirmDiv,image,movie}) {
     const [audio, setAudio] = useState(false);
     const [video, setVideo] = useState(false);
     const [reaction, setReaction] = useState(false);
@@ -44,7 +44,7 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode, conf
         let res = await fetch("https://cinesync-3k1z.onrender.com/addRoom", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username:user.username, room: room, audio: audio, video: video, reaction: reaction, chat: chat, game: game })
+            body: JSON.stringify({ username:user.username, room: room, audio: audio, video: video, reaction: reaction, chat: chat, game: game, movieId : movie.id })
         })
 
         let data = await res.json();

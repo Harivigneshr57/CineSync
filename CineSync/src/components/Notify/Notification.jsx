@@ -17,6 +17,7 @@ export default function Notification({roomName, ownerName,movieName,moviestatus,
         console.log("The room user want to join: "+room);
         localStorage.setItem("Roomname",room);
         changeRoomVideo(video);
+        localStorage.setItem('MovieName',movie);
         setRoomName(room);
         setMovieName(movie);
         nav("/waitingRoom");
@@ -39,7 +40,7 @@ export default function Notification({roomName, ownerName,movieName,moviestatus,
                     <p className="timeStamp">{timeStamp}</p>
                 </div>
                 <div className="buttonDiv">
-                    <button className="joinNot" onClick={()=>{acceptInvitation(roomName,video,roomName)}}>Join Room</button>
+                    <button className="joinNot" onClick={()=>{acceptInvitation(roomName,video,movieName)}}>Join Room</button>
                     <button className="declineNot" onClick={()=>{declineinvitation}} >Decline</button>
                 </div>
             </div>

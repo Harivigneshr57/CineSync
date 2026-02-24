@@ -17,6 +17,7 @@ export default function InviteMovie({ code, onStep, step, movie, room }) {
     function started(movie,title){
         setRoomVideo(movie);
         setMovieName(title);
+        localStorage.setItem("MovieName",title)
         setRoomName(localStorage.getItem('Roomname'));
         navigateToMainRoom()
     }

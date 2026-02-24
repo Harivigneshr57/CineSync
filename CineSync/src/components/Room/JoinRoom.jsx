@@ -67,10 +67,10 @@ export default function JoinRoom() {
                 console.log("Room Name " + data.roomname.length);
 
                 if (data.roomname.length) {
-                    console.log(data.roomname[0].RoomName);
+                    console.log(data.roomname);
                     toast.success("You joined the room", toastSuccessStyle);
                     // socket.emit("joinRoom", data.roomname[0].RoomName, localStorage.getItem("Username"));
-                    localStorage.setItem("Roomname",data.roomname[0].RoomName);
+                    localStorage.setItem("Roomname",data.roomname);
                     navigate("/waitingRoom");
                 }
                 else {

@@ -12,7 +12,7 @@ export default function Chat({setmessage, chat, setChat, allmessages ,chatBoxRef
             <div className="roomChats" style={chat ? { display: "block" } : { display: "none" }}>
                 <div className="roomHead">
                     <h2>{localStorage.getItem('Roomname')}</h2>
-                    <Button><i class="fa-solid fa-xmark" onClick={close}></i></Button>
+                    <Button id="chatClose"><i class="fa-solid fa-xmark" onClick={close}></i></Button>
                 </div>
                 <div className="roomBody">
                     <div id="lobbyChatBox" ref={chatBoxRef}>
@@ -22,8 +22,8 @@ export default function Chat({setmessage, chat, setChat, allmessages ,chatBoxRef
                     </div>
                 </div>
                 <div className="roomFoot">
-                    <input type="text" name="" id="" onChange={(e)=>{setmessage(e.target.value)}}/>
-                    <Button onClick={sendMessageToRoom}><i className="fa-solid fa-paper-plane"></i></Button>
+                    <input type="text" name="" id="" placeholder="Enter Messages ...." onChange={(e)=>{setmessage(e.target.value)}}/>
+                    <Button id="chatSend" onClick={sendMessageToRoom}><i className="fa-solid fa-paper-plane"></i></Button>
                 </div>
             </div>
         </>

@@ -1,6 +1,7 @@
 services:
   - type: web
     name: cinesync
+    env: static
     buildCommand: npm run build
     staticPublishPath: dist
     routes:

@@ -1,9 +1,9 @@
 services:
   - type: web
     name: cinesync
-    # env: static
+    runtime: static
 
-    rootDir: CineSync   # ⭐ VERY IMPORTANT
+    rootDir: CineSync
 
     buildCommand: npm install && npm run build
     staticPublishPath: dist

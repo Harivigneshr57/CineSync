@@ -13,7 +13,7 @@ export default function WaitingMain(){
             <hr ></hr>
             </div>
             <img style={{width:"25rem"}} src={localStorage.getItem('MovieImage')} alt="Image"/>
-            <button id="iamReady"><i class="fa-regular fa-circle-play"></i> I'M READY</button>
+            {/* <button id="iamReady"><i class="fa-regular fa-circle-play"></i> I'M READY</button> */}
         </div>
         </>
     )

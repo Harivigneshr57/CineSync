@@ -69,7 +69,7 @@ export default function HostView() {
     return (
         <>
             <LobbyChat />
-            <Lobbymembers connectedMembers={connectedMembers} />
+            {/* <Lobbymembers connectedMembers={connectedMembers} /> */}
         </>
     );
 

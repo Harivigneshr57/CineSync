@@ -8,7 +8,7 @@ export default function VideoControls({ reference }) {
   const { user } = useContext(UserContext);
   const [currentTime, setCurrentTime] = useState("00:00");
   const [duration, setDuration] = useState("00:00");
-  const [isPlaying, setPlaying] = useState(false);
+  const [isPlaying, setPlaying] = useState(true);
   const [videoRange, setVideoRange] = useState(0);
   const [videoVol, setvideoVol] = useState(0);
   const [showSpeed, setShowSpeed] = useState(false);
@@ -230,7 +230,14 @@ useEffect(()=>{
 
 }
 function formatTime(timevalue) {
-  const min = Math.floor(timevalue / 60);
+  if (!timevalue || !isFinite(timevalue)) {
+    return "00:00:00";
+  }
+
+  const hour = Math.floor(timevalue / 3600);
+  const min = Math.floor((timevalue % 3600) / 60);
   const sec = Math.floor(timevalue % 60);
-  return `${min}:${sec < 10 ? "0" : ""}${sec}`
+
+  return `${hour}:${min < 10 ? "0" : ""}${min}:${sec < 10 ? "0" : ""
+    }${sec}`;
 }

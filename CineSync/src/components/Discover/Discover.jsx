@@ -6,16 +6,25 @@ import { useContext, useRef, useState } from "react"
 import SideBar from "../Home/SideBar"
 import Button from "../Login-SignIn/Button"
 import { UserContext } from "../Login-SignIn/UserContext"
-import { useNavigate } from "react-router-dom"
 
 
 export default function Discover(){
     const myRef = useRef(null);
     const myRef2 = useRef(null);
+    const {user}=useContext(UserContext);
     const [overview,setOverview] = useState(false);
     const [overviewMovie,setOverviewMovie] = useState({});
-    const {movie,setMovie} = useContext(UserContext);
-    let nav = useNavigate(null);
+
+    async function addToFavorite(){
+      await fetch("http://localhost:3458/addFavorite",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.username,movie_name:overviewMovie.title,movieYear:overviewMovie.year})
+      }).then((res)=>res.json())
+      .then((data)=>{
+        console.log(data);
+      })
+    }
 
     const handleScroll = () => {
       // alert("rdxtfgyvhb");
@@ -25,11 +34,6 @@ export default function Discover(){
         myRef2.current.focus();
       }
     };
-
-    function solo(movie){
-      setMovie(movie)
-      nav('/single');
-    }
 
     function close(){
       setOverview(false);
@@ -42,8 +46,7 @@ export default function Discover(){
             <SideBar></SideBar>
             <div id="discovermain">
                 <TopDisBar handleScroll={handleScroll}></TopDisBar>    
-                <SearchBar ref={myRef} ref2={myRef2}></SearchBar>
-                <MainMovieDiv overview={overview} setOverview={setOverview} overviewMovie={overviewMovie} setOverviewMovie={setOverviewMovie}></MainMovieDiv>
+                <MainMovieDiv overview={overview} setOverview={setOverview} overviewMovie={overviewMovie} setOverviewMovie={setOverviewMovie} ref={myRef} ref2={myRef2}></MainMovieDiv>
             </div> 
         </div>  
         <div className="overviewContainer flex" style={overview?{display:"flex"}:{display:"none"}}>
@@ -76,9 +79,9 @@ export default function Discover(){
                           </div>
                         </div>
                         <div className="playButtons">
-                            <Button id="playSolo" onClick={()=>solo(overviewMovie)}><i class="fa-solid fa-play"></i> Play Now</Button>
+                            <Button id="playSolo"><i class="fa-solid fa-play"></i> Play Now</Button>
                             <Button id='host'><i class="fa-solid fa-people-group"></i> Host Party</Button>
-                            <Button id='like'><i class="fa-regular fa-heart"></i></Button>
+                            <Button onClick={addToFavorite} id='like'><i class="fa-regular fa-heart"></i></Button>
                         </div>
                     </div>
                     <Button id='close'onClick={close}><i class="fa-solid fa-xmark"></i></Button>

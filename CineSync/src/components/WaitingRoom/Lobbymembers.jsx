@@ -1,10 +1,10 @@
 import ConnectedMembers from "./Connectedmembers";
 
-export default function Lobbymembers({connectedmemebers}){
+export default function Lobbymembers({connectedMembers}){
     return <>
         <div className="lobby-members">
             <h2 style={{marginBottom:"2rem"}}>Lobby members</h2>
-            <ConnectedMembers connectedmemebers={connectedmemebers}></ConnectedMembers>
+            <ConnectedMembers connectedMembers={connectedMembers}></ConnectedMembers>
         </div>
     </>
 }

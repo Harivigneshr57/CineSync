@@ -30,6 +30,7 @@ export default function HostView() {
         .then(data => {
     
             if (data.allmembers) {
+                console.log(data);
                 setConnectedMembers(data.allmembers);
             }
     
@@ -46,11 +47,11 @@ export default function HostView() {
                 if (exists) return prev;
     
                 return [
-                    ...prev,
                     {
                         username: username,
                         status: "Not Ready"
-                    }
+                    },
+                    ...prev
                 ];
     
             });
@@ -67,7 +68,7 @@ export default function HostView() {
     return (
         <>
             <LobbyChat />
-            <Lobbymembers connectedmemebers={connectedMembers} />
+            <Lobbymembers connectedMembers={connectedMembers} />
         </>
     );
 

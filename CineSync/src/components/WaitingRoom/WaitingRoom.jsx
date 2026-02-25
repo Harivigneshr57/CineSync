@@ -8,7 +8,7 @@ import { socket } from "../Home/socket";
 import { useNavigate } from "react-router-dom";
 
 export default function WaitingRoom() {
-    const [connectedMember, setConnectedMemebers] = useState([]);
+    const [connectedMembers, setConnectedMemebers] = useState([]);
     const navigate = useNavigate();
 
     // useEffect(() => {
@@ -112,7 +112,7 @@ export default function WaitingRoom() {
     return <>
         <SideBar></SideBar>
         <div className="waitingRoomMain">
-            <Lobbymembers connectedMember={connectedMember}></Lobbymembers>
+            <Lobbymembers connectedMembers={connectedMembers}></Lobbymembers>
             <WaitingMain></WaitingMain>
             <LobbyChat></LobbyChat>
         </div>

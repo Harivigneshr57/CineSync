@@ -538,6 +538,8 @@ io.on("connection", (socket) => {
 
 socket.on("joinRoom", (roomName, username) => {
 
+  console.log(username);
+  
   socket.join(roomName);
 
   users[socket.id] = username;

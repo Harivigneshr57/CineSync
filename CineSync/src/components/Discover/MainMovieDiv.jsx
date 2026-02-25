@@ -1,8 +1,10 @@
 import MovieCard from "./MovieCard";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../Login-SignIn/UserContext";
-export default function MainMovieDiv({overview,setOverview,overviewMovie,setOverviewMovie}) {
+export default function MainMovieDiv({overview,setOverview,overviewMovie,setOverviewMovie,ref,ref2}) {
     const [movies, setMovies] = useState([]);
+    const [moviename, setmovieName]=useState("");
+    const [showDiv, setShowDiv] = useState(false);
     useEffect(() => {
         const fetmovie = async () => {
             await fetch("https://cinesync-3k1z.onrender.com/getAllMovies")
@@ -17,14 +19,40 @@ export default function MainMovieDiv({overview,setOverview,overviewMovie,setOver
         }
         fetmovie();
     }, [])
+    let filterMovieArray=[];
+    if(moviename.trim().length){
+        
+        
+        filterMovieArray = movies?.filter((ele) => ele.title.toLowerCase().includes(moviename.toLowerCase()));
+    }
+    else{
+
+        filterMovieArray=movies;
+
+
+    }
+
     let categoryNameArray = [];
 
     let categorizedArray = [];
 
 
+    function searchMovie(e){
+        const value=e.target.value;
+        setmovieName(value);
+        console.log("Movie type "+value);
 
-    if (movies) {
-        (movies.map(movie => {
+        if (!value.trim()) {
+            setShowDiv(false);
+        } else {
+            setShowDiv(true);
+        }
+    }
+
+
+
+    if (filterMovieArray) {
+        (filterMovieArray.map(movie => {
             categorizedArray.push([]);
             if (!categoryNameArray.includes(movie.Category_Name)) {
                 categoryNameArray.push(movie.Category_Name);
@@ -32,7 +60,7 @@ export default function MainMovieDiv({overview,setOverview,overviewMovie,setOver
     
     
         }));
-        movies.map((movie) => {
+        filterMovieArray.map((movie) => {
 
             categoryNameArray.map((cat) => {
 
@@ -52,6 +80,11 @@ export default function MainMovieDiv({overview,setOverview,overviewMovie,setOver
 
     return (
         <>
+               <div ref={ref}
+        id="searchBarDiscover">
+            <input onChange={searchMovie} ref={ref2} style={{width:"40rem"}}   id="disSearch" placeholder="Enter movie Name..."></input>
+
+        </div>
             {
                 categorizedArray.map((movie, index) => {
                     return(

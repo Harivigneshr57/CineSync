@@ -53,6 +53,9 @@ export default function SelectMovies({ onMovie }) {
                 selectedMovieId === movie.id
                   ? "2px dashed white"
                   : "none",
+                  filter: selectedMovieId === movie.id
+                  ? "brightness(1)"
+                  : "brightness(0.7)"
             }} alt="" />
         </div>
       ))}

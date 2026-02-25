@@ -1,15 +1,14 @@
 import { useRef, useState, useEffect } from "react";
 import { socket } from "../Home/socket";
+import Button from "../Login-SignIn/Button";
 
-export default function Participants({ roomName, username, micOn, setMicOn, camOn, setCamOn, mutedUsers, setMutedUsers, localVideo }) {
+export default function Participants({ roomName, username, micOn, setMicOn, camOn, setCamOn, mutedUsers, setMutedUsers, localVideo, chat, setChat, party, setParty }) {
 
   const peersRef = useRef({});
   const localStream = useRef(null);
   const iceQueue = useRef({});
 
   const [remoteStreams, setRemoteStreams] = useState([]);
-
-  /* ================= ICE SERVERS ================= */
 
   const pcConfig = {
     iceServers: [
@@ -21,8 +20,6 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
       }
     ]
   };
-
-  /* ================= START ================= */
 
   useEffect(() => {
     start();
@@ -52,7 +49,7 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
       socket.emit("joinRoom", roomName, username);
 
       socket.on("all-users", users => {
-        users.forEach(id => createPeer(id, true));
+        users.forEach((id,users) => createPeer(id, true));
       });
 
       socket.on("user-joined", id => {
@@ -68,7 +65,6 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
           new RTCSessionDescription(data.offer)
         );
 
-        /* flush ICE queue */
         if (iceQueue.current[data.from]) {
           for (const c of iceQueue.current[data.from]) {
             await pc.addIceCandidate(c);
@@ -119,8 +115,6 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
     }
   }
 
-  /* ================= CREATE PEER ================= */
-
   function createPeer(userId, initiator) {
 
     if (peersRef.current[userId])
@@ -166,19 +160,12 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
     return pc;
   }
 
-  /* ================= SELF CONTROLS ================= */
-
-
-  /* ================= MUTE PARTICULAR USER ================= */
-
   function toggleUserMute(id) {
     setMutedUsers(prev => ({
       ...prev,
       [id]: !prev[id]
     }));
   }
-
-  /* ================= VIDEO COMPONENT ================= */
 
   function Video({ stream, muted }) {
 
@@ -196,18 +183,20 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
     );
   }
 
-  /* ================= UI ================= */
+  function close(){
+    setParty(false);
+  }
 
   return (
-    <div className="roomParticipants">
+    <div className="roomParticipants" style={{display:party?'block':'none'}}>
 
       <div className="participantsHead">
         <h2>Participants</h2>
+        <Button id="chatClose"><i class="fa-solid fa-xmark" onClick={close}></i></Button>
       </div>
 
       <div className="participantsBody">
 
-        {/* LOCAL VIDEO */}
         <div className="video">
         <video
           ref={localVideo}
@@ -222,7 +211,7 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
         </div>
 
         {remoteStreams.map(user => (
-          <div key={user.id} className="video" onClick={toggleUserMute}>
+          <div key={user.id} className="video" onClick={toggleUserMute(user.id)}>
 
             <Video
               stream={user.stream}
@@ -232,7 +221,6 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
         <div className="personDetails">
             <h6>YOU</h6>
             <h5>{micOn?'Click to Mute':'Click to Unmute'}</h5> 
-            {/* {ref.current.muted?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>} */}
         </div>
 
             {/* <button onClick={() => toggleUserMute(user.id)}>

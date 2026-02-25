@@ -24,7 +24,7 @@ export default function SelectedMovie({movie,confirmDiv}){
     }
     return(
         <>
-            <div className="selectedMovie">
+            <div className="selectedMovie" style={{filter:confirmDiv?`blur(10px)`:''}}>
                 <img src={movie.image} alt={movie.image} />
                 <div>
                     <p>• {movie.genre} • {movie.year} </p>

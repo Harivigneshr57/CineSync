@@ -52,7 +52,7 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
       peersRef.current = {};
       setRemoteStreams([]);
     };
-  }, [party]);
+  }, []);
 
   async function start() {
     try {

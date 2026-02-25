@@ -56,7 +56,17 @@ export default function RoomWatch() {
     const username = localStorage.getItem("Username");
 
     socket.on('frndLeave',msg=>{
-        toast.info(msg,toastErrorStyle);
+        toast(
+            <p><i class="fa-regular fa-message"></i>{msg}</p>,
+             {
+               style: {
+                background: "#5a83a3",
+                color: "#fff",
+                display:"flex",
+                gap:"0.5rem"
+               }
+             }
+           );
     })
     function sendMessageToRoom() {
         console.log("Message: "+currentmessage)

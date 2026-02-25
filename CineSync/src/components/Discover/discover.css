@@ -367,7 +367,7 @@ body {
             #like{
                 padding: 1rem;
                 border: 1px solid var(--grey);
-                color: var(--grey);
+                color: var(--error);
                 background-color: var(--background);
                 font-size: 1.5rem;
                 border-radius: .25rem;
@@ -391,7 +391,7 @@ body {
     #close{
         padding: 1rem;
         border: 1px solid var(--grey);
-        color: var(--grey);
+        color: var(--error);
         background-color: var(--background);
         font-size: 1.5rem;
         border-radius: .25rem;

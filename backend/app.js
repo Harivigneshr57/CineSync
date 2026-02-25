@@ -12,6 +12,8 @@ const {Server} = require('socket.io');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const http=require('http');
+const multer = require("multer");
+const upload = multer({ limits: { fileSize: 5 * 1024 * 1024 } });
 app.use(cors({
   origin: "*",
   credentials: true

@@ -112,7 +112,7 @@ export default function WaitingRoom() {
     return <>
         <SideBar></SideBar>
         <div className="waitingRoomMain">
-            <Lobbymembers connectedMembers={connectedMembers}></Lobbymembers>
+            {/* <Lobbymembers connectedMembers={connectedMembers}></Lobbymembers> */}
             <WaitingMain></WaitingMain>
             <LobbyChat></LobbyChat>
         </div>

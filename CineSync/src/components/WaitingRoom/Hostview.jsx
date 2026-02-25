@@ -28,6 +28,7 @@ export default function HostView() {
         })
         .then(res => res.json())
         .then(data => {
+            console.log(data);
     
             if (data.allmembers) {
                 console.log(data);

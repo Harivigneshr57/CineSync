@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Members from "./Members";
 import { socket } from "../Home/socket";
 
-function ConnectedMembers({  connectedMembers }) {
+function ConnectedMembers({  connectedMembers=[] }) {
     // let connectedmemebers = [{ membername: "Hari vignesh", status: "Ready" }, { membername: "Vinoth", status: "Ready" }, { membername: "Majith", status: "Waiting" }];
 
     return <>

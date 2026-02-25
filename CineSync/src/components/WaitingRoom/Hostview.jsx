@@ -37,7 +37,7 @@ export default function HostView() {
     
         });
     
-        socket.on("newJoin", (username) => {
+        socket.on("newJoin", (id,username) => {
     
             setConnectedMembers(prev => {
     

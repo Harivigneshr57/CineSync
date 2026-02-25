@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from "react";
 import { socket } from "../Home/socket";
 import Button from "../Login-SignIn/Button";
 
+/* ================= VIDEO COMPONENT ================= */
+
 const Video = React.memo(({ stream, muted }) => {
   const ref = useRef(null);
 
@@ -15,13 +17,31 @@ const Video = React.memo(({ stream, muted }) => {
   return <video ref={ref} autoPlay playsInline />;
 });
 
-export default function Participants({ roomName, username, micOn, setMicOn, camOn, setCamOn, mutedUsers, setMutedUsers, localVideo, chat, setChat, party, setParty }) {
+/* ================= MAIN COMPONENT ================= */
+
+export default function Participants({
+  roomName,
+  username,
+  micOn,
+  setMicOn,
+  camOn,
+  setCamOn,
+  mutedUsers,
+  setMutedUsers,
+  localVideo,
+  chat,
+  setChat,
+  party,
+  setParty
+}) {
 
   const peersRef = useRef({});
   const localStream = useRef(null);
   const iceQueue = useRef({});
 
   const [remoteStreams, setRemoteStreams] = useState([]);
+
+  /* ================= ICE CONFIG ================= */
 
   const pcConfig = {
     iceServers: [
@@ -34,8 +54,11 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
     ]
   };
 
+  /* ================= EFFECT ================= */
+
   useEffect(() => {
     if (!party) return;
+
     start();
 
     return () => {
@@ -47,20 +70,22 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
 
       Object.values(peersRef.current).forEach(pc => pc.close());
 
-      localStream.current?.getTracks().forEach(track => track.stop());
+      localStream.current?.getTracks().forEach(t => t.stop());
 
       peersRef.current = {};
       setRemoteStreams([]);
     };
-  }, []);
+  }, [party]);
+
+  /* ================= START MEDIA ================= */
 
   async function start() {
     try {
-
-      localStream.current = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      });
+      localStream.current =
+        await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
 
       if (localVideo.current) {
         localVideo.current.srcObject = localStream.current;
@@ -68,16 +93,21 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
 
       socket.emit("joinRoom", roomName, username);
 
+      /* ---------- existing users ---------- */
+
       socket.on("all-users", users => {
         users.forEach(id => createPeer(id, true));
       });
+
+      /* ---------- new user ---------- */
 
       socket.on("user-joined", id => {
         createPeer(id, false);
       });
 
-      socket.on("offer", async data => {
+      /* ---------- offer ---------- */
 
+      socket.on("offer", async data => {
         let pc = peersRef.current[data.from];
         if (!pc) pc = createPeer(data.from, false);
 
@@ -101,6 +131,8 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
         });
       });
 
+      /* ---------- answer ---------- */
+
       socket.on("answer", async data => {
         const pc = peersRef.current[data.from];
         if (!pc) return;
@@ -112,13 +144,13 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
         }
       });
 
-      socket.on("ice-candidate", async data => {
+      /* ---------- ice ---------- */
 
+      socket.on("ice-candidate", async data => {
         const pc = peersRef.current[data.from];
         if (!pc) return;
 
-        const candidate =
-          new RTCIceCandidate(data.candidate);
+        const candidate = new RTCIceCandidate(data.candidate);
 
         if (pc.remoteDescription) {
           await pc.addIceCandidate(candidate);
@@ -131,9 +163,11 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
       });
 
     } catch (err) {
-      console.error(err);
+      console.error("Media error:", err);
     }
   }
+
+  /* ================= CREATE PEER ================= */
 
   function createPeer(userId, initiator) {
 
@@ -143,22 +177,22 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
     const pc = new RTCPeerConnection(pcConfig);
     peersRef.current[userId] = pc;
 
-    if (!localStream.current) return pc;
+    /* add local tracks safely */
+    if (localStream.current) {
+      localStream.current.getTracks().forEach(track =>
+        pc.addTrack(track, localStream.current)
+      );
+    }
 
-    localStream.current.getTracks().forEach(track =>
-      pc.addTrack(track, localStream.current)
-    );
-
+    /* receive remote stream */
     pc.ontrack = e => {
       setRemoteStreams(prev => {
-
-        if (prev.find(p => p.id === userId))
-          return prev;
-
+        if (prev.find(p => p.id === userId)) return prev;
         return [...prev, { id: userId, stream: e.streams[0] }];
       });
     };
 
+    /* send ICE */
     pc.onicecandidate = e => {
       if (e.candidate) {
         socket.emit("ice-candidate", {
@@ -168,6 +202,7 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
       }
     };
 
+    /* initiator creates offer */
     if (initiator) {
       pc.createOffer()
         .then(o => pc.setLocalDescription(o))
@@ -182,6 +217,8 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
     return pc;
   }
 
+  /* ================= UI ACTIONS ================= */
+
   function toggleUserMute(id) {
     setMutedUsers(prev => ({
       ...prev,
@@ -189,74 +226,65 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
     }));
   }
 
-  function Video({ stream, muted }) {
-
-    const ref = useRef(null);
-
-    useEffect(() => {
-      if (ref.current) {
-        ref.current.srcObject = stream;
-        ref.current.muted = muted;
-      }
-    }, [stream, muted]);
-
-    return (
-      <video ref={ref} autoPlay playsInline />
-    );
-  }
-
-  function close(){
+  function close() {
     setParty(false);
   }
 
-  return (
-    <div className="roomParticipants" style={{display:party?'block':'none'}}>
+  /* ================= UI ================= */
 
+  return (
+    <div
+      className="roomParticipants"
+      style={{ display: party ? "block" : "none" }}
+    >
       <div className="participantsHead">
         <h2>Participants</h2>
-        <Button id="chatClose"><i class="fa-solid fa-xmark" onClick={close}></i></Button>
+        <Button id="chatClose">
+          <i className="fa-solid fa-xmark" onClick={close}></i>
+        </Button>
       </div>
 
       <div className="participantsBody">
 
+        {/* LOCAL VIDEO */}
         <div className="video">
-        <video
-          ref={localVideo}
-          autoPlay
-          muted
-          playsInline
-        />
-        <div className="personDetails">
+          <video ref={localVideo} autoPlay muted playsInline />
+
+          <div className="personDetails">
             <h6>YOU</h6>
-            {micOn?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>}
-        </div>
+            {micOn
+              ? <i className="fa-solid fa-microphone"></i>
+              : <i className="fa-solid fa-microphone-slash"></i>}
+          </div>
         </div>
 
+        {/* REMOTE USERS */}
         {remoteStreams.map(user => (
           <div
-          key={user.id}
-          className="video"
-          onClick={() => toggleUserMute(user.id)}
-        >
-
+            key={user.id}
+            className="video"
+            onClick={() => toggleUserMute(user.id)}
+          >
             <Video
               stream={user.stream}
               muted={mutedUsers[user.id]}
             />
 
-        <div className="personDetails">
-            <h6>FRIEND</h6>
-            <h5>{micOn?'Click to Mute':'Click to Unmute'}</h5> 
-            {ref.current.muted?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>}
-        </div>
+            <div className="personDetails">
+              <h6>FRIEND</h6>
 
-            {/* <button onClick={() => toggleUserMute(user.id)}>
-              {mutedUsers[user.id] ? "Unmute User" : "Mute User"}
-            </button> */}
+              <h5>
+                {mutedUsers[user.id]
+                  ? "Click to Unmute"
+                  : "Click to Mute"}
+              </h5>
 
+              {mutedUsers[user.id]
+                ? <i className="fa-solid fa-microphone-slash"></i>
+                : <i className="fa-solid fa-microphone"></i>}
+            </div>
           </div>
         ))}
-
       </div>
     </div>
   );

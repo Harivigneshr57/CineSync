@@ -504,36 +504,38 @@ app.post("/getmessage", (req, res) => {
   });
 });
 
+console.log("Connected:", socket.id);
+
+
+
+socket.on("addtoserver", (username) => {
+
+  users[username] = socket.id;
+  socketUsers[socket.id] = username;
+
+  console.log("Active users:", users);
+});
+
+
+socket.on("one2one", (message, friend, username) => {
+
+  const friendSocket = users[friend];
+
+  if (friendSocket) {
+    io.to(friendSocket).emit(
+      "privatemessage",
+      message,
+      username
+    );
+  }
+});
+
 let users = {};        
 let socketUsers = {};
 
 io.on("connection", (socket) => {
 
-  console.log("Connected:", socket.id);
 
-
-
-  socket.on("addtoserver", (username) => {
-
-    users[username] = socket.id;
-    socketUsers[socket.id] = username;
-
-    console.log("Active users:", users);
-  });
-
-
-  socket.on("one2one", (message, friend, username) => {
-
-    const friendSocket = users[friend];
-
-    if (friendSocket) {
-      io.to(friendSocket).emit(
-        "privatemessage",
-        message,
-        username
-      );
-    }
-  });
 
 
 socket.on("joinRoom", (roomName, username) => {
@@ -557,11 +559,12 @@ socket.on("joinRoom", (roomName, username) => {
 
   socket.emit("all-users", usersInRoom);
 
-  socket.to(roomName).emit("user-joined", {
-    id: socket.id,
-    username
-  });
+  // socket.to(roomName).emit("user-joined", {
+  //   id: socket.id,
+  //   username
+  // });
   socket.to(roomName).emit("newJoin", {
+    id:socket.id,
     username
    });
   });

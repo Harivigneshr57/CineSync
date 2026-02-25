@@ -247,14 +247,7 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
         <div className="personDetails">
             <h6>FRIEND</h6>
             <h5>{micOn?'Click to Mute':'Click to Unmute'}</h5> 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-            {ref.current.muted?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>}
->>>>>>> parent of 48e43ea (remove render yaml)
-=======
-            {ref.current.muted?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>}
->>>>>>> parent of 48e43ea (remove render yaml)
+            {/* {ref.current.muted?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>} */}
         </div>
 
             {/* <button onClick={() => toggleUserMute(user.id)}>

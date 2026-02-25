@@ -554,6 +554,7 @@ io.on("connection", (socket) => {
 
   socket.on('exit',(username,roomname)=>{
     socket.leave(roomname);
+    console.log(username+'is leaved');
     socket.to(roomname).emit('frndLeave',username+" leaved !!");
   })
 

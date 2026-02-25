@@ -56,6 +56,7 @@ export default function RoomWatch() {
     const username = localStorage.getItem("Username");
 
     socket.on('frndLeave',msg=>{
+        console.log(msg+'msg');
         toast(
             <p><i class="fa-regular fa-message"></i>{msg}</p>,
              {

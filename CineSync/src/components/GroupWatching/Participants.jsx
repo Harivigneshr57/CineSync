@@ -211,7 +211,7 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
         </div>
 
         {remoteStreams.map(user => (
-          <div key={user.id} className="video" onClick={toggleUserMute(user.id)}>
+          <div key={user.id} className="video" onClick={()=>toggleUserMute(user.id)}>
 
             <Video
               stream={user.stream}
@@ -219,7 +219,7 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
             />
 
         <div className="personDetails">
-            <h6>YOU</h6>
+            <h6>FRIEND</h6>
             <h5>{micOn?'Click to Mute':'Click to Unmute'}</h5> 
         </div>
 

@@ -4,7 +4,7 @@ export default function Footer(){
     <footer>
       <div className="footer-container flex1">
         <div className="footer-brand">
-          <h2>Onna <span style={{color:"#4A6E8A"}}>Paarkalam</span></h2>
+          <h2>Cine<span style={{color:"#4A6E8A"}}>Sync</span></h2>
           <p>Watch together. Anywhere. Anytime.</p>
         </div>
         <div className="footer-links">
@@ -28,7 +28,7 @@ export default function Footer(){
         </div>
       </div>
       <div className="footer-bottom">
-        © 2026 Onna Paarkalam • Built for collaborative movie watching
+        © 2026 CineSync • Built for collaborative movie watching
       </div>
     </footer>
         </>

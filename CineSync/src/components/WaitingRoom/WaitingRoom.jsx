@@ -72,7 +72,7 @@ export default function WaitingRoom() {
 
         initRoom();
 
-        socket.on("newJoin", (id,friend) => {
+        socket.on("newJoin", (id,username) => {
 
             setConnectedMemebers(prev => {
 
@@ -85,7 +85,7 @@ export default function WaitingRoom() {
                 return [
                     ...prev,
                     {
-                        username: friend,
+                        username: username,
                         status: "Not Ready"
                     }
                 ];

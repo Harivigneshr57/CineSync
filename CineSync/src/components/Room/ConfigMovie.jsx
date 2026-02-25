@@ -15,7 +15,7 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode, conf
     const [reaction, setReaction] = useState(false);
     const [chat, setChat] = useState(false);
     const [game, setGame] = useState(false);
-    const { user,changeMovieImage} = useContext(UserContext);
+    const { user,changeMovieImage,setAsRoom} = useContext(UserContext);
     const toastErrorStyle = {
         style: {
             borderRadius: "1rem",
@@ -39,6 +39,7 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode, conf
         }
     }
     async function addRoom() {
+        setAsRoom(true);
         {console.log(image);}
         changeMovieImage(image);
         let res = await fetch("https://cinesync-3k1z.onrender.com/addRoom", {

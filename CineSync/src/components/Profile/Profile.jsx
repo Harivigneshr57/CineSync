@@ -13,7 +13,6 @@ export default function Profile() {
   const[bio,setbio]=useState("");
   const[image,setimage]=useState("");
 
-
   function displayedit(){
     setEdit(true);
   }
@@ -21,14 +20,13 @@ export default function Profile() {
   function hideedit(){
     setEdit(false);
   }
-
   return (
     <main className="page">
       <SideBar></SideBar>
-      <ProfileHeader username={username} bio={bio} image={image} displayedit={displayedit}/>
+      <ProfileHeader setuserName={setuserName} username={username} bio={bio} image={image} displayedit={displayedit}/>
       <Favourites></Favourites> 
-      <RecentlyWatched />
-      <EditProfile setimage={setimage} setuserName={setuserName} setbio={setbio}  isEditable={isEditable} hideedit={hideedit}>
+      {/* <RecentlyWatched /> */}
+      <EditProfile defusername={username} defimage={image} defbio={bio} setimage={setimage} setuserName={setuserName} setbio={setbio}  isEditable={isEditable} hideedit={hideedit}>
       </EditProfile>
     </main>
   );

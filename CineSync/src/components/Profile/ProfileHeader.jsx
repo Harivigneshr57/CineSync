@@ -9,24 +9,54 @@ export default function ProfileHeader(props) {
   const[image,setImage]=useState("");
   const[name,setName]=useState("");
   const [bio,setbio]=useState("");
-  useEffect(()=>{
-    const fetchProfile=async()=>{
-      await fetch("https://cinesync-3k1z.onrender.com/getMyProfile",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username:user.username, user_id:user.id})
-      }).then((res)=>res.json())
-      .then((data)=>{
-        console.log("------------------");
-        console.log(data.message[0])
-        setImage(data.message[0].image);
-        setName(data.message[0].username);
-        setbio(data.message[0].bio);
-      })
-      .catch((err)=>console.log(err))
-    }
+  console.log("hii");
+  console.log('\n\n');
+  console.log(props.image);
+  console.log('\n\n');
+  console.log(`url(data:image/png;base64,${image})`);
+  // console.log( `${props.image}?t=${Date.now()}`);
+  
+  const profileImage = props.image
+  ? `url(${props.image})`
+  : image
+  ? `url(data:image/png;base64,${image})`
+  : `url(${def})`;
+
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        if (!user.username) return;
+        console.log('------------------------');
+          console.log(user.username);
+  
+          const res = await fetch("https://cinesync-3k1z.onrender.com/getMyProfile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: user.username })
+        });
+  
+        const data = await res.json();
+        console.log("Response:", data);
+  
+        if (data.error) return;
+        console.log("===================");
+        console.log(data.message);
+        if(data.message.image !==null){
+          setImage(data.message.image);
+        }
+          props.setuserName(data.message.username)
+          setName(data.message.username);
+          setbio(data.message.bio);
+        
+  
+      } catch (err) {
+        console.log("Fetch error:", err);
+      }
+    };
+  
     fetchProfile();
-  },[user]);
+  }, [user.username]);
   console.log(image,name,bio);
   return (
     <section className="profile-header">
@@ -34,7 +64,7 @@ export default function ProfileHeader(props) {
         <div className="profile-section">
         <div className="avatar" >
         <div
-  className="imageholder" style={{backgroundImage: `url(${props.image || image || def})`}}></div> </div>
+  className="imageholder" style={{backgroundImage:profileImage}}></div> </div>
         {/* <span className="pro-badge">PRO</span> */}
         <h3>{props.username?props.username:name}</h3>
 
@@ -51,4 +81,4 @@ export default function ProfileHeader(props) {
       </div>
     </section>
   );
-  }
+}

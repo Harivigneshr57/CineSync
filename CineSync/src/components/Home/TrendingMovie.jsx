@@ -1,32 +1,43 @@
-import movie1 from "../../assets/Avenger.png";
-import movie2 from "../../assets/SpiderMan.png";
-import movie3 from "../../assets/KGF.png";
-import movie4 from "../../assets/Tmovie1.png";
-import movie6 from "../../assets/Thunivu.png"
-import movie5 from "../../assets/Master.png";
-import Trending from "./Trending";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../Login-SignIn/UserContext";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
+import MovieCard from "../Discover/MovieCard";
 
 export default function TrendingMovie(){
     let nav = useNavigate();
     const { changeMovie } = useContext(UserContext);
+    const {user} =useContext(UserContext);
+    const [arr,setMovieArr]=useState([]);
+
     function single(title){
         changeMovie("",title)
         nav('/single');
     }
-    let arr = [
-        [movie1,"Avengers"],[movie2,"SpiderMan"],[movie3,"KGF2"],[movie4,"Stranger Things"],[movie6,"Thunivu"],[movie5,"Master"]
-    ]
+
+    useEffect(()=>{
+        console.log("qwertyuiopudsdfghjkl;")
+        const fetchTrending=async()=>{
+            await fetch("https://cinesync-3k1z.onrender.com/getTrendingMovie")
+            .then((res)=>res.json())
+            .then((data)=>{
+                console.log("----------------------");
+                console.log(data.result);
+                console.log("----------------------");
+
+                setMovieArr(data.result);
+            })
+            .catch((err)=>console.log(err));
+        }
+        fetchTrending();
+    },[user]);
     return(
         <>
             <div className="trendingMovies">
                 <h2>Trending Movies</h2>
                 <div className="trends">
-                    {arr.map((a,i)=>{
-                        return <Trending arr={a} key={i} onClick={()=>single(a[1])}></Trending> 
-                    })}
+                {arr.map((a, i) => {
+    return <MovieCard url={a.movie_poster} title={a.title} genre="" year={a.year} setOverview={""} setOverviewMovie={""} video={""} lead={a.lead_cast} director={a.director} description={a.overview} rating={a.rating} key={i} onClick={() => single(a.title)} />
+})}
                 </div>
             </div>
         </>

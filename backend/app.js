@@ -534,23 +534,35 @@ io.on("connection", (socket) => {
   });
 
 
-  socket.on("joinRoom", (roomName, username) => {
+socket.on("joinRoom", (roomName, username) => {
 
-    socket.join(roomName);
+  socket.join(roomName);
 
-    console.log(`${username} joined ${roomName}`);
+  users[socket.id] = username;
 
-    const room = io.sockets.adapter.rooms.get(roomName);
+  console.log(`${username} joined ${roomName}`);
 
-    const usersInRoom = room
-      ? [...room].filter(id => id !== socket.id)
-      : [];
+  const room = io.sockets.adapter.rooms.get(roomName);
 
-    socket.emit("all-users", usersInRoom);
+  const usersInRoom = room
+    ? [...room]
+        .filter(id => id !== socket.id)
+        .map(id => ({
+          id,
+          username: users[id]
+        }))
+    : [];
 
-    socket.to(roomName).emit("user-joined", socket.id);
+  socket.emit("all-users", usersInRoom);
+
+  socket.to(roomName).emit("user-joined", {
+    id: socket.id,
+    username
   });
-
+  socket.to(roomName).emit("newJoin", {
+    friend
+   });
+  });
 
   socket.on("sendMessageInsideRoom", (room, msgObj) => {
     socket.to(room).emit("messageFromRoom", msgObj);
@@ -1100,3 +1112,125 @@ app.post("/getMyProfile",(req,res)=>{
   });
 
 })
+
+
+app.post("/editProfile", upload.single("image"), (req, res) => {
+  const { oldname, image, name, bio } = req.body;
+  const imageFile = req.file;
+  const imageBase64 = imageFile ? imageFile.buffer.toString("base64") : null;
+
+  db.query("SELECT ROWID FROM users WHERE username=?", [oldname], (err, userResult) => {
+    if (err) return res.status(500).json({ error: err });
+    if (!userResult.length)
+      return res.json({ error: "User not found" });
+
+    const userID = userResult[0].ROWID;
+
+    db.query("SELECT ROWID FROM users WHERE username=?", [name], (err, nameResult) => {
+      if (err) return res.status(500).json({ error: err });
+
+      if (nameResult.length && name !== oldname) {
+        return res.json({ error: "User already exists" });
+      }
+
+      const alterQuery = "UPDATE users SET image=?, username=?, bio=? WHERE ROWID=?";
+      db.query(alterQuery, [imageBase64, name, bio, userID], (err,result) => {
+        if (err) return res.status(500).json({ error: err });
+
+        return res.json({ result: userID });
+      });
+    });
+  });
+});
+app.post("/getMyProfile", (req, res) => {
+  const { username } = req.body;
+  console.log("username:", username);
+
+  if (!username) {
+    console.log("No username provided!");
+    return res.status(400).json({ error: "Username required" });
+  }
+
+  db.query(
+    "SELECT bio, image, username FROM users WHERE username=?",
+    [username],
+    (err, userResult) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ error: "Database query failed" });
+      }
+
+      if (!userResult.length) {
+        console.log("User not found in DB");
+        return res.status(404).json({ error: "User not found" });
+      }
+      const user = userResult[0];
+
+      console.log("DB result:", user);
+      return res.json({ message: user });
+    }
+  );
+});
+
+app.post("/addFavorite",(req,res)=>{
+  const {username,movie_name,movieYear}=req.body;
+  if (!username) {
+    console.log("No username provided!");
+    return res.status(400).json({ error: "Username required" });
+  }
+  console.log(username,movie_name,movieYear)
+  db.query("SELECT ROWID FROM users WHERE username=?", [username], (err, userResult) => {
+    if (err) return res.status(500).json({ error: err });
+    if (!userResult.length)
+      return res.json({ error: "User not found" });
+
+    const userID = userResult[0].ROWID;
+    db.query("select ROWID from Movies where title=? and year=?",[movie_name,movieYear],(err,result)=>{
+      if(err)return res.status(500).json({ error: err });
+      if(! result.length) return res.json({error:"Movie Not Found"});
+      let movie_id=result[0].ROWID;
+
+
+      db.query("Insert into FavoriteMovie(userID,movieID) values(?,?)", [userID,movie_id], (err, nameResult) => {
+        if (err) return res.status(500).json({ error: err });
+
+        return res.json({ result: userID });
+      });
+
+    })
+
+    });
+  });
+
+  app.post("/getMyFavoriteMovie",(req,res)=>{
+    const {username}=req.body;
+    if (!username) {
+      console.log("No username provided!");
+      return res.status(400).json({ error: "Username required" });
+    }
+    db.query("SELECT ROWID FROM users WHERE username=?", [username], (err, userResult) => {
+      if (err) return res.status(500).json({ error: err });
+      if (!userResult.length)
+        return res.json({ error: "User not found" });
+  
+      const userID = userResult[0].ROWID;
+      db.query("SELECT movie_poster, title, rating, year, overview, director, lead_cast FROM Movies WHERE ROWID IN (SELECT movieID FROM FavoriteMovie WHERE userID=?)",[userID],(err,movieReslt)=>{
+        if (err) return res.status(500).json({ error: err });
+    if (!movieReslt.length)
+      return res.json({ error: "User not found" });
+        return res.json({result:movieReslt});
+      })
+    });
+  })
+
+
+  app.get("/getTrendingMovie",(req,res)=>{
+
+      db.query("SELECT movie_poster, title, rating, year, overview, director, lead_cast FROM Movies WHERE ROWID IN (SELECT movie_id FROM MovieCategoryRelation WHERE category_id=8) limit 5",(err,movieReslt)=>{
+        if (err) return res.status(500).json({ error: err });
+    if (!movieReslt.length)
+      return res.json({ error: err });
+        return res.json({result:movieReslt});
+      })
+
+  })

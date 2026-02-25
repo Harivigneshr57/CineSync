@@ -539,7 +539,7 @@ io.on("connection", (socket) => {
 socket.on("joinRoom", (roomName, username) => {
 
   console.log(username);
-  
+
   socket.join(roomName);
 
   users[socket.id] = username;
@@ -559,10 +559,10 @@ socket.on("joinRoom", (roomName, username) => {
 
   socket.emit("all-users", usersInRoom);
 
-  // socket.to(roomName).emit("user-joined", {
-  //   id: socket.id,
-  //   username
-  // });
+  socket.to(roomName).emit("user-joined", {
+    id: socket.id,
+    username
+  });
   socket.to(roomName).emit("newJoin", {
     id:socket.id,
     username

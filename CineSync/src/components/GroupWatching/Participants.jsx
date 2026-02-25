@@ -94,7 +94,7 @@ export default function Participants({
       });
 
       /* new user joined */
-      socket.on("newJoin", (id,username) => {
+      socket.on("user-joined", id => {
         createPeer(id, false);
       });
 

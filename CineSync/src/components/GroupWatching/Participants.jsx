@@ -2,6 +2,19 @@ import { useRef, useState, useEffect } from "react";
 import { socket } from "../Home/socket";
 import Button from "../Login-SignIn/Button";
 
+const Video = React.memo(({ stream, muted }) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!ref.current || !stream) return;
+
+    ref.current.srcObject = stream;
+    ref.current.muted = muted ?? false;
+  }, [stream, muted]);
+
+  return <video ref={ref} autoPlay playsInline />;
+});
+
 export default function Participants({ roomName, username, micOn, setMicOn, camOn, setCamOn, mutedUsers, setMutedUsers, localVideo, chat, setChat, party, setParty }) {
 
   const peersRef = useRef({});
@@ -22,6 +35,7 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
   };
 
   useEffect(() => {
+    if (!party) return;
     start();
 
     return () => {
@@ -32,24 +46,30 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
       socket.off("ice-candidate");
 
       Object.values(peersRef.current).forEach(pc => pc.close());
+
+      localStream.current?.getTracks().forEach(track => track.stop());
+
+      peersRef.current = {};
+      setRemoteStreams([]);
     };
-  }, []);
+  }, [party]);
 
   async function start() {
     try {
 
-      localStream.current =
-        await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true
-        });
+      localStream.current = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
 
-      localVideo.current.srcObject = localStream.current;
+      if (localVideo.current) {
+        localVideo.current.srcObject = localStream.current;
+      }
 
       socket.emit("joinRoom", roomName, username);
 
       socket.on("all-users", users => {
-        users.forEach((id,users) => createPeer(id, true));
+        users.forEach(id => createPeer(id, true));
       });
 
       socket.on("user-joined", id => {
@@ -122,6 +142,8 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
 
     const pc = new RTCPeerConnection(pcConfig);
     peersRef.current[userId] = pc;
+
+    if (!localStream.current) return pc;
 
     localStream.current.getTracks().forEach(track =>
       pc.addTrack(track, localStream.current)
@@ -211,7 +233,11 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
         </div>
 
         {remoteStreams.map(user => (
-          <div key={user.id} className="video" onClick={toggleUserMute(user.id)}>
+          <div
+          key={user.id}
+          className="video"
+          onClick={() => toggleUserMute(user.id)}
+        >
 
             <Video
               stream={user.stream}
@@ -219,7 +245,7 @@ export default function Participants({ roomName, username, micOn, setMicOn, camO
             />
 
         <div className="personDetails">
-            <h6>YOU</h6>
+            <h6>FRIEND</h6>
             <h5>{micOn?'Click to Mute':'Click to Unmute'}</h5> 
         </div>
 

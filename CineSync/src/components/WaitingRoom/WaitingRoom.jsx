@@ -77,7 +77,7 @@ export default function WaitingRoom() {
             setConnectedMemebers(prev => {
 
                 const exists = prev.some(
-                    member => member.username === friend
+                    member => member.username === username
                 );
 
                 if (exists) return prev;

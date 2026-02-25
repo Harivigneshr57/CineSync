@@ -560,7 +560,7 @@ socket.on("joinRoom", (roomName, username) => {
     username
   });
   socket.to(roomName).emit("newJoin", {
-    friend
+    username
    });
   });
 

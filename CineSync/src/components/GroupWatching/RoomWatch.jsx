@@ -58,10 +58,10 @@ export default function RoomWatch() {
     socket.on('frndLeave',msg=>{
         console.log(msg+'msg');
         toast(
-            <p><i class="fa-regular fa-message"></i>{msg}</p>,
+            <p>{msg}</p>,
              {
                style: {
-                background: "#5a83a3",
+                background: "var(--error)",
                 color: "#fff",
                 display:"flex",
                 gap:"0.5rem"
@@ -97,6 +97,17 @@ export default function RoomWatch() {
 
         socket.on("messageFromRoom", (msgObj) => {
             setmessages(prev => [...prev, msgObj]);
+            toast(
+                <p>{msgObj.role} send a message !!</p>,
+                 {
+                   style: {
+                    background: "#5a83a3",
+                    color: "#fff",
+                    display:"flex",
+                    gap:"0.5rem"
+                   }
+                 }
+               );
         });
         return () => {
             socket.off("messageFromRoom");

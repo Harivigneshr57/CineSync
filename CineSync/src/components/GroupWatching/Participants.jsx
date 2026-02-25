@@ -1,41 +1,13 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { socket } from "../Home/socket";
 import Button from "../Login-SignIn/Button";
 
-/* ================= VIDEO COMPONENT (MUST BE OUTSIDE) ================= */
-
-const Video = React.memo(({ stream, muted }) => {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (!ref.current || !stream) return;
-
-    ref.current.srcObject = stream;
-    ref.current.muted = muted ?? false;
-  }, [stream, muted]);
-
-  return <video ref={ref} autoPlay playsInline />;
-});
-
-/* ================= PARTICIPANTS ================= */
-
-export default function Participants({
-  roomName,
-  username,
-  micOn,
-  setMicOn,
-  camOn,
-  setCamOn,
-  mutedUsers,
-  setMutedUsers,
-  localVideo,
-  party,
-  setParty
-}) {
+export default function Participants({ roomName, username, micOn, setMicOn, camOn, setCamOn, mutedUsers, setMutedUsers, localVideo, chat, setChat, party, setParty }) {
 
   const peersRef = useRef({});
   const localStream = useRef(null);
   const iceQueue = useRef({});
+
   const [remoteStreams, setRemoteStreams] = useState([]);
 
   const pcConfig = {
@@ -49,11 +21,7 @@ export default function Participants({
     ]
   };
 
-  /* ================= START ONLY WHEN PARTY OPENS ================= */
-
   useEffect(() => {
-    if (!party) return;
-
     start();
 
     return () => {
@@ -64,42 +32,32 @@ export default function Participants({
       socket.off("ice-candidate");
 
       Object.values(peersRef.current).forEach(pc => pc.close());
-
-      localStream.current?.getTracks().forEach(track => track.stop());
-
-      peersRef.current = {};
-      setRemoteStreams([]);
     };
-  }, [party]);
-
-  /* ================= START WEBRTC ================= */
+  }, []);
 
   async function start() {
     try {
-      /* get camera + mic */
-      localStream.current = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      });
 
-      if (localVideo.current) {
-        localVideo.current.srcObject = localStream.current;
-      }
+      localStream.current =
+        await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
+
+      localVideo.current.srcObject = localStream.current;
 
       socket.emit("joinRoom", roomName, username);
 
-      /* existing users */
       socket.on("all-users", users => {
-        users.forEach(id => createPeer(id, true));
+        users.forEach((id,users) => createPeer(id, true));
       });
 
-      /* new user joined */
       socket.on("user-joined", id => {
         createPeer(id, false);
       });
 
-      /* OFFER */
       socket.on("offer", async data => {
+
         let pc = peersRef.current[data.from];
         if (!pc) pc = createPeer(data.from, false);
 
@@ -123,7 +81,6 @@ export default function Participants({
         });
       });
 
-      /* ANSWER */
       socket.on("answer", async data => {
         const pc = peersRef.current[data.from];
         if (!pc) return;
@@ -135,12 +92,13 @@ export default function Participants({
         }
       });
 
-      /* ICE */
       socket.on("ice-candidate", async data => {
+
         const pc = peersRef.current[data.from];
         if (!pc) return;
 
-        const candidate = new RTCIceCandidate(data.candidate);
+        const candidate =
+          new RTCIceCandidate(data.candidate);
 
         if (pc.remoteDescription) {
           await pc.addIceCandidate(candidate);
@@ -153,20 +111,17 @@ export default function Participants({
       });
 
     } catch (err) {
-      console.error("WebRTC start error:", err);
+      console.error(err);
     }
   }
 
-  /* ================= CREATE PEER ================= */
-
   function createPeer(userId, initiator) {
+
     if (peersRef.current[userId])
       return peersRef.current[userId];
 
     const pc = new RTCPeerConnection(pcConfig);
     peersRef.current[userId] = pc;
-
-    if (!localStream.current) return pc;
 
     localStream.current.getTracks().forEach(track =>
       pc.addTrack(track, localStream.current)
@@ -174,7 +129,10 @@ export default function Participants({
 
     pc.ontrack = e => {
       setRemoteStreams(prev => {
-        if (prev.find(p => p.id === userId)) return prev;
+
+        if (prev.find(p => p.id === userId))
+          return prev;
+
         return [...prev, { id: userId, stream: e.streams[0] }];
       });
     };
@@ -202,8 +160,6 @@ export default function Participants({
     return pc;
   }
 
-  /* ================= MUTE USER ================= */
-
   function toggleUserMute(id) {
     setMutedUsers(prev => ({
       ...prev,
@@ -211,57 +167,66 @@ export default function Participants({
     }));
   }
 
-  function close() {
+  function Video({ stream, muted }) {
+
+    const ref = useRef(null);
+
+    useEffect(() => {
+      if (ref.current) {
+        ref.current.srcObject = stream;
+        ref.current.muted = muted;
+      }
+    }, [stream, muted]);
+
+    return (
+      <video ref={ref} autoPlay playsInline />
+    );
+  }
+
+  function close(){
     setParty(false);
   }
 
-  /* ================= UI ================= */
-
   return (
-    <div
-      className="roomParticipants"
-      style={{ display: party ? "block" : "none" }}
-    >
+    <div className="roomParticipants" style={{display:party?'block':'none'}}>
+
       <div className="participantsHead">
         <h2>Participants</h2>
-        <Button id="chatClose">
-          <i className="fa-solid fa-xmark" onClick={close}></i>
-        </Button>
+        <Button id="chatClose"><i class="fa-solid fa-xmark" onClick={close}></i></Button>
       </div>
 
       <div className="participantsBody">
 
-        {/* LOCAL VIDEO */}
         <div className="video">
-          <video ref={localVideo} autoPlay muted playsInline />
-          <div className="personDetails">
+        <video
+          ref={localVideo}
+          autoPlay
+          muted
+          playsInline
+        />
+        <div className="personDetails">
             <h6>YOU</h6>
-            {micOn
-              ? <i className="fa-solid fa-microphone"></i>
-              : <i className="fa-solid fa-microphone-slash"></i>}
-          </div>
+            {micOn?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>}
+        </div>
         </div>
 
-        {/* REMOTE USERS */}
         {remoteStreams.map(user => (
-          <div
-            key={user.id}
-            className="video"
-            onClick={() => toggleUserMute(user.id)}
-          >
+          <div key={user.id} className="video" onClick={()=>toggleUserMute(user.id)}>
+
             <Video
               stream={user.stream}
               muted={mutedUsers[user.id]}
             />
 
-            <div className="personDetails">
-              <h6>FRIEND</h6>
-              <h5>
-                {mutedUsers[user.id]
-                  ? "Click to Unmute"
-                  : "Click to Mute"}
-              </h5>
-            </div>
+        <div className="personDetails">
+            <h6>FRIEND</h6>
+            <h5>{micOn?'Click to Mute':'Click to Unmute'}</h5> 
+        </div>
+
+            {/* <button onClick={() => toggleUserMute(user.id)}>
+              {mutedUsers[user.id] ? "Unmute User" : "Mute User"}
+            </button> */}
+
           </div>
         ))}
 

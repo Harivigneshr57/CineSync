@@ -111,7 +111,7 @@
 
 
 
-.top-progress::-webkit-slider-thumb {
+.single-top-progress::-webkit-slider-thumb {
   appearance: none;
   width: 1px;
   height: 1px;
@@ -196,7 +196,7 @@ i {
   cursor: pointer;
 }
 
-#backColorDiv {
+#single-backColorDiv {
   width: 97%;
   height: 8px;
   position: absolute;
@@ -206,14 +206,21 @@ i {
   border-radius: 10px;
 }
 
+#single-backColorDiv {
+    width: 95%;
+    position: absolute;
+    height: 6px;
+    z-index: 0;
+    border-radius: 10px;
+}
 
-.top-progress {
+.single-top-progress {
   width: 100%;
   appearance: none;
-  height: 8px;
+  height: 1rem;
   border-radius: 4px;
   background: transparent;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
   cursor: pointer;
   position: relative;
   z-index: 1;
@@ -223,7 +230,7 @@ i {
 .speedDropDownContainer {
   position: absolute;
   right: 0;
-  top: -9rem;
+  top: -7rem;
   background: rgba(0, 0, 0, 0.9);
   padding: 9px 0;
   border-radius: 5px;
@@ -267,8 +274,16 @@ i {
 .left-controls p:hover {
   transform: scale(1.05);  
 }
-
-.controls-wrapper {
+#single-mainIp{
+  width: 100%;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 1rem;
+}
+.single-controls-wrapper {
   border-radius:10px;
   position: absolute;
   bottom:20px;

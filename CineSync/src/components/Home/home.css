@@ -327,3 +327,9 @@ h5{
   right: 15%;
   animation-delay: .3s;
 }
+
+
+.trends .moviecards{
+  flex: 0 0 auto;
+    width: 20rem;
+}

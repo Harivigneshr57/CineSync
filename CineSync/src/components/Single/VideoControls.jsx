@@ -110,12 +110,12 @@ useEffect(()=>{
 
   }, [reference]);
   return (
-    <div className="controls-wrapper">
+    <div className="single-controls-wrapper">
 
       {/* Progress bar (top thin line) */}
-      <div id="mainIp">
-        <input type="range" className="top-progress" min={0} max={100} value={reference.current ? (reference.current.currentTime / reference.current.duration) * 100 || 0 : 0} onChange={movementOfRange} />
-        <div id="backColorDiv" style={{ background: `linear-gradient(90deg,var(--major) ${videoRange}%,white ${videoRange}%)` }}></div>
+      <div id="single-mainIp">
+        <input type="range" className="single-top-progress" min={0} max={100} value={reference.current ? (reference.current.currentTime / reference.current.duration) * 100 || 0 : 0} onChange={movementOfRange} />
+        <div id="single-backColorDiv" style={{ background: `linear-gradient(90deg,var(--major) ${videoRange}%,white ${videoRange}%)` }}></div>
       </div>
 
 

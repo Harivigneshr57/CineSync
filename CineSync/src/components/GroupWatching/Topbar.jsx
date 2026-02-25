@@ -7,7 +7,8 @@ export default function TopBar(){
     let nav = useNavigate();
     const {roomName,movieName} = useContext(UserContext);
     function exit(){
-        socket.emit('exit',localStorage.getItem('Username'),localStorage.getItem('Roomname'))
+        socket.emit('exit',localStorage.getItem('Username'),localStorage.getItem('Roomname'));
+        nav('/room');
     }
     return(
         <>

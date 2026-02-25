@@ -196,7 +196,7 @@ aside  button{
     overflow-x: auto;
     scrollbar-width: none;
     scroll-behavior: smooth;
-    padding-bottom: 0.5rem;
+    padding: 0.5rem;
 }
 
 .homeMovieContainer{

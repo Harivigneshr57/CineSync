@@ -552,6 +552,11 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on('exit',(username,roomname)=>{
+    socket.leave(roomname);
+    socket.to(roomname).emit('frndLeave',username+" leaved !!");
+  })
+
   /* ================= ROOM CHAT ================= */
 
   socket.on("sendMessageInsideRoom", (room, msgObj) => {

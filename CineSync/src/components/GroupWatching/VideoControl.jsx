@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import Button from "../Login-SignIn/Button";
 import { socket } from "../Home/socket";
 
-export default function VideoControl({reference, references,chat,setChat,emitSeek}) {
+export default function VideoControl({reference, references,chat,setChat,emitSeek,party,setParty,micOn,setMicOn,camOn,setCamOn,mutedUsers,setMutedUsers,localVideo}) {
 
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
@@ -137,6 +137,12 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
 
   function roomChat() {
     setChat(true);
+    setParty(false);
+  }
+
+  function roomParty(){
+    setParty(true);
+    setChat(false)
   }
 
   const isRemoteSeek = useRef(false);
@@ -150,6 +156,22 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
       room: roomName,
       time: videoRef.current.currentTime
     });
+  }
+
+  function toggleMic() {
+    const stream = localVideo.current.srcObject;
+    const track = stream.getAudioTracks()[0];
+  
+    track.enabled = !track.enabled;
+    setMicOn(track.enabled);
+  }
+  
+  function toggleCamera() {
+    const stream = localVideo.current.srcObject;
+    const track = stream.getVideoTracks()[0];
+  
+    track.enabled = !track.enabled;
+    setCamOn(track.enabled);
   }
 
   useEffect(() => {
@@ -206,16 +228,6 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
             <i className="fa-solid fa-forward"></i>
           </Button>
 
-          <div className="callOptions">
-            <Button id={"audio"}>
-              <i className="fa-solid fa-microphone"></i>
-            </Button>
-
-            <Button id={"video"}>
-              <i className="fa-solid fa-video"></i>
-            </Button>
-          </div>
-
           <p>{currentTime} / {duration}</p>
 
           <div className="volume">
@@ -250,12 +262,20 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
 
           </div>
         </div>
+        <div className="callOptions">
+            <Button id={"audio"} onClick={toggleMic} style={{background:micOn?'var(--major)':'var(--error)'}}>
+              {micOn?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>}
+            </Button>
 
+            <Button id={"video"} onClick={toggleCamera} style={{background:camOn?'var(--major)':'var(--error)'}}>
+              {camOn?<i className="fa-solid fa-video"></i>:<i class="fa-solid fa-video-slash"></i>}
+            </Button>
+          </div>
         <div className="rightSide">
           <Button id={"roomChats"} onClick={roomChat} style={chat ? { background: "var(--major)" } : { background: "var(--background)" }}>
             <i className="fa-solid fa-message"></i> Chat
           </Button>
-          <Button id={"roomParticipants"}>
+          <Button id={"roomParticipants"} onClick={roomParty} style={party ? { background: "var(--major)" } : { background: "var(--background)" }}>
             <i class="fa-solid fa-people-group"></i> Video
           </Button>
           <div className="horizontaline"></div>

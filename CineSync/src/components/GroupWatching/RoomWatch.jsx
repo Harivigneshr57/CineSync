@@ -9,7 +9,15 @@ import { socket } from "../Home/socket";
 import { useEffect } from "react";
 
 export default function RoomWatch() {
+      /* ===== SELF CONTROL STATES ===== */
+  const [micOn, setMicOn] = useState(true);
+  const [camOn, setCamOn] = useState(true);
+  const localVideo = useRef(null);
+
+  /* ===== PER USER MUTE ===== */
+  const [mutedUsers, setMutedUsers] = useState({});
     const [chat, setChat] = useState(false);
+    const [party,setParty] = useState(false); 
     let video = useRef(null);
     let container = useRef(null);
 
@@ -68,10 +76,9 @@ export default function RoomWatch() {
             <div className="roomWatch">
                 <SideBar></SideBar>
                 <TopBar></TopBar>
-                <VideoArea reference={video} references={container} chat={chat} setChat={setChat}></VideoArea>
-                <Chat allmessages = {allmessages}chat={chat}setmessage={setmessage} setChat={setChat} chatBoxRef ={chatBoxRef} sendMessageToRoom={sendMessageToRoom}>
-                </Chat>
-                <Participants chat={chat} setChat={setChat}></Participants>
+                <VideoArea reference={video} references={container} chat={chat} setChat={setChat} party={party} setParty={setParty} micOn={micOn} setMicOn={setMicOn} camOn={camOn} setCamOn={setCamOn} mutedUsers={mutedUsers} setMutedUsers={setMutedUsers} localVideo={localVideo}></VideoArea>
+                <Chat allmessages = {allmessages}chat={chat}setmessage={setmessage} setChat={setChat} chatBoxRef ={chatBoxRef} sendMessageToRoom={sendMessageToRoom} setParty={setParty}></Chat>
+                <Participants chat={chat} setChat={setChat} party={party} setParty={setParty} micOn={micOn} setMicOn={setMicOn} camOn={camOn} setCamOn={setCamOn} mutedUsers={mutedUsers} setMutedUsers={setMutedUsers} localVideo={localVideo}></Participants>
             </div>
         </>
     )

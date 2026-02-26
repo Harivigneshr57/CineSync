@@ -40,7 +40,6 @@ export default function RoomWatch() {
       secondary: "#16A34A"
     }
   };
-  /* ===== PER USER MUTE ===== */
   const [mutedUsers, setMutedUsers] = useState({});
     const [chat, setChat] = useState(false);
     const [party,setParty] = useState(false); 

@@ -5,7 +5,7 @@ const rtcConfig = {
     { urls: "stun:stun.l.google.com:19302" }
   ]
 };
-export default function Participants({ party, localVideo }) {
+export default function Participants({ party, localVideo, mutedUsers, setMutedUsers, micOn }) {
   const [participants, setParticipants] = useState([]);
   const [remoteStreams, setRemoteStreams] = useState({});
 
@@ -17,6 +17,13 @@ export default function Participants({ party, localVideo }) {
   const peerConnections = useRef({});
   const localStreamRef = useRef(null);
 
+  function toggleRemoteMute(member) {
+    setMutedUsers((prev) => ({
+      ...prev,
+      [member]: !prev[member]
+    }));
+  }
+  
   const getPeerConnection = (remoteUser) => {
     if (peerConnections.current[remoteUser]) {
       return peerConnections.current[remoteUser];
@@ -210,8 +217,18 @@ export default function Participants({ party, localVideo }) {
                 }}
                 autoPlay
                 playsInline
+                muted={!micOn || !!mutedUsers?.[member]}
               />
-              <p>{member}</p>
+              <p>
+                {member}
+                <button
+                  className="participantMuteBtn"
+                  onClick={() => toggleRemoteMute(member)}
+                  type="button"
+                >
+                  {mutedUsers?.[member] ? "Unmute" : "Mute"}
+                </button>
+              </p>
             </div>
           ))}
       </div>

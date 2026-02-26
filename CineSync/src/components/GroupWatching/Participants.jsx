@@ -1,532 +1,303 @@
-// import React, { useRef, useState, useEffect } from "react";
-// import { socket } from "../Home/socket";
-// import Button from "../Login-SignIn/Button";
-
-// /* ================= VIDEO COMPONENT ================= */
-
-// const Video = React.memo(({ stream, muted }) => {
-//   const ref = useRef(null);
-
-//   useEffect(() => {
-//     if (!ref.current || !stream) return;
-
-//     ref.current.srcObject = stream;
-//     ref.current.muted = muted ?? false;
-//   }, [stream, muted]);
-
-//   return <video ref={ref} autoPlay playsInline />;
-// });
-
-// /* ================= MAIN COMPONENT ================= */
-
-// export default function Participants({
-//   roomName,
-//   username,
-//   micOn,
-//   setMicOn,
-//   camOn,
-//   setCamOn,
-//   mutedUsers,
-//   setMutedUsers,
-//   localVideo,
-//   chat,
-//   setChat,
-//   party,
-//   setParty
-// }) {
-
-//   const peersRef = useRef({});
-//   const localStream = useRef(null);
-//   const iceQueue = useRef({});
-
-//   const [remoteStreams, setRemoteStreams] = useState([]);
-
-//   /* ================= ICE CONFIG ================= */
-
-//   const pcConfig = {
-//     iceServers: [
-//       { urls: "stun:stun.l.google.com:19302" },
-//       {
-//         urls: "turn:openrelay.metered.ca:80",
-//         username: "openrelayproject",
-//         credential: "openrelayproject"
-//       }
-//     ]
-//   };
-
-//   /* ================= EFFECT ================= */
-
-//   useEffect(() => {
-//     if (!party) return;
-
-//     start();
-
-//     return () => {
-//       socket.off("all-users");
-//       socket.off("user-joined");
-//       socket.off("offer");
-//       socket.off("answer");
-//       socket.off("ice-candidate");
-
-//       Object.values(peersRef.current).forEach(pc => pc.close());
-
-//       localStream.current?.getTracks().forEach(t => t.stop());
-
-//       peersRef.current = {};
-//       setRemoteStreams([]);
-//     };
-//   }, [party]);
-
-//   /* ================= START MEDIA ================= */
-
-//   async function start() {
-//     try {
-//       localStream.current =
-//         await navigator.mediaDevices.getUserMedia({
-//           video: true,
-//           audio: true
-//         });
-
-//       if (localVideo.current) {
-//         localVideo.current.srcObject = localStream.current;
-//       }
-
-//       socket.emit("joinRoom", roomName, username);
-
-//       /* ---------- existing users ---------- */
-
-//       socket.on("all-users", users => {
-//         users.forEach(id => createPeer(id, true));
-//       });
-
-//       /* ---------- new user ---------- */
-
-//       socket.on("user-joined", id => {
-//         createPeer(id, false);
-//       });
-
-//       /* ---------- offer ---------- */
-
-//       socket.on("offer", async data => {
-//         let pc = peersRef.current[data.from];
-//         if (!pc) pc = createPeer(data.from, false);
-
-//         await pc.setRemoteDescription(
-//           new RTCSessionDescription(data.offer)
-//         );
-
-//         if (iceQueue.current[data.from]) {
-//           for (const c of iceQueue.current[data.from]) {
-//             await pc.addIceCandidate(c);
-//           }
-//           iceQueue.current[data.from] = [];
-//         }
-
-//         const answer = await pc.createAnswer();
-//         await pc.setLocalDescription(answer);
-
-//         socket.emit("answer", {
-//           answer,
-//           to: data.from
-//         });
-//       });
-
-//       /* ---------- answer ---------- */
-
-//       socket.on("answer", async data => {
-//         const pc = peersRef.current[data.from];
-//         if (!pc) return;
-
-//         if (pc.signalingState === "have-local-offer") {
-//           await pc.setRemoteDescription(
-//             new RTCSessionDescription(data.answer)
-//           );
-//         }
-//       });
-
-//       /* ---------- ice ---------- */
-
-//       socket.on("ice-candidate", async data => {
-//         const pc = peersRef.current[data.from];
-//         if (!pc) return;
-
-//         const candidate = new RTCIceCandidate(data.candidate);
-
-//         if (pc.remoteDescription) {
-//           await pc.addIceCandidate(candidate);
-//         } else {
-//           if (!iceQueue.current[data.from])
-//             iceQueue.current[data.from] = [];
-
-//           iceQueue.current[data.from].push(candidate);
-//         }
-//       });
-
-//     } catch (err) {
-//       console.error("Media error:", err);
-//     }
-//   }
-
-//   /* ================= CREATE PEER ================= */
-
-//   function createPeer(userId, initiator) {
-
-//     if (peersRef.current[userId])
-//       return peersRef.current[userId];
-
-//     const pc = new RTCPeerConnection(pcConfig);
-//     peersRef.current[userId] = pc;
-
-//     /* add local tracks safely */
-//     if (localStream.current) {
-//       localStream.current.getTracks().forEach(track =>
-//         pc.addTrack(track, localStream.current)
-//       );
-//     }
-
-//     /* receive remote stream */
-//     pc.ontrack = e => {
-//       setRemoteStreams(prev => {
-//         if (prev.find(p => p.id === userId)) return prev;
-//         return [...prev, { id: userId, stream: e.streams[0] }];
-//       });
-//     };
-
-//     /* send ICE */
-//     pc.onicecandidate = e => {
-//       if (e.candidate) {
-//         socket.emit("ice-candidate", {
-//           candidate: e.candidate,
-//           to: userId
-//         });
-//       }
-//     };
-
-//     /* initiator creates offer */
-//     if (initiator) {
-//       pc.createOffer()
-//         .then(o => pc.setLocalDescription(o))
-//         .then(() => {
-//           socket.emit("offer", {
-//             offer: pc.localDescription,
-//             to: userId
-//           });
-//         });
-//     }
-
-//     return pc;
-//   }
-
-//   /* ================= UI ACTIONS ================= */
-
-//   function toggleUserMute(id) {
-//     setMutedUsers(prev => ({
-//       ...prev,
-//       [id]: !prev[id]
-//     }));
-//   }
-
-//   function close() {
-//     setParty(false);
-//   }
-
-//   /* ================= UI ================= */
-
-//   return (
-//     <div
-//       className="roomParticipants"
-//       style={{ display: party ? "block" : "none" }}
-//     >
-//       <div className="participantsHead">
-//         <h2>Participants</h2>
-//         <Button id="chatClose">
-//           <i className="fa-solid fa-xmark" onClick={close}></i>
-//         </Button>
-//       </div>
-
-//       <div className="participantsBody">
-
-//         {/* LOCAL VIDEO */}
-//         <div className="video">
-//           <video ref={localVideo} autoPlay muted playsInline />
-
-//           <div className="personDetails">
-//             <h6>YOU</h6>
-//             {micOn
-//               ? <i className="fa-solid fa-microphone"></i>
-//               : <i className="fa-solid fa-microphone-slash"></i>}
-//           </div>
-//         </div>
-
-//         {/* REMOTE USERS */}
-//         {remoteStreams.map(user => (
-//           <div
-//             key={user.id}
-//             className="video"
-//             onClick={() => toggleUserMute(user.id)}
-//           >
-//             <Video
-//               stream={user.stream}
-//               muted={mutedUsers[user.id]}
-//             />
-
-//             <div className="personDetails">
-//               <h6>FRIEND</h6>
-
-//               <h5>
-//                 {mutedUsers[user.id]
-//                   ? "Click to Unmute"
-//                   : "Click to Mute"}
-//               </h5>
-
-//               {mutedUsers[user.id]
-//                 ? <i className="fa-solid fa-microphone-slash"></i>
-//                 : <i className="fa-solid fa-microphone"></i>}
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { socket } from "../Home/socket";
 import Button from "../Login-SignIn/Button";
 
-export default function Participants({ roomName, username, micOn, setMicOn, camOn, setCamOn, mutedUsers, setMutedUsers, localVideo, chat, setChat, party, setParty }) {
+/* ================= VIDEO COMPONENT ================= */
 
-const peersRef = useRef({});
-const localStream = useRef(null);
-const iceQueue = useRef({});
+const Video = React.memo(({ stream, muted }) => {
+  const ref = useRef(null);
 
-const [remoteStreams, setRemoteStreams] = useState([]);
+  useEffect(() => {
+    if (!ref.current || !stream) return;
 
-  /* ================= ICE SERVERS ================= */
+    ref.current.srcObject = stream;
+    ref.current.muted = muted ?? false;
+  }, [stream, muted]);
 
-const pcConfig = {
-iceServers: [
-{ urls: "stun:stun.l.google.com:19302" },
-{
-urls: "turn:openrelay.metered.ca:80",
-username: "openrelayproject",
-credential: "openrelayproject"
-}
-]
-};
+  return <video ref={ref} autoPlay playsInline />;
+});
+
+/* ================= MAIN COMPONENT ================= */
+
+export default function Participants({
+  roomName,
+  username,
+  micOn,
+  setMicOn,
+  camOn,
+  setCamOn,
+  mutedUsers,
+  setMutedUsers,
+  localVideo,
+  party,
+  setParty
+}) {
+  const peersRef = useRef({});
+  const localStream = useRef(null);
+  const iceQueue = useRef({});
+
+  const [remoteStreams, setRemoteStreams] = useState([]);
+
+  /* ================= ICE CONFIG ================= */
+
+  const pcConfig = {
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      {
+        urls: "turn:openrelay.metered.ca:80",
+        username: "openrelayproject",
+        credential: "openrelayproject"
+      }
+    ]
+  };
+
+  /* ================= EFFECT ================= */
+
+  useEffect(() => {
+    if (!party) return;
+
+    start();
+
+    return () => {
+      socket.off("all-users");
+      socket.off("user-joined");
+      socket.off("offer");
+      socket.off("answer");
+      socket.off("ice-candidate");
+
+      Object.values(peersRef.current).forEach(pc => pc.close());
+
+      localStream.current?.getTracks().forEach(t => t.stop());
+
+      peersRef.current = {};
+      setRemoteStreams([]);
+    };
+  }, [party]);
 
   /* ================= START ================= */
 
-useEffect(() => {
-start();
+  async function start() {
+    try {
+      /* get camera + mic */
+      localStream.current =
+        await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
 
-return () => {
-socket.off("all-users");
-socket.off("user-joined");
-socket.off("offer");
-socket.off("answer");
-socket.off("ice-candidate");
+      if (localVideo.current) {
+        localVideo.current.srcObject = localStream.current;
+      }
 
-Object.values(peersRef.current).forEach(pc => pc.close());
-};
-}, []);
+      socket.emit("joinRoom", roomName, username);
 
-async function start() {
-try {
+      /* existing users */
+      socket.on("all-users", users => {
+        users.forEach(id => {
+          if (localStream.current) {
+            createPeer(id, true);
+          }
+        });
+      });
 
-localStream.current =
-await navigator.mediaDevices.getUserMedia({
-video: true,
-audio: true
-});
+      /* new user joined */
+      socket.on("user-joined", id => {
+        createPeer(id, false);
+      });
 
-localVideo.current.srcObject = localStream.current;
+      /* OFFER */
+      socket.on("offer", async data => {
+        let pc = peersRef.current[data.from];
+        if (!pc) pc = createPeer(data.from, false);
 
-socket.emit("joinRoom", roomName, username);
+        await pc.setRemoteDescription(
+          new RTCSessionDescription(data.offer)
+        );
 
-socket.on("all-users", users => {
-        users.forEach((id,users) => createPeer(id, true));
-});
+        /* apply queued ICE */
+        if (iceQueue.current[data.from]) {
+          for (const c of iceQueue.current[data.from]) {
+            await pc.addIceCandidate(c);
+          }
+          iceQueue.current[data.from] = [];
+        }
 
-socket.on("user-joined", id => {
-createPeer(id, false);
-});
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
 
-socket.on("offer", async data => {
+        socket.emit("answer", {
+          answer,
+          to: data.from
+        });
+      });
 
-let pc = peersRef.current[data.from];
-if (!pc) pc = createPeer(data.from, false);
+      /* ANSWER */
+      socket.on("answer", async data => {
+        const pc = peersRef.current[data.from];
+        if (!pc) return;
 
-await pc.setRemoteDescription(
-new RTCSessionDescription(data.offer)
-);
+        if (pc.signalingState === "have-local-offer") {
+          await pc.setRemoteDescription(
+            new RTCSessionDescription(data.answer)
+          );
+        }
+      });
 
-        /* flush ICE queue */
-if (iceQueue.current[data.from]) {
-for (const c of iceQueue.current[data.from]) {
-await pc.addIceCandidate(c);
-}
-iceQueue.current[data.from] = [];
-}
+      /* ICE */
+      socket.on("ice-candidate", async data => {
+        const pc = peersRef.current[data.from];
+        if (!pc) return;
 
-const answer = await pc.createAnswer();
-await pc.setLocalDescription(answer);
+        const candidate = new RTCIceCandidate(data.candidate);
 
-socket.emit("answer", {
-answer,
-to: data.from
-});
-});
+        if (pc.remoteDescription) {
+          await pc.addIceCandidate(candidate);
+        } else {
+          if (!iceQueue.current[data.from])
+            iceQueue.current[data.from] = [];
 
-socket.on("answer", async data => {
-const pc = peersRef.current[data.from];
-if (!pc) return;
+          iceQueue.current[data.from].push(candidate);
+        }
+      });
 
-if (pc.signalingState === "have-local-offer") {
-await pc.setRemoteDescription(
-new RTCSessionDescription(data.answer)
-);
-}
-});
-
-socket.on("ice-candidate", async data => {
-
-const pc = peersRef.current[data.from];
-if (!pc) return;
-
-const candidate =
-new RTCIceCandidate(data.candidate);
-
-if (pc.remoteDescription) {
-await pc.addIceCandidate(candidate);
-} else {
-if (!iceQueue.current[data.from])
-iceQueue.current[data.from] = [];
-
-iceQueue.current[data.from].push(candidate);
-}
-});
-
-} catch (err) {
-console.error(err);
-}
-}
+    } catch (err) {
+      console.error("Media error:", err);
+    }
+  }
 
   /* ================= CREATE PEER ================= */
 
-function createPeer(userId, initiator) {
+  function createPeer(userId, initiator) {
+    if (peersRef.current[userId])
+      return peersRef.current[userId];
 
-if (peersRef.current[userId])
-return peersRef.current[userId];
+    const pc = new RTCPeerConnection(pcConfig);
+    peersRef.current[userId] = pc;
 
-const pc = new RTCPeerConnection(pcConfig);
-peersRef.current[userId] = pc;
+    /* add local tracks */
+    localStream.current.getTracks().forEach(track => {
+      pc.addTrack(track, localStream.current);
+    });
 
-localStream.current.getTracks().forEach(track =>
-pc.addTrack(track, localStream.current)
-);
+    /* receive remote stream */
+    pc.ontrack = event => {
+      const stream = event.streams[0];
 
-pc.ontrack = e => {
-setRemoteStreams(prev => {
+      setRemoteStreams(prev => {
+        const existing = prev.find(p => p.id === userId);
 
-if (prev.find(p => p.id === userId))
-return prev;
+        if (existing) {
+          return prev.map(p =>
+            p.id === userId ? { ...p, stream } : p
+          );
+        }
 
-return [...prev, { id: userId, stream: e.streams[0] }];
-});
-};
+        return [...prev, { id: userId, stream }];
+      });
+    };
 
-pc.onicecandidate = e => {
-if (e.candidate) {
-socket.emit("ice-candidate", {
-candidate: e.candidate,
-to: userId
-});
-}
-};
+    /* ICE send */
+    pc.onicecandidate = e => {
+      if (e.candidate) {
+        socket.emit("ice-candidate", {
+          candidate: e.candidate,
+          to: userId
+        });
+      }
+    };
 
-if (initiator) {
-pc.createOffer()
-.then(o => pc.setLocalDescription(o))
-.then(() => {
-socket.emit("offer", {
-offer: pc.localDescription,
-to: userId
-});
-});
-}
+    /* connection debug */
+    pc.onconnectionstatechange = () => {
+      console.log("Connection", userId, pc.connectionState);
+    };
 
-return pc;
-}
+    /* ✅ FIXED NEGOTIATION */
+    if (initiator) {
+      pc.onnegotiationneeded = async () => {
+        try {
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
 
-  /* ================= SELF CONTROLS ================= */
+          socket.emit("offer", {
+            offer: pc.localDescription,
+            to: userId
+          });
+        } catch (err) {
+          console.error("Negotiation error:", err);
+        }
+      };
+    }
 
-
-  /* ================= MUTE PARTICULAR USER ================= */
-
-function toggleUserMute(id) {
-setMutedUsers(prev => ({
-...prev,
-[id]: !prev[id]
-}));
-}
-
-  /* ================= VIDEO COMPONENT ================= */
-
-function Video({ stream, muted }) {
-
-const ref = useRef(null);
-
-useEffect(() => {
-if (ref.current) {
-ref.current.srcObject = stream;
-ref.current.muted = muted;
-}
-}, [stream, muted]);
-
-return (
-<video ref={ref} autoPlay playsInline />
-);
-}
+    return pc;
+  }
 
   /* ================= UI ================= */
-  function close(){
+
+  function toggleUserMute(id) {
+    setMutedUsers(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  }
+
+  function close() {
     setParty(false);
   }
 
-return (
-  <>
-    <div className="roomParticipants" style={{display:party?'block':'none'}}>
-        <div className="participantsHead">
-            <h2>Participants</h2>
-            <Button id="chatClose"><i class="fa-solid fa-xmark" onClick={close}></i></Button>
-        </div>
-        <div className="participantsBody">
-            <div className="video">
-                <video ref={localVideo} autoPlay muted playsInline/>
-                <div className="personDetails">
-                    <h6>YOU</h6>
-                    {micOn?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>}
-                </div>
-            </div>
+  return (
+    <div
+      className="roomParticipants"
+      style={{ display: party ? "block" : "none" }}
+    >
+      <div className="participantsHead">
+        <h2>Participants</h2>
+        <Button>
+          <i className="fa-solid fa-xmark" onClick={close}></i>
+        </Button>
+      </div>
 
-          {remoteStreams.map(user => (
-            <div key={user.id} className="video" onClick={toggleUserMute(user.id)}>
-                <Video stream={user.stream} muted={mutedUsers[user.id]}/>
-                <div className="personDetails">
-                    <h6>FRIEND</h6>
-                    <h5>{micOn?'Click to Mute':'Click to Unmute'}</h5> 
-            {/* {ref.current.muted?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>} */}
-                </div>
+      <div className="participantsBody">
 
-{/* <button onClick={() => toggleUserMute(user.id)}>
-             {mutedUsers[user.id] ? "Unmute User" : "Mute User"}
-           </button> */}
+        {/* LOCAL VIDEO */}
+        <div className="video">
+          <video ref={localVideo} autoPlay muted playsInline />
 
+          <div className="personDetails">
+            <h6>YOU</h6>
+            {micOn
+              ? <i className="fa-solid fa-microphone"></i>
+              : <i className="fa-solid fa-microphone-slash"></i>}
           </div>
-          ))}
+        </div>
 
+        {/* REMOTE USERS */}
+        {remoteStreams.map(user => (
+          <div
+            key={user.id}
+            className="video"
+            onClick={() => toggleUserMute(user.id)}
+          >
+            <Video
+              stream={user.stream}
+              muted={mutedUsers[user.id]}
+            />
+
+            <div className="personDetails">
+              <h6>FRIEND</h6>
+              <h5>
+                {mutedUsers[user.id]
+                  ? "Click to Unmute"
+                  : "Click to Mute"}
+              </h5>
+
+              {mutedUsers[user.id]
+                ? <i className="fa-solid fa-microphone-slash"></i>
+                : <i className="fa-solid fa-microphone"></i>}
+            </div>
+          </div>
+        ))}
+
+      </div>
     </div>
-</div>
-</>
-)};
+  );
+}

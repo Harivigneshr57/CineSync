@@ -20,7 +20,7 @@ export default function WaitingRoom() {
 
             try {
 
-                const joinRes = await fetch("http://localhost:3458/addToRoom", {
+                const joinRes = await fetch("https://cinesync-3k1z.onrender.com/addToRoom", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -46,7 +46,7 @@ export default function WaitingRoom() {
                     localStorage.getItem("Username")
                 );
 
-                const response = await fetch("http://localhost:3458/getAllParticipants", {
+                const response = await fetch("https://cinesync-3k1z.onrender.com/getAllParticipants", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

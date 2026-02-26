@@ -16,7 +16,7 @@ export default function Discover(){
     const [overviewMovie,setOverviewMovie] = useState({});
 
     async function addToFavorite(){
-      await fetch("http://localhost:3458/addFavorite",{
+      await fetch("https://cinesync-3k1z.onrender.com/addFavorite",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({username:user.username,movie_name:overviewMovie.title,movieYear:overviewMovie.year})

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { socket } from "../Home/socket";
 const rtcConfig = {
   iceServers: [
@@ -13,6 +13,7 @@ export default function Participants({ party, localVideo }) {
   const username = localStorage.getItem("Username");
 
   const localVideoRef = useRef(null);
+  const remoteVideoRefs = useRef({});
   const peerConnections = useRef({});
   const localStreamRef = useRef(null);
 
@@ -68,8 +69,24 @@ export default function Participants({ party, localVideo }) {
   };
 
   useEffect(() => {
-    socket.emit("joinRoom", roomName, username);
-    socket.emit("requestRoomUsers", roomName);
+    const startLocalMedia = async () => {
+      if (localStreamRef.current) return;
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
+
+      localStreamRef.current = stream;
+
+      if (localVideo?.current) {
+        localVideo.current.srcObject = stream;
+      }
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+    };
 
     const handleRoomUsers = (members) => {
       const orderedMembers = members || [];
@@ -126,6 +143,14 @@ export default function Participants({ party, localVideo }) {
       await pc.addIceCandidate(new RTCIceCandidate(candidate));
     };
 
+    startLocalMedia()
+      .then(() => {
+        socket.emit("addtoserver", username);
+        socket.emit("joinRoom", roomName, username);
+        socket.emit("requestRoomUsers", roomName);
+      })
+      .catch(console.error);
+
     socket.on("roomUsersUpdated", handleRoomUsers);
     socket.on("webrtcOffer", handleOffer);
     socket.on("webrtcAnswer", handleAnswer);
@@ -140,47 +165,27 @@ export default function Participants({ party, localVideo }) {
 
       Object.values(peerConnections.current).forEach((pc) => pc.close());
       peerConnections.current = {};
-    };
-  }, [roomName, username]);
+      remoteVideoRefs.current = {};
 
-  useEffect(() => {
-    const startLocalMedia = async () => {
-      if (localStreamRef.current) return;
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      });
-
-      localStreamRef.current = stream;
-
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-
-      if (localVideo?.current) {
-        localVideo.current.srcObject = stream;
-      }
-    };
-
-    startLocalMedia().catch(console.error);
-
-    return () => {
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach((track) => track.stop());
         localStreamRef.current = null;
       }
     };
-  }, [localVideo]);
+  }, [roomName, username, localVideo]);
 
   useEffect(() => {
+    if (localVideoRef.current && localStreamRef.current) {
+      localVideoRef.current.srcObject = localStreamRef.current;
+    }
+
     Object.entries(remoteStreams).forEach(([member, stream]) => {
-      const element = document.getElementById(`remote-video-${member}`);
+      const element = remoteVideoRefs.current[member];
       if (element && element.srcObject !== stream) {
         element.srcObject = stream;
       }
     });
-  }, [remoteStreams]);
+  }, [remoteStreams, party]);
 
   if (!party) {
     return null;
@@ -199,7 +204,13 @@ export default function Participants({ party, localVideo }) {
           .filter((member) => member !== username)
           .map((member) => (
             <div className="participantCard" key={member}>
-              <video id={`remote-video-${member}`} autoPlay playsInline />
+              <video
+                ref={(el) => {
+                  remoteVideoRefs.current[member] = el;
+                }}
+                autoPlay
+                playsInline
+              />
               <p>{member}</p>
             </div>
           ))}

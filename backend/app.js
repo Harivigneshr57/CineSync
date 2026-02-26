@@ -541,22 +541,42 @@ io.on("connection", (socket) => {
     console.log(username+" leave the room ");
   })
 
-  socket.on("webrtc-offer", ({ room, offer, sender }) => {
-    socket.to(room).emit("webrtc-offer", {
+  /* ===============================
+   GROUP WEBRTC SIGNALING
+=============================== */
+
+// offer
+socket.on("webrtc-offer", ({ target, offer, sender }) => {
+  const targetSocket = users[target];
+  if (targetSocket) {
+    io.to(targetSocket).emit("webrtc-offer", {
       offer,
       sender,
     });
-  });
-  
-  // answer
-  socket.on("webrtc-answer", ({ room, answer }) => {
-    socket.to(room).emit("webrtc-answer", answer);
-  });
-  
-  // ice candidate
-  socket.on("webrtc-ice-candidate", ({ room, candidate }) => {
-    socket.to(room).emit("webrtc-ice-candidate", candidate);
-  });
+  }
+});
+
+// answer
+socket.on("webrtc-answer", ({ target, answer, sender }) => {
+  const targetSocket = users[target];
+  if (targetSocket) {
+    io.to(targetSocket).emit("webrtc-answer", {
+      answer,
+      sender,
+    });
+  }
+});
+
+// ice candidate
+socket.on("webrtc-ice-candidate", ({ target, candidate, sender }) => {
+  const targetSocket = users[target];
+  if (targetSocket) {
+    io.to(targetSocket).emit("webrtc-ice-candidate", {
+      candidate,
+      sender,
+    });
+  }
+});
 
   socket.on('sendMessageInsideRoom', (room, msgObj) => {
     socket.to(room).emit("messageFromRoom", msgObj);

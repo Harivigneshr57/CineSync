@@ -570,26 +570,6 @@ io.on("connection", (socket) => {
     socket.broadcast.to(room).emit("updateSeek", time);
   });
 
-  socket.on("offer", ({ offer, to, from }) => {
-    io.to(users[to]).emit("offer", { offer, from });
-  });
-  
-  socket.on("answer", ({ answer, to }) => {
-    io.to(users[to]).emit("answer", {
-      answer,
-      from: socket.id
-    });
-  });
-  
-  socket.on("iceCandidate", ({ candidate, to }) => {
-    io.to(users[to]).emit("iceCandidate", {
-      candidate,
-      from: socket.id
-    });
-  });
-
-
-
   socket.on("disconnect", () => {
 
     for (let user in users) {

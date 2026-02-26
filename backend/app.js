@@ -12,8 +12,6 @@ const {Server} = require('socket.io');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const http=require('http');
-const multer = require("multer");
-const upload = multer({ limits: { fileSize: 5 * 1024 * 1024 } });
 app.use(cors({
   origin: "*",
   credentials: true
@@ -504,28 +502,55 @@ app.post("/getmessage", (req, res) => {
   });
 });
 
+/* ================= STORAGE ================= */
+
 let userToSocket = {};
 let socketToUser = {};
+let socketToRoom = {};
 
 io.on("connection", (socket) => {
 
   console.log("Connected:", socket.id);
 
-  /* ================= REGISTER USER ================= */
+  /* =================================================
+     REGISTER USER (GLOBAL LOGIN)
+  ================================================= */
 
   socket.on("addtoserver", (username) => {
     userToSocket[username] = socket.id;
     socketToUser[socket.id] = username;
+
+    console.log("Active users:", userToSocket);
   });
 
-  /* ================= JOIN ROOM ================= */
+  /* =================================================
+     ONE TO ONE CHAT ✅ (KEPT)
+  ================================================= */
+
+  socket.on("one2one", (message, friend, username) => {
+
+    const friendSocket = userToSocket[friend];
+
+    if (friendSocket) {
+      io.to(friendSocket).emit(
+        "privatemessage",
+        message,
+        username
+      );
+    }
+  });
+
+  /* =================================================
+     JOIN ROOM (LOBBY ONLY ONCE)
+  ================================================= */
 
   socket.on("joinRoom", (roomName, username) => {
 
     socket.join(roomName);
 
-    userToSocket[username] = socket.id;
+    socketToRoom[socket.id] = roomName;
     socketToUser[socket.id] = username;
+    userToSocket[username] = socket.id;
 
     console.log(`${username} joined ${roomName}`);
 
@@ -546,43 +571,92 @@ io.on("connection", (socket) => {
       id: socket.id,
       username
     });
-
-    socket.to(roomName).emit("newJoin", {
-      username
-    });
   });
 
-  socket.on('exit',(username,roomname)=>{
-    socket.leave(roomname);
-    console.log(username+'is leaved');
-    socket.to(roomname).emit('frndLeave',username+" leaved !!");
-  })
+  /* =================================================
+     GET USERS (WHEN PARTY STARTS)
+  ================================================= */
 
-  /* ================= ROOM CHAT ================= */
+  socket.on("get-users", () => {
+
+    const roomName = socketToRoom[socket.id];
+    if (!roomName) return;
+
+    const room = io.sockets.adapter.rooms.get(roomName);
+
+    const users = room
+      ? [...room]
+          .filter(id => id !== socket.id)
+          .map(id => ({
+            id,
+            username: socketToUser[id]
+          }))
+      : [];
+
+    socket.emit("all-users", users);
+  });
+
+  /* =================================================
+   WEBRTC READY (START VIDEO CONNECTIONS)
+================================================= */
+
+socket.on("ready-for-webrtc", () => {
+
+  const roomName = socketToRoom[socket.id];
+  if (!roomName) return;
+
+  const room = io.sockets.adapter.rooms.get(roomName);
+
+  const users = room
+    ? [...room]
+        .filter(id => id !== socket.id)
+        .map(id => ({
+          id,
+          username: socketToUser[id]
+        }))
+    : [];
+
+  // send existing users to new peer
+  socket.emit("all-users", users);
+
+  // notify others
+  socket.to(roomName).emit("user-joined", {
+    id: socket.id,
+    username: socketToUser[socket.id]
+  });
+});
+
+  /* =================================================
+     ROOM CHAT
+  ================================================= */
 
   socket.on("sendMessageInsideRoom", (room, msgObj) => {
     socket.to(room).emit("messageFromRoom", msgObj);
   });
 
-  /* ================= PARTY CONTROL ================= */
+  /* =================================================
+     PARTY CONTROL
+  ================================================= */
 
-  socket.on("Startparty", room =>
-    io.to(room).emit("partystarted")
-  );
+  socket.on("Startparty", (room) => {
+    io.to(room).emit("partystarted");
+  });
 
-  socket.on("VideoPaused", room =>
-    socket.to(room).emit("pauseTheVideo")
-  );
+  socket.on("VideoPaused", (room) => {
+    socket.to(room).emit("pauseTheVideo");
+  });
 
-  socket.on("VideoPlayed", room =>
-    socket.to(room).emit("playTheVideo")
-  );
+  socket.on("VideoPlayed", (room) => {
+    socket.to(room).emit("playTheVideo");
+  });
 
-  socket.on("VideoSeek", ({ room, time }) =>
-    socket.to(room).emit("updateSeek", time)
-  );
+  socket.on("VideoSeek", ({ room, time }) => {
+    socket.to(room).emit("updateSeek", time);
+  });
 
-  /* ================= INVITES ================= */
+  /* =================================================
+     INVITES
+  ================================================= */
 
   socket.on(
     "sendInvite",
@@ -603,46 +677,49 @@ io.on("connection", (socket) => {
     }
   );
 
-  /* ================= WEBRTC SIGNALING ================= */
+  /* =================================================
+     WEBRTC SIGNALING ✅
+  ================================================= */
 
-  socket.on("offer", data => {
-    if (data?.to)
-      socket.to(data.to).emit("offer", {
-        offer: data.offer,
-        from: socket.id
-      });
+  socket.on("offer", ({ offer, to }) => {
+    io.to(to).emit("offer", {
+      offer,
+      from: socket.id
+    });
   });
 
-  socket.on("answer", data => {
-    if (data?.to)
-      socket.to(data.to).emit("answer", {
-        answer: data.answer,
-        from: socket.id
-      });
+  socket.on("answer", ({ answer, to }) => {
+    io.to(to).emit("answer", {
+      answer,
+      from: socket.id
+    });
   });
 
-  socket.on("ice-candidate", data => {
-    if (data?.to)
-      socket.to(data.to).emit("ice-candidate", {
-        candidate: data.candidate,
-        from: socket.id
-      });
+  socket.on("ice-candidate", ({ candidate, to }) => {
+    io.to(to).emit("ice-candidate", {
+      candidate,
+      from: socket.id
+    });
   });
 
-  /* ================= DISCONNECT ================= */
+  /* =================================================
+     DISCONNECT
+  ================================================= */
 
   socket.on("disconnect", () => {
 
     const username = socketToUser[socket.id];
-
-    if (username) {
-      delete userToSocket[username];
-      delete socketToUser[socket.id];
-    }
-
-    socket.broadcast.emit("user-disconnected", socket.id);
+    const room = socketToRoom[socket.id];
 
     console.log("Disconnected:", socket.id);
+
+    if (room) {
+      socket.to(room).emit("user-left", socket.id);
+    }
+
+    if (username) delete userToSocket[username];
+    delete socketToUser[socket.id];
+    delete socketToRoom[socket.id];
   });
 
 });
@@ -1109,125 +1186,3 @@ app.post("/getMyProfile",(req,res)=>{
   });
 
 })
-
-
-app.post("/editProfile", upload.single("image"), (req, res) => {
-  const { oldname, image, name, bio } = req.body;
-  const imageFile = req.file;
-  const imageBase64 = imageFile ? imageFile.buffer.toString("base64") : null;
-
-  db.query("SELECT ROWID FROM users WHERE username=?", [oldname], (err, userResult) => {
-    if (err) return res.status(500).json({ error: err });
-    if (!userResult.length)
-      return res.json({ error: "User not found" });
-
-    const userID = userResult[0].ROWID;
-
-    db.query("SELECT ROWID FROM users WHERE username=?", [name], (err, nameResult) => {
-      if (err) return res.status(500).json({ error: err });
-
-      if (nameResult.length && name !== oldname) {
-        return res.json({ error: "User already exists" });
-      }
-
-      const alterQuery = "UPDATE users SET image=?, username=?, bio=? WHERE ROWID=?";
-      db.query(alterQuery, [imageBase64, name, bio, userID], (err,result) => {
-        if (err) return res.status(500).json({ error: err });
-
-        return res.json({ result: userID });
-      });
-    });
-  });
-});
-app.post("/getMyProfile", (req, res) => {
-  const { username } = req.body;
-  console.log("username:", username);
-
-  if (!username) {
-    console.log("No username provided!");
-    return res.status(400).json({ error: "Username required" });
-  }
-
-  db.query(
-    "SELECT bio, image, username FROM users WHERE username=?",
-    [username],
-    (err, userResult) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({ error: "Database query failed" });
-      }
-
-      if (!userResult.length) {
-        console.log("User not found in DB");
-        return res.status(404).json({ error: "User not found" });
-      }
-      const user = userResult[0];
-
-      console.log("DB result:", user);
-      return res.json({ message: user });
-    }
-  );
-});
-
-app.post("/addFavorite",(req,res)=>{
-  const {username,movie_name,movieYear}=req.body;
-  if (!username) {
-    console.log("No username provided!");
-    return res.status(400).json({ error: "Username required" });
-  }
-  console.log(username,movie_name,movieYear)
-  db.query("SELECT ROWID FROM users WHERE username=?", [username], (err, userResult) => {
-    if (err) return res.status(500).json({ error: err });
-    if (!userResult.length)
-      return res.json({ error: "User not found" });
-
-    const userID = userResult[0].ROWID;
-    db.query("select ROWID from Movies where title=? and year=?",[movie_name,movieYear],(err,result)=>{
-      if(err)return res.status(500).json({ error: err });
-      if(! result.length) return res.json({error:"Movie Not Found"});
-      let movie_id=result[0].ROWID;
-
-
-      db.query("Insert into FavoriteMovie(userID,movieID) values(?,?)", [userID,movie_id], (err, nameResult) => {
-        if (err) return res.status(500).json({ error: err });
-
-        return res.json({ result: userID });
-      });
-
-    })
-
-    });
-  });
-
-  app.post("/getMyFavoriteMovie",(req,res)=>{
-    const {username}=req.body;
-    if (!username) {
-      console.log("No username provided!");
-      return res.status(400).json({ error: "Username required" });
-    }
-    db.query("SELECT ROWID FROM users WHERE username=?", [username], (err, userResult) => {
-      if (err) return res.status(500).json({ error: err });
-      if (!userResult.length)
-        return res.json({ error: "User not found" });
-  
-      const userID = userResult[0].ROWID;
-      db.query("SELECT movie_poster, title, rating, year, overview, director, lead_cast FROM Movies WHERE ROWID IN (SELECT movieID FROM FavoriteMovie WHERE userID=?)",[userID],(err,movieReslt)=>{
-        if (err) return res.status(500).json({ error: err });
-    if (!movieReslt.length)
-      return res.json({ error: "User not found" });
-        return res.json({result:movieReslt});
-      })
-    });
-  })
-
-
-  app.get("/getTrendingMovie",(req,res)=>{
-
-      db.query("SELECT movie_poster, title, rating, year, overview, director, lead_cast FROM Movies WHERE ROWID IN (SELECT movie_id FROM MovieCategoryRelation WHERE category_id=8) limit 5",(err,movieReslt)=>{
-        if (err) return res.status(500).json({ error: err });
-    if (!movieReslt.length)
-      return res.json({ error: err });
-        return res.json({result:movieReslt});
-      })
-
-  })

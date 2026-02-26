@@ -64,6 +64,7 @@ export default function Participants({
       socket.off("offer");
       socket.off("answer");
       socket.off("ice-candidate");
+      socket.off("user-left");
 
       Object.values(peersRef.current).forEach(pc => pc.close());
 
@@ -89,7 +90,7 @@ export default function Participants({
         localVideo.current.srcObject = localStream.current;
       }
 
-      socket.emit("joinRoom", roomName, username);
+      socket.emit("ready-for-webrtc", roomName);
 
       /* existing users */
       socket.on("all-users", users => {
@@ -102,7 +103,9 @@ export default function Participants({
 
       /* new user joined */
       socket.on("user-joined", id => {
-        createPeer(id, false);
+        if (!peersRef.current[id]) {
+          createPeer(id, false);
+        }
       });
 
       /* OFFER */
@@ -160,6 +163,17 @@ export default function Participants({
         }
       });
 
+      socket.on("user-left", id => {
+        if (peersRef.current[id]) {
+          peersRef.current[id].close();
+          delete peersRef.current[id];
+        }
+      
+        setRemoteStreams(prev =>
+          prev.filter(p => p.id !== id)
+        );
+      });
+
     } catch (err) {
       console.error("Media error:", err);
     }
@@ -213,19 +227,19 @@ export default function Participants({
 
     /* ✅ FIXED NEGOTIATION */
     if (initiator) {
-      pc.onnegotiationneeded = async () => {
+      setTimeout(async () => {
         try {
           const offer = await pc.createOffer();
           await pc.setLocalDescription(offer);
-
+    
           socket.emit("offer", {
-            offer: pc.localDescription,
+            offer,
             to: userId
           });
         } catch (err) {
           console.error("Negotiation error:", err);
         }
-      };
+      }, 300);
     }
 
     return pc;

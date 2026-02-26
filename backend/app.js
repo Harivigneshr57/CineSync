@@ -541,6 +541,23 @@ io.on("connection", (socket) => {
     console.log(username+" leave the room ");
   })
 
+  socket.on("webrtc-offer", ({ room, offer, sender }) => {
+    socket.to(room).emit("webrtc-offer", {
+      offer,
+      sender,
+    });
+  });
+  
+  // answer
+  socket.on("webrtc-answer", ({ room, answer }) => {
+    socket.to(room).emit("webrtc-answer", answer);
+  });
+  
+  // ice candidate
+  socket.on("webrtc-ice-candidate", ({ room, candidate }) => {
+    socket.to(room).emit("webrtc-ice-candidate", candidate);
+  });
+
   socket.on('sendMessageInsideRoom', (room, msgObj) => {
     socket.to(room).emit("messageFromRoom", msgObj);
   });
@@ -561,6 +578,8 @@ io.on("connection", (socket) => {
   socket.on("VideoSeek", ({ room, time }) => {
     socket.broadcast.to(room).emit("updateSeek", time);
   });
+
+
 
   socket.on("disconnect", () => {
 

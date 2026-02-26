@@ -1,8 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { socket } from "../Home/socket";
+const optionalTurnServer =
+  import.meta.env.VITE_TURN_URL &&
+  import.meta.env.VITE_TURN_USERNAME &&
+  import.meta.env.VITE_TURN_CREDENTIAL
+    ? {
+        urls: import.meta.env.VITE_TURN_URL,
+        username: import.meta.env.VITE_TURN_USERNAME,
+        credential: import.meta.env.VITE_TURN_CREDENTIAL
+      }
+    : null;
+
 const rtcConfig = {
   iceServers: [
-    { urls: "stun:stun.l.google.com:19302" }
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun1.l.google.com:19302" },
+    ...(optionalTurnServer ? [optionalTurnServer] : [])
   ]
 };
 export default function Participants({ party, localVideo, mutedUsers, setMutedUsers, micOn }) {

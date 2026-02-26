@@ -503,31 +503,25 @@ app.post("/getmessage", (req, res) => {
       });
   });
 });
-const users = {};        // username -> socketId
-const roomUsers = {};    // room -> [usernames]
+let users = {};
+let roomUsers = {};
 
 io.on("connection", (socket) => {
 
-  console.log("Connected:", socket.id);
-
-  /* =====================================
-     REGISTER USER
-  ===================================== */
 
   socket.on("addtoserver", (username) => {
-    users[username] = socket.id;
-    console.log("Active users:", users);
-  });
 
-  /* =====================================
-     PRIVATE CHAT
-  ===================================== */
+    users[username] = socket.id;
+    console.log(users);
+
+  });
 
   socket.on("one2one", (message, friend, username) => {
 
     const friendSocket = users[friend];
 
     if (friendSocket) {
+
       io.to(friendSocket).emit(
         "privatemessage",
         message,
@@ -536,115 +530,39 @@ io.on("connection", (socket) => {
     }
   });
 
-  /* =====================================
-     JOIN ROOM (IMPORTANT FIX)
-  ===================================== */
-
-  socket.on("joinRoom", (roomName, username) => {
-
+  socket.on('joinRoom', (roomName, username) => {
+    let friend = username;
     socket.join(roomName);
-
+    
     if (!roomUsers[roomName]) {
       roomUsers[roomName] = [];
     }
-
-    console.log(username + " joined room:", roomName);
-
-    // ✅ send already existing users to new user
-    socket.emit("existingUsers", roomUsers[roomName]);
-
-    // ✅ add new user into room
-    roomUsers[roomName].push(username);
-
-    // ✅ notify others
-    socket.to(roomName).emit("newJoin", username);
-
-    console.log("Room users:", roomUsers);
+    
+    roomUsers[roomName].push({username:users[username]})
+    console.log(username + ` joined room: ${roomName}`);
+    socket.to(roomName).emit("newJoin", friend);
   });
 
-  /* =====================================
-     LEAVE ROOM
-  ===================================== */
 
-  socket.on("leaveRoom", (username, roomName) => {
-
+  socket.on('leaveRoom',(username,roomName)=>{
     socket.leave(roomName);
+    console.log(username+" leave the room ");
+  })
 
-    if (roomUsers[roomName]) {
-      roomUsers[roomName] =
-        roomUsers[roomName].filter(u => u !== username);
-    }
-
-    socket.to(roomName).emit("userLeft", username);
-
-    console.log(username + " left room");
-  });
-
-  /* =====================================
-     GROUP WEBRTC SIGNALING
-  ===================================== */
-
-  // OFFER
-  socket.on("webrtc-offer", ({ target, offer, sender }) => {
-
-    const targetSocket = users[target];
-
-    if (targetSocket) {
-      io.to(targetSocket).emit("webrtc-offer", {
-        offer,
-        sender,
-      });
-    }
-  });
-
-  // ANSWER
-  socket.on("webrtc-answer", ({ target, answer, sender }) => {
-
-    const targetSocket = users[target];
-
-    if (targetSocket) {
-      io.to(targetSocket).emit("webrtc-answer", {
-        answer,
-        sender,
-      });
-    }
-  });
-
-  // ICE CANDIDATE
-  socket.on("webrtc-ice-candidate", ({ target, candidate, sender }) => {
-
-    const targetSocket = users[target];
-
-    if (targetSocket) {
-      io.to(targetSocket).emit("webrtc-ice-candidate", {
-        candidate,
-        sender,
-      });
-    }
-  });
-
-  /* =====================================
-     ROOM CHAT
-  ===================================== */
-
-  socket.on("sendMessageInsideRoom", (room, msgObj) => {
+  socket.on('sendMessageInsideRoom', (room, msgObj) => {
     socket.to(room).emit("messageFromRoom", msgObj);
   });
-
-  /* =====================================
-     PARTY EVENTS
-  ===================================== */
 
   socket.on("Startparty", (room) => {
     console.log("Party started in:", room);
     io.to(room).emit("partystarted");
   });
 
-  socket.on("VideoPaused", (roomname) => {
+  socket.on("VideoPaused", (roomname, username) => {
     socket.broadcast.to(roomname).emit("pauseTheVideo");
   });
-
-  socket.on("VideoPlayed", (roomname) => {
+  
+  socket.on("VideoPlayed", (roomname, username) => {
     socket.broadcast.to(roomname).emit("playTheVideo");
   });
 
@@ -652,57 +570,49 @@ io.on("connection", (socket) => {
     socket.broadcast.to(room).emit("updateSeek", time);
   });
 
-  /* =====================================
-     SEND INVITE
-  ===================================== */
+  socket.on("offer", ({ offer, to, from }) => {
+    io.to(users[to]).emit("offer", { offer, from });
+  });
+  
+  socket.on("answer", ({ answer, to }) => {
+    io.to(users[to]).emit("answer", {
+      answer,
+      from: socket.id
+    });
+  });
+  
+  socket.on("iceCandidate", ({ candidate, to }) => {
+    io.to(users[to]).emit("iceCandidate", {
+      candidate,
+      from: socket.id
+    });
+  });
 
-  socket.on(
-    "sendInvite",
-    (room_name, sender_name, movie_name, receiver_name) => {
 
-      const friend = users[receiver_name];
-
-      if (friend) {
-        io.to(friend).emit(
-          "sendingInvite",
-          room_name,
-          movie_name,
-          sender_name
-        );
-      }
-    }
-  );
-
-  /* =====================================
-     DISCONNECT CLEANUP
-  ===================================== */
 
   socket.on("disconnect", () => {
 
-    let disconnectedUser = null;
-
-    // remove from users list
     for (let user in users) {
+
       if (users[user] === socket.id) {
-        disconnectedUser = user;
+        console.log("User disconnected: " + user);
         delete users[user];
-        console.log("User disconnected:", user);
+
         break;
+
       }
+
     }
 
-    // remove from rooms
-    if (disconnectedUser) {
-
-      for (let room in roomUsers) {
-
-        roomUsers[room] =
-          roomUsers[room].filter(u => u !== disconnectedUser);
-
-        socket.to(room).emit("userLeft", disconnectedUser);
-      }
-    }
   });
+
+  socket.on("sendInvite", (room_name, sender_name, movie_name, receiver_name) => {
+    let friend = users[receiver_name];
+    console.log(users, " Send Invite");
+    if (friend) {
+      io.to(friend).emit("sendingInvite", room_name, movie_name, sender_name);
+    }
+  })
 
 });
 app.get("/getAllMovies", (req, res) => {

@@ -1,243 +1,195 @@
-import { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { socket } from "../Home/socket";
+
+const iceServers = {
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" }
+  ]
+};
 
 export default function Participants({ roomName, username }) {
 
   const localVideoRef = useRef(null);
   const localStream = useRef(null);
 
-  // username -> RTCPeerConnection
   const peers = useRef({});
-
-  // username -> MediaStream
   const [remoteStreams, setRemoteStreams] = useState({});
 
-  /* =====================================
-     START CAMERA + JOIN ROOM
-  ===================================== */
-
-  useEffect(() => {
-    startMedia();
-  }, []);
-
+  /* ===============================
+      START CAMERA + MIC
+  =============================== */
   const startMedia = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true,
+        audio: true
       });
 
       localStream.current = stream;
-      localVideoRef.current.srcObject = stream;
 
-      // register user (IMPORTANT)
-      socket.emit("addtoserver", username);
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
 
-      // join watch party room
       socket.emit("joinRoom", roomName, username);
 
     } catch (err) {
-      console.error("Media error:", err);
+      console.log("Media error:", err);
     }
   };
 
-  /* =====================================
-     CREATE PEER CONNECTION
-  ===================================== */
+  /* ===============================
+        CREATE PEER
+  =============================== */
+  const createPeer = (targetUser) => {
 
-  const createPeerConnection = (targetUser) => {
+    const peer = new RTCPeerConnection(iceServers);
 
-    // prevent duplicate connection
-    if (peers.current[targetUser]) return peers.current[targetUser];
-
-    const pc = new RTCPeerConnection({
-      iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-      ],
-    });
-
-    // send local tracks
     localStream.current.getTracks().forEach(track => {
-      pc.addTrack(track, localStream.current);
+      peer.addTrack(track, localStream.current);
     });
 
-    // receive remote stream
-    pc.ontrack = (event) => {
+    peer.ontrack = (event) => {
       setRemoteStreams(prev => ({
         ...prev,
-        [targetUser]: event.streams[0],
+        [targetUser]: event.streams[0]
       }));
     };
 
-    // ICE candidate
-    pc.onicecandidate = (event) => {
+    peer.onicecandidate = (event) => {
       if (event.candidate) {
-        socket.emit("webrtc-ice-candidate", {
-          target: targetUser,
+        socket.emit("iceCandidate", {
           candidate: event.candidate,
-          sender: username,
+          to: targetUser
         });
       }
     };
 
-    peers.current[targetUser] = pc;
-    return pc;
+    peers.current[targetUser] = peer;
+    return peer;
   };
 
-  /* =====================================
-     SOCKET EVENTS
-  ===================================== */
-
+  /* ===============================
+        SOCKET EVENTS
+  =============================== */
   useEffect(() => {
 
-    /* ---------- EXISTING USERS ---------- */
-    socket.on("existingUsers", async (usersInRoom) => {
+    startMedia();
 
-      console.log("Existing users:", usersInRoom);
-
-      for (const user of usersInRoom) {
-
-        if (user === username) continue;
-
-        const pc = createPeerConnection(user);
-
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-
-        socket.emit("webrtc-offer", {
-          target: user,
-          offer,
-          sender: username,
-        });
-      }
-    });
-
-    /* ---------- NEW USER JOINED ---------- */
+    // new user joined
     socket.on("newJoin", async (newUser) => {
 
-      if (newUser === username) return;
+      const peer = createPeer(newUser);
 
-      const pc = createPeerConnection(newUser);
+      const offer = await peer.createOffer();
+      await peer.setLocalDescription(offer);
 
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-
-      socket.emit("webrtc-offer", {
-        target: newUser,
+      socket.emit("offer", {
         offer,
-        sender: username,
+        to: newUser,
+        from: username
       });
     });
 
-    /* ---------- RECEIVE OFFER ---------- */
-    socket.on("webrtc-offer", async ({ offer, sender }) => {
+    // receive offer
+    socket.on("offer", async ({ offer, from }) => {
 
-      const pc = createPeerConnection(sender);
+      const peer = createPeer(from);
 
-      await pc.setRemoteDescription(
+      await peer.setRemoteDescription(
         new RTCSessionDescription(offer)
       );
 
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
+      const answer = await peer.createAnswer();
+      await peer.setLocalDescription(answer);
 
-      socket.emit("webrtc-answer", {
-        target: sender,
+      socket.emit("answer", {
         answer,
-        sender: username,
+        to: from
       });
     });
 
-    /* ---------- RECEIVE ANSWER ---------- */
-    socket.on("webrtc-answer", async ({ answer, sender }) => {
-
-      const pc = peers.current[sender];
-      if (!pc) return;
-
-      await pc.setRemoteDescription(
-        new RTCSessionDescription(answer)
-      );
-    });
-
-    /* ---------- ICE ---------- */
-    socket.on("webrtc-ice-candidate", async ({ candidate, sender }) => {
-
-      const pc = peers.current[sender];
-      if (!pc) return;
-
-      try {
-        await pc.addIceCandidate(candidate);
-      } catch (err) {
-        console.error("ICE error:", err);
+    // receive answer
+    socket.on("answer", async ({ answer, from }) => {
+      const peer = peers.current[from];
+      if (peer) {
+        await peer.setRemoteDescription(
+          new RTCSessionDescription(answer)
+        );
       }
     });
 
-    /* ---------- USER LEFT ---------- */
-    socket.on("userLeft", (user) => {
-
-      if (peers.current[user]) {
-        peers.current[user].close();
-        delete peers.current[user];
+    // ICE candidate
+    socket.on("iceCandidate", async ({ candidate, from }) => {
+      const peer = peers.current[from];
+      if (peer) {
+        await peer.addIceCandidate(
+          new RTCIceCandidate(candidate)
+        );
       }
-
-      setRemoteStreams(prev => {
-        const copy = { ...prev };
-        delete copy[user];
-        return copy;
-      });
     });
 
     return () => {
-      socket.off("existingUsers");
       socket.off("newJoin");
-      socket.off("webrtc-offer");
-      socket.off("webrtc-answer");
-      socket.off("webrtc-ice-candidate");
-      socket.off("userLeft");
+      socket.off("offer");
+      socket.off("answer");
+      socket.off("iceCandidate");
     };
 
-  }, [username]);
+  }, []);
 
-  /* =====================================
-     UI
-  ===================================== */
+  /* ===============================
+            UI
+  =============================== */
+  return (
+    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+
+      {/* LOCAL VIDEO */}
+      <video
+        ref={localVideoRef}
+        autoPlay
+        muted
+        playsInline
+        style={{
+          width: "250px",
+          borderRadius: "10px",
+          background: "black"
+        }}
+      />
+
+      {/* REMOTE USERS */}
+      {Object.entries(remoteStreams).map(([user, stream]) => (
+        <Video key={user} stream={stream} />
+      ))}
+
+    </div>
+  );
+}
+
+
+/* ===============================
+      REMOTE VIDEO COMPONENT
+================================= */
+
+function Video({ stream }) {
+  const ref = useRef();
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.srcObject = stream;
+    }
+  }, [stream]);
 
   return (
-    <div>
-
-      <h2>Participants</h2>
-
-      <div style={{
-        display: "flex",
-        flexWrap: "wrap",
-        gap: 20
-      }}>
-
-        {/* LOCAL VIDEO */}
-        <video
-          ref={localVideoRef}
-          autoPlay
-          muted
-          playsInline
-          width="250"
-        />
-
-        {/* REMOTE VIDEOS */}
-        {Object.entries(remoteStreams).map(([user, stream]) => (
-          <video
-            key={user}
-            autoPlay
-            playsInline
-            width="250"
-            ref={(video) => {
-              if (video && stream) {
-                video.srcObject = stream;
-              }
-            }}
-          />
-        ))}
-
-      </div>
-    </div>
+    <video
+      ref={ref}
+      autoPlay
+      playsInline
+      style={{
+        width: "250px",
+        borderRadius: "10px",
+        background: "black"
+      }}
+    />
   );
 }

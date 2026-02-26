@@ -11,6 +11,16 @@ const optionalTurnServer =
       }
     : null;
 
+    const fallbackTurnServer = {
+      urls: [
+        "turn:openrelay.metered.ca:80",
+        "turn:openrelay.metered.ca:443",
+        "turn:openrelay.metered.ca:443?transport=tcp"
+      ],
+      username: "openrelayproject",
+      credential: "openrelayproject"
+    };
+
 const rtcConfig = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
@@ -29,6 +39,7 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
   const remoteVideoRefs = useRef({});
   const peerConnections = useRef({});
   const localStreamRef = useRef(null);
+  const pendingIceCandidates = useRef({});
 
   function toggleRemoteMute(member) {
     setMutedUsers((prev) => ({
@@ -88,6 +99,18 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
     });
   };
 
+  const flushPendingCandidates = async (remoteUser, pc) => {
+    const queuedCandidates = pendingIceCandidates.current[remoteUser] || [];
+
+    if (!queuedCandidates.length) return;
+
+    for (const candidate of queuedCandidates) {
+      await pc.addIceCandidate(new RTCIceCandidate(candidate));
+    }
+
+    pendingIceCandidates.current[remoteUser] = [];
+  };
+
   useEffect(() => {
     const startLocalMedia = async () => {
       if (localStreamRef.current) return;
@@ -139,6 +162,7 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
       const pc = getPeerConnection(from);
 
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      await flushPendingCandidates(from, pc);
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
 
@@ -158,7 +182,14 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
 
     const handleIceCandidate = async ({ from, candidate }) => {
       const pc = peerConnections.current[from];
-      if (!pc || !candidate) return;
+      if (!candidate) return;
+
+      if (!pc || !pc.remoteDescription) {
+        const prev = pendingIceCandidates.current[from] || [];
+        pendingIceCandidates.current[from] = [...prev, candidate];
+        return;
+      }
+
 
       await pc.addIceCandidate(new RTCIceCandidate(candidate));
     };
@@ -186,6 +217,7 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
       Object.values(peerConnections.current).forEach((pc) => pc.close());
       peerConnections.current = {};
       remoteVideoRefs.current = {};
+      pendingIceCandidates.current = {};
 
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach((track) => track.stop());

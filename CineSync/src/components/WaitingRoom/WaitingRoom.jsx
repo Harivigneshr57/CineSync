@@ -6,9 +6,8 @@ import WaitingMain from "./WaitingMain";
 import "./waitingroom.css";
 import { socket } from "../Home/socket";
 import { useNavigate } from "react-router-dom";
-
 export default function WaitingRoom() {
-    const [connectedMembers, setConnectedMemebers] = useState([]);
+    const [connectedmemebers, setConnectedMemebers] = useState([]);
     const navigate = useNavigate();
 
     // useEffect(() => {
@@ -21,7 +20,7 @@ export default function WaitingRoom() {
 
             try {
 
-                const joinRes = await fetch("https://cinesync-3k1z.onrender.com/addToRoom", {
+                const joinRes = await fetch("http://localhost:3458/addToRoom", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -47,7 +46,7 @@ export default function WaitingRoom() {
                     localStorage.getItem("Username")
                 );
 
-                const response = await fetch("https://cinesync-3k1z.onrender.com/getAllParticipants", {
+                const response = await fetch("http://localhost:3458/getAllParticipants", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -72,12 +71,12 @@ export default function WaitingRoom() {
 
         initRoom();
 
-        socket.on("newJoin", (id,username) => {
-
+        socket.on("newJoin", (friend) => {
+            toast.succes()
             setConnectedMemebers(prev => {
 
                 const exists = prev.some(
-                    member => member.username === username
+                    member => member.username === friend
                 );
 
                 if (exists) return prev;
@@ -85,7 +84,7 @@ export default function WaitingRoom() {
                 return [
                     ...prev,
                     {
-                        username: username,
+                        username: friend,
                         status: "Not Ready"
                     }
                 ];
@@ -112,7 +111,7 @@ export default function WaitingRoom() {
     return <>
         <SideBar></SideBar>
         <div className="waitingRoomMain">
-            <Lobbymembers connectedMembers={connectedMembers}></Lobbymembers>
+            <Lobbymembers connectedmemebers={connectedmemebers}></Lobbymembers>
             <WaitingMain></WaitingMain>
             <LobbyChat></LobbyChat>
         </div>

@@ -8,7 +8,7 @@
 
 .lobby-members {
     border-left: 1px solid #292828;
-    width: 50rem;
+    width: 23rem;
     height: 100vh;
     background-color: #121214;
     padding: 2rem;
@@ -73,7 +73,7 @@ p.statusval {
 }
 
 .lobbyChat {
-    width: 50%;
+    width: 30%;
     border-left: 1px solid #292828;
     background-color: #141414;
 }
@@ -163,7 +163,7 @@ hr {
     align-items: center;
     font-size: larger;
     font-weight: 500;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid #2a2828;
 }
 
 #lobbyChatBox {
@@ -176,7 +176,7 @@ hr {
 }
 
 .lobbyChat {
-    width: 50%;
+    width: 31%;
     background-color: #141414;
     height: 100vh;
 }

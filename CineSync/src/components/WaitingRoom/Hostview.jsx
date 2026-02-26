@@ -2,11 +2,25 @@ import LobbyChat from "../WaitingRoom/LobbyChat";
 import Lobbymembers from "../WaitingRoom/Lobbymembers";
 import { useEffect, useState } from "react";
 import { socket } from "../Home/socket";
+import toast from "react-hot-toast";
 
 export default function HostView() {
 
     const [connectedMembers, setConnectedMembers] = useState([]);
 
+    const toastSuccessStyle = {
+        style: {
+          borderRadius: "1rem",
+          background: "#16A34A",
+          color: "white",
+          fontWeight: 600
+        },
+        iconTheme: {
+          primary: "white",
+          secondary: "#16A34A"
+        }
+      };
+      
     useEffect(() => {
 
         const room = localStorage.getItem("Roomname");
@@ -16,7 +30,7 @@ export default function HostView() {
     
         socket.emit("joinRoom", room, username);
     
-        fetch("https://cinesync-3k1z.onrender.com/getAllParticipants", {
+        fetch("http://localhost:3458/getAllParticipants", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -28,17 +42,14 @@ export default function HostView() {
         })
         .then(res => res.json())
         .then(data => {
-            console.log(data);
     
             if (data.allmembers) {
-                console.log(data);
                 setConnectedMembers(data.allmembers);
             }
     
         });
     
-        socket.on("newJoin", (id,username) => {
-    
+        socket.on("newJoin", (username) => {
             setConnectedMembers(prev => {
     
                 const exists = prev.some(
@@ -46,13 +57,17 @@ export default function HostView() {
                 );
     
                 if (exists) return prev;
-    
+                
+                if(username!=localStorage.getItem("Username")){
+                    toast.success(username+" joined the room",toastSuccessStyle);
+                }
+
                 return [
+                    ...prev,
                     {
                         username: username,
                         status: "Not Ready"
-                    },
-                    ...prev
+                    }
                 ];
     
             });
@@ -69,7 +84,7 @@ export default function HostView() {
     return (
         <>
             <LobbyChat />
-            {/* <Lobbymembers connectedMembers={connectedMembers} /> */}
+            <Lobbymembers connectedmemebers={connectedMembers} />
         </>
     );
 

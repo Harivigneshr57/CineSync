@@ -24,6 +24,7 @@ export default function Participants({ roomName, username }) {
     localVideoRef.current.srcObject = stream;
 
     createPeer(stream);
+    startCall();
   };
 
   /* ===============================
@@ -144,10 +145,6 @@ export default function Participants({ roomName, username }) {
           width="300"
         />
       </div>
-
-      <button onClick={startCall}>
-        Start Video Call
-      </button>
 
     </div>
   );

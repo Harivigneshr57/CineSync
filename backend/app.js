@@ -502,34 +502,27 @@ app.post("/getmessage", (req, res) => {
   });
 });
 
-/* ================= STORAGE ================= */
-
-let userToSocket = {};
-let socketToUser = {};
-let socketToRoom = {};
+let users = {};        
+let socketUsers = {};
 
 io.on("connection", (socket) => {
 
   console.log("Connected:", socket.id);
 
-  /* =================================================
-     REGISTER USER (GLOBAL LOGIN)
-  ================================================= */
+
 
   socket.on("addtoserver", (username) => {
-    userToSocket[username] = socket.id;
-    socketToUser[socket.id] = username;
 
-    console.log("Active users:", userToSocket);
+    users[username] = socket.id;
+    socketUsers[socket.id] = username;
+
+    console.log("Active users:", users);
   });
 
-  /* =================================================
-     ONE TO ONE CHAT ✅ (KEPT)
-  ================================================= */
 
   socket.on("one2one", (message, friend, username) => {
 
-    const friendSocket = userToSocket[friend];
+    const friendSocket = users[friend];
 
     if (friendSocket) {
       io.to(friendSocket).emit(
@@ -540,136 +533,67 @@ io.on("connection", (socket) => {
     }
   });
 
-  /* =================================================
-     JOIN ROOM (LOBBY ONLY ONCE)
-  ================================================= */
 
-  socket.on("joinRoom", (roomName, username) => {
+socket.on("joinRoom", (roomName, username) => {
 
-    socket.join(roomName);
+  socket.join(roomName);
 
-    socketToRoom[socket.id] = roomName;
-    socketToUser[socket.id] = username;
-    userToSocket[username] = socket.id;
+  users[socket.id] = username;
 
-    console.log(`${username} joined ${roomName}`);
-
-    const room = io.sockets.adapter.rooms.get(roomName);
-
-    const usersInRoom = room
-      ? [...room]
-          .filter(id => id !== socket.id)
-          .map(id => ({
-            id,
-            username: socketToUser[id]
-          }))
-      : [];
-
-    socket.emit("all-users", usersInRoom);
-
-    socket.to(roomName).emit("user-joined", {
-      id: socket.id,
-      username
-    });
-  });
-
-  /* =================================================
-     GET USERS (WHEN PARTY STARTS)
-  ================================================= */
-
-  socket.on("get-users", () => {
-
-    const roomName = socketToRoom[socket.id];
-    if (!roomName) return;
-
-    const room = io.sockets.adapter.rooms.get(roomName);
-
-    const users = room
-      ? [...room]
-          .filter(id => id !== socket.id)
-          .map(id => ({
-            id,
-            username: socketToUser[id]
-          }))
-      : [];
-
-    socket.emit("all-users", users);
-  });
-
-  /* =================================================
-   WEBRTC READY (START VIDEO CONNECTIONS)
-================================================= */
-
-socket.on("ready-for-webrtc", () => {
-
-  const roomName = socketToRoom[socket.id];
-  if (!roomName) return;
+  console.log(`${username} joined ${roomName}`);
 
   const room = io.sockets.adapter.rooms.get(roomName);
 
-  const users = room
+  const usersInRoom = room
     ? [...room]
         .filter(id => id !== socket.id)
         .map(id => ({
           id,
-          username: socketToUser[id]
+          username: users[id]
         }))
     : [];
 
-  // send existing users to new peer
-  socket.emit("all-users", users);
+  socket.emit("all-users", usersInRoom);
 
-  // notify others
   socket.to(roomName).emit("user-joined", {
     id: socket.id,
-    username: socketToUser[socket.id]
+    username
   });
 });
 
-  /* =================================================
-     ROOM CHAT
-  ================================================= */
 
   socket.on("sendMessageInsideRoom", (room, msgObj) => {
     socket.to(room).emit("messageFromRoom", msgObj);
   });
 
-  /* =================================================
-     PARTY CONTROL
-  ================================================= */
-
   socket.on("Startparty", (room) => {
     io.to(room).emit("partystarted");
   });
 
-  socket.on("VideoPaused", (room) => {
-    socket.to(room).emit("pauseTheVideo");
+  socket.on("VideoPaused", (roomname) => {
+    socket.to(roomname).emit("pauseTheVideo");
   });
 
-  socket.on("VideoPlayed", (room) => {
-    socket.to(room).emit("playTheVideo");
+  socket.on("VideoPlayed", (roomname) => {
+    socket.to(roomname).emit("playTheVideo");
   });
 
   socket.on("VideoSeek", ({ room, time }) => {
     socket.to(room).emit("updateSeek", time);
   });
 
-  /* =================================================
-     INVITES
-  ================================================= */
-
   socket.on(
     "sendInvite",
-    (room, sender, movie, receiver, video, image) => {
+    (room_name, sender_name, movie_name, receiver_name, video, image) => {
 
-      const friendSocket = userToSocket[receiver];
+      const friendSocket = users[receiver_name];
 
       if (friendSocket) {
         io.to(friendSocket).emit(
           "sendingInvite",
-          room,
-          movie,
-          sender,
+          room_name,
+          movie_name,
+          sender_name,
           video,
           image
         );
@@ -677,49 +601,49 @@ socket.on("ready-for-webrtc", () => {
     }
   );
 
-  /* =================================================
-     WEBRTC SIGNALING ✅
-  ================================================= */
 
-  socket.on("offer", ({ offer, to }) => {
-    io.to(to).emit("offer", {
-      offer,
+  socket.on("offer", (data) => {
+
+    if (!data?.to) return;
+
+    socket.to(data.to).emit("offer", {
+      offer: data.offer,
       from: socket.id
     });
   });
 
-  socket.on("answer", ({ answer, to }) => {
-    io.to(to).emit("answer", {
-      answer,
+  socket.on("answer", (data) => {
+
+    if (!data?.to) return;
+
+    socket.to(data.to).emit("answer", {
+      answer: data.answer,
       from: socket.id
     });
   });
 
-  socket.on("ice-candidate", ({ candidate, to }) => {
-    io.to(to).emit("ice-candidate", {
-      candidate,
+  socket.on("ice-candidate", (data) => {
+
+    if (!data?.to) return;
+
+    socket.to(data.to).emit("ice-candidate", {
+      candidate: data.candidate,
       from: socket.id
     });
   });
-
-  /* =================================================
-     DISCONNECT
-  ================================================= */
 
   socket.on("disconnect", () => {
 
-    const username = socketToUser[socket.id];
-    const room = socketToRoom[socket.id];
+    const username = socketUsers[socket.id];
 
-    console.log("Disconnected:", socket.id);
+    if (username) {
+      delete users[username];
+      delete socketUsers[socket.id];
 
-    if (room) {
-      socket.to(room).emit("user-left", socket.id);
+      console.log("User disconnected:", username);
     }
 
-    if (username) delete userToSocket[username];
-    delete socketToUser[socket.id];
-    delete socketToRoom[socket.id];
+    socket.broadcast.emit("user-disconnected", socket.id);
   });
 
 });

@@ -506,6 +506,12 @@ app.post("/getmessage", (req, res) => {
 let users = {};
 let roomUsers = {};
 
+function emitRoomUsers(roomName) {
+  const members = roomUsers[roomName] || [];
+  io.to(roomName).emit("roomUsersUpdated", members);
+}
+
+
 io.on("connection", (socket) => {
 
 
@@ -533,21 +539,56 @@ io.on("connection", (socket) => {
   socket.on('joinRoom', (roomName, username) => {
     let friend = username;
     socket.join(roomName);
-    
+    socket.data.username = username;
+    socket.data.roomName = roomName;
     if (!roomUsers[roomName]) {
       roomUsers[roomName] = [];
     }
     
-    roomUsers[roomName].push({username:users[username]})
+    if (!roomUsers[roomName].includes(username)) {
+      roomUsers[roomName].push(username);
+    }
     console.log(username + ` joined room: ${roomName}`);
     socket.to(roomName).emit("newJoin", friend);
+    emitRoomUsers(roomName);
+  });
+
+  socket.on("requestRoomUsers", (roomName) => {
+    emitRoomUsers(roomName);
   });
 
 
   socket.on('leaveRoom',(username,roomName)=>{
     socket.leave(roomName);
+    roomUsers[roomName] = (roomUsers[roomName] || []).filter((member) => member !== username);
+    if (roomUsers[roomName]?.length === 0) {
+      delete roomUsers[roomName];
+    } else {
+      emitRoomUsers(roomName);
+    }
     console.log(username+" leave the room ");
   })
+
+  socket.on("webrtcOffer", ({ to, from, offer }) => {
+    const targetSocket = users[to];
+    if (targetSocket) {
+      io.to(targetSocket).emit("webrtcOffer", { from, offer });
+    }
+  });
+
+  socket.on("webrtcAnswer", ({ to, from, answer }) => {
+    const targetSocket = users[to];
+    if (targetSocket) {
+      io.to(targetSocket).emit("webrtcAnswer", { from, answer });
+    }
+  });
+
+  socket.on("webrtcIceCandidate", ({ to, from, candidate }) => {
+    const targetSocket = users[to];
+    if (targetSocket) {
+      io.to(targetSocket).emit("webrtcIceCandidate", { from, candidate });
+    }
+  });
 
   socket.on('sendMessageInsideRoom', (room, msgObj) => {
     socket.to(room).emit("messageFromRoom", msgObj);
@@ -571,6 +612,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+
+    const { username, roomName } = socket.data;
+    if (username && roomName && roomUsers[roomName]) {
+      roomUsers[roomName] = roomUsers[roomName].filter((member) => member !== username);
+      if (roomUsers[roomName].length === 0) {
+        delete roomUsers[roomName];
+      } else {
+        emitRoomUsers(roomName);
+      }
+    }
 
     for (let user in users) {
 

@@ -91,6 +91,28 @@ export default function RoomWatch() {
 
         setmessage("");
     }
+    useEffect(() => {
+        const handleFriendLeave = (msg) => {
+            console.log(msg + 'msg');
+            toast(
+                <p>{msg}</p>,
+                 {
+                   style: {
+                    background: "var(--error)",
+                    color: "#fff",
+                    display:"flex",
+                    gap:"0.5rem"
+                   }
+                 }
+               );
+        };
+
+        socket.on('frndLeave', handleFriendLeave);
+
+        return () => {
+            socket.off('frndLeave', handleFriendLeave);
+        };
+    }, []);
 
 
     useEffect(() => {

@@ -159,17 +159,19 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
   }
 
   function toggleMic() {
-    const stream = localVideo.current.srcObject;
+    const stream = localVideo?.current?.srcObject;
+    if (!stream) return;
     const track = stream.getAudioTracks()[0];
-  
+    if (!track) return;
     track.enabled = !track.enabled;
     setMicOn(track.enabled);
   }
   
   function toggleCamera() {
-    const stream = localVideo.current.srcObject;
+    const stream = localVideo?.current?.srcObject;
+    if (!stream) return;
     const track = stream.getVideoTracks()[0];
-  
+    if (!track) return;
     track.enabled = !track.enabled;
     setCamOn(track.enabled);
   }

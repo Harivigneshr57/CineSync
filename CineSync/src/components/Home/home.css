@@ -85,7 +85,7 @@ aside  button{
 /* Big Movie Container */
 .bigMovieContainer {
     display: flex;
-    justify-content: start;
+    justify-content: space-between;
     align-items: end;
     padding-left: 5rem;
     position: relative;
@@ -100,14 +100,22 @@ aside  button{
     filter: brightness(0.8);
   }
   
-  .bigMovieContainer section {
-    position: absolute;
-    padding: 4vw;
-    max-width: 32rem;
+  .movieInfoAction {
     display: flex;
-    justify-content: space-around;
-    flex-direction: column;
-    gap: 0.8rem;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    width: 94%;
+    padding: 4vw;
+
+
+    .bigMovieDetail {
+      max-width: 32rem;
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
   }
   
   /* Movie Details */
@@ -331,7 +339,7 @@ h5{
 
 .trends .moviecards{
   flex: 0 0 auto;
-    width: 20rem;
+  width: 20rem;
 }
 
 .exit-overlay {
@@ -404,4 +412,21 @@ h5{
 
 .bell-wrapper {
   position: relative;
+}
+
+.fbButtons{
+  display: inline-flex;
+  gap: 2rem;
+  align-self: flex-end;
+
+  button{
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.3rem;
+    background-color: var(--major);
+    border: 1px solid var(--white);
+    color: var(--white);
+    border-radius: 50%;
+    corner-shape: round;
+  }
 }

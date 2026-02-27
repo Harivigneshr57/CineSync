@@ -86,24 +86,30 @@ export default function BigMovie() {
           transition: "opacity 1s ease-in-out", 
         }}
       />
-      <section className="bigMovieDetail">
-        <div className="premieres">
-          <div className="tonight">PREMIERES TONIGHT</div>
-          <p>{currentMovie.genres}</p>
+      <div className="movieInfoAction">
+        <section className="bigMovieDetail">
+          <div className="premieres">
+            <div className="tonight">PREMIERES TONIGHT</div>
+            <p>{currentMovie.genres}</p>
+          </div>
+          <div className="movieName">
+            <h1>{currentMovie.title}</h1>
+          </div>
+          <div className="movieDesc">{currentMovie.description}</div>
+          <div className="watchButtons">
+            <Button icon={<i className="fa-solid fa-users"></i>} id="friendWatch">
+              Watch with Friends
+            </Button>
+            <Button icon={<i className="fa-solid fa-play"></i>} id="soloPlay" onClick={()=>single(currentMovie.url,currentMovie.title)}>
+              Play
+            </Button>
+          </div>
+        </section>
+        <div className="fbButtons">
+          <Button onClick={() =>setCurrentIndex((prev) => (prev - 1 + movies.length) % movies.length)}> <i className="fa-solid fa-angle-left"></i></Button>
+          <Button onClick={() =>setCurrentIndex((prev) => (prev + 1) % movies.length)}><i className="fa-solid fa-angle-right"></i></Button>
         </div>
-        <div className="movieName">
-          <h1>{currentMovie.title}</h1>
-        </div>
-        <div className="movieDesc">{currentMovie.description}</div>
-        <div className="watchButtons">
-          <Button icon={<i className="fa-solid fa-users"></i>} id="friendWatch">
-            Watch with Friends
-          </Button>
-          <Button icon={<i className="fa-solid fa-play"></i>} id="soloPlay" onClick={()=>single(currentMovie.url,currentMovie.title)}>
-            Play
-          </Button>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }

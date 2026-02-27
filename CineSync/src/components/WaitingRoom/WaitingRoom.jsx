@@ -10,9 +10,9 @@ export default function WaitingRoom() {
     const [connectedmemebers, setConnectedMemebers] = useState([]);
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
-    // }, [])
+    useEffect(() => {
+        socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
+    }, [])
 
     useEffect(() => {
 
@@ -40,11 +40,11 @@ export default function WaitingRoom() {
 
                 console.log("DB join success");
 
-                socket.emit(
-                    "joinRoom",
-                    localStorage.getItem("Roomname"),
-                    localStorage.getItem("Username")
-                );
+                // socket.emit(
+                //     "joinRoom",
+                //     localStorage.getItem("Roomname"),
+                //     localStorage.getItem("Username")
+                // );
 
                 const response = await fetch("https://cinesync-3k1z.onrender.com/getAllParticipants", {
                     method: "POST",

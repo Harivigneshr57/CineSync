@@ -32,7 +32,7 @@ export default function InviteMovie({ code, onStep, step, movie, room }) {
 
 
     async function startRoom() {
-    const startRes = await fetch("http://localhost:3458/startparty", {
+    const startRes = await fetch("https://cinesync-3k1z.onrender.com/startparty", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -70,6 +70,7 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode, conf
     }
 
     function addToRoom(roomName) {
+        
         fetch("https://cinesync-3k1z.onrender.com/addToRoom", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

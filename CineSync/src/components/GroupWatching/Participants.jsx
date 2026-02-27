@@ -11,23 +11,30 @@ const optionalTurnServer =
       }
     : null;
 
-    const fallbackTurnServer = {
-      urls: [
-        "turn:openrelay.metered.ca:80",
-        "turn:openrelay.metered.ca:443",
-        "turn:openrelay.metered.ca:443?transport=tcp"
-      ],
-      username: "openrelayproject",
-      credential: "openrelayproject"
-    };
+
+const fallbackTurnServer = {
+  urls: [
+    "turn:openrelay.metered.ca:80?transport=tcp",
+    "turn:openrelay.metered.ca:443?transport=tcp"
+  ],
+  username: "openrelayproject",
+  credential: "openrelayproject"
+};
+
 
 const rtcConfig = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
     { urls: "stun:stun1.l.google.com:19302" },
-    ...(optionalTurnServer ? [optionalTurnServer] : [])
-  ]
+
+    ...(optionalTurnServer ? [optionalTurnServer] : []),
+
+    fallbackTurnServer
+  ],
+
+  iceTransportPolicy: "all"
 };
+
 export default function Participants({ party, localVideo, mutedUsers, setMutedUsers, micOn }) {
   const [participants, setParticipants] = useState([]);
   const [remoteStreams, setRemoteStreams] = useState({});

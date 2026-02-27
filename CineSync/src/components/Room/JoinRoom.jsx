@@ -2,7 +2,9 @@ import { useRef, useState } from 'react'
 import Button from '../Login-SignIn/Button';
 import { socket } from '../Home/socket';
 import toast from 'react-hot-toast';
+import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from "../Login-SignIn/UserContext";
 
 export default function JoinRoom() {
     let inputOne = useRef(null);
@@ -11,6 +13,7 @@ export default function JoinRoom() {
     let inputFour = useRef(null);
     let button = useRef(null);
     const navigate = useNavigate();
+    const { user, setAsRoom } = useContext(UserContext);
 
     const toastErrorStyle = {
         style: {
@@ -64,14 +67,47 @@ export default function JoinRoom() {
                     console.log(data.movie_url,data.movie_poster);
                     localStorage.setItem('MovieImage',data.movie_poster);
                     localStorage.setItem('movieVideo',data.movie_url);
+                    localStorage.setItem('MovieName',data.title)
                 console.log("Room Name " + data.roomname.length);
 
                 if (data.roomname.length) {
-                    console.log(data.roomname);
+                    console.log(data.roomname[0].RoomName);
                     toast.success("You joined the room", toastSuccessStyle);
                     // socket.emit("joinRoom", data.roomname[0].RoomName, localStorage.getItem("Username"));
-                    localStorage.setItem("Roomname",data.roomname);
-                    navigate("/waitingRoom");
+                    localStorage.setItem("Roomname", data.roomname[0].RoomName);
+
+                    let res = await fetch("https://cinesync-3k1z.onrender.com/roomcheck", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            roomCode: roomcode
+                        })
+                    })
+                    let results = await res.json();
+                    
+                    if (results.result.length === 0) {
+                        navigate("/waitingRoom");
+                    } else {
+                        console.log(localStorage.getItem("Roomname"));
+                        let hostdetail = await fetch("https://cinesync-3k1z.onrender.com/getHostName", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                roomname: localStorage.getItem("Roomname")
+                            })
+                        })
+
+                        let hostname = await hostdetail.json();
+                        console.log(hostname.hostname[0].username);
+                        socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
+                        socket.emit("middlejoin",localStorage.getItem("Username"),localStorage.getItem("Roomname"),hostname.hostname[0].username);
+                        navigate("/mainRoom");
+                    }
+                    setAsRoom(true);
                 }
                 else {
                     toast.error("No Rooms Exist in this code !!", toastErrorStyle);

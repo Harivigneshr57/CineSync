@@ -5,6 +5,7 @@ import './discover.css'
 import { useContext, useRef, useState } from "react"
 import SideBar from "../Home/SideBar"
 import Button from "../Login-SignIn/Button"
+import OverView from "./Overview";
 import { UserContext } from "../Login-SignIn/UserContext"
 
 
@@ -16,7 +17,7 @@ export default function Discover(){
     const [overviewMovie,setOverviewMovie] = useState({});
 
     async function addToFavorite(){
-      await fetch("https://cinesync-3k1z.onrender.com/addFavorite",{
+      await fetch("http://localhost:3458/addFavorite",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({username:user.username,movie_name:overviewMovie.title,movieYear:overviewMovie.year})
@@ -26,10 +27,10 @@ export default function Discover(){
       })
     }
 
+
     const handleScroll = () => {
-      // alert("rdxtfgyvhb");
-      if (myRef.current) {
       
+      if (myRef.current) {
         myRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         myRef2.current.focus();
       }
@@ -49,44 +50,7 @@ export default function Discover(){
                 <MainMovieDiv overview={overview} setOverview={setOverview} overviewMovie={overviewMovie} setOverviewMovie={setOverviewMovie} ref={myRef} ref2={myRef2}></MainMovieDiv>
             </div> 
         </div>  
-        <div className="overviewContainer flex" style={overview?{display:"flex"}:{display:"none"}}>
-                <div className="flex">
-                    <img src={overviewMovie.url} alt="" />
-                    <div className="overviev">
-                        <h1>{overviewMovie.title}</h1>
-                        <div className="aboutMovie">
-                            <div className="ratings">
-                              <i class="fa-solid fa-star"></i>
-                              {overviewMovie.rating}
-                            </div>
-                            <div className="horizonLine"></div>
-                            <h3>{overviewMovie.year}</h3>
-                            <div className="horizonLine"></div>
-                            <h3>{overviewMovie.genre}</h3>
-                        </div>
-                        <div className="contents">
-                          <h6>overview</h6>
-                          <h5>{overviewMovie.description}</h5>
-                        </div>
-                        <div className="peoples">
-                          <div className="director">
-                            <h6>DIRECTOR</h6>
-                            <h3>{overviewMovie.director}</h3>
-                          </div>
-                          <div className="lead">
-                            <h6>LEADCAST</h6>
-                            <h3>{overviewMovie.lead}</h3>
-                          </div>
-                        </div>
-                        <div className="playButtons">
-                            <Button id="playSolo"><i class="fa-solid fa-play"></i> Play Now</Button>
-                            <Button id='host'><i class="fa-solid fa-people-group"></i> Host Party</Button>
-                            <Button onClick={addToFavorite} id='like'><i class="fa-regular fa-heart"></i></Button>
-                        </div>
-                    </div>
-                    <Button id='close'onClick={close}><i class="fa-solid fa-xmark"></i></Button>
-                </div>
-            </div>        
+        <OverView overview={overview} overviewMovie={overviewMovie} setOverview={setOverview}></OverView>
         </>
     )
 }

@@ -3,13 +3,14 @@ import BigMovie from "./BigMovie"
 import TrendingMovie from "./TrendingMovie"
 import TamilBlockBustors from "./TamilBlockBusters"
 import './home.css'
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { UserContext } from "../Login-SignIn/UserContext";
 import { socket } from "./socket";
 
 
 export default function Home() {
     const { changeRoomDetail } = useContext(UserContext);
+    const [isinvite,setMessage] = useState(false);
     useEffect(() => {
 
         async function rendernotification() {
@@ -47,6 +48,7 @@ export default function Home() {
         socket.on("sendingInvite", (room_name, movie_name, sender_name) => {
             console.log("Invite received");
             console.log(room_name, movie_name, sender_name);
+            setMessage(true);
         });
 
         return () => {
@@ -59,7 +61,7 @@ export default function Home() {
     return (
         <>
             <div className="home">
-                <SideBar>
+                <SideBar isinvite={isinvite}>
                 </SideBar>
                 <div className="mainDiv">
                     <BigMovie></BigMovie>

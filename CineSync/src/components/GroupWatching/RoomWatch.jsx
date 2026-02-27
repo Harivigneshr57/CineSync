@@ -40,6 +40,9 @@ export default function RoomWatch() {
       secondary: "#16A34A"
     }
   };
+  socket.on("newJoin", (friend) => {
+    toast.success(friend + " joined the room");
+});
   const [mutedUsers, setMutedUsers] = useState({});
     const [chat, setChat] = useState(false);
     const [party,setParty] = useState(false); 
@@ -90,6 +93,34 @@ export default function RoomWatch() {
 
         setmessage("");
     }
+    async function fetching(moviename) {
+      const response = await fetch("https://ragaibot-production.up.railway.app/ai_chat/ask", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+              'prompt': "Avengers End Game",
+              'x-api-key': "99eedd3892d5a820b347415779c22655fcc7fc9b93991e9c08154bd633b18ca9"
+          })
+      });
+
+      const result = await response.json();
+      console.log(result);
+  }
+  socket.on("latejoin", (username) => {
+    let currenttime = video.current.currentTime;
+    toast.success("" + currenttime);
+    console.log("current Time " + currenttime);
+    socket.emit("toSetTime",currenttime,username);
+    // fetching("Avengers end game");
+})
+
+socket.on("setCurrentTime",(time)=>{
+    console.log("setting the time")
+    console.log(time);
+    video.current.currentTime =time
+})
     useEffect(() => {
         const handleFriendLeave = (msg) => {
             console.log(msg + 'msg');
@@ -142,6 +173,12 @@ export default function RoomWatch() {
                 chatBoxRef.current.scrollHeight;
         }
     }, [allmessages]);
+
+    socket.on("sendingInvite", (room_name, movie_name, sender_name) => {
+      console.log("Invite received");
+      console.log(room_name, movie_name, sender_name);
+      setmessage(true);
+  });
 
     return (
         <>

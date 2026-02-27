@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useLocation } from "react-router-dom";
 import SideBar from "../Home/SideBar"
 import ConfigMovie from "./ConfigMovie";
 import InviteMovie from "./InviteMovie";
@@ -18,6 +19,17 @@ export default function Room() {
     }
     function onSetStep(step) {
         setStep(step);
+    }
+    const location=useLocation();
+    if(location.state){
+        useEffect(()=>{
+            const {moviedet}=location.state;
+            console.log("hi na na");
+            // console.log(moviedet);
+            console.log("------------------");
+            setMovie(moviedet);
+            setStep(2);       
+        },[])
     }
     return (
         <>

@@ -58,13 +58,16 @@ export function FriendPanel({ currentUser, handleUser, displayChat,refresh }) {
 
 
 export function MyFriend(props) {
-
+    console.log(props,"props");
 
 
     return (
         <>
             <div className="myFriend">
-                <img src={props.img ? props.img : def} id='social-profile-image'/>
+            <img
+  src={props.img ? `data:image/png;base64,${props.img}` : def}
+  id="social-profile-image"
+/>
                 <h3>{props.name}</h3>
                 <p style={{ color: "#5a83a3" }}>{props.bio}</p>
                 <button id="inviteToWatch" onClick={() => { props.displayChat(); props.handleUser(props.name) }}>Chat  <i className="fa-solid fa-message"></i></button>

@@ -13,11 +13,6 @@ function ConnectedMembers({  connectedmemebers = [] }) {
                     return <Members membername={member.username} status={member.status} key={i}></Members>
                 })
             }
-
-            <div className="isInvite">
-                <i class="fa-solid fa-plus plus"></i>
-                <p style={{ fontSize: "larger", fontWeight: 900, color: "lightgray" }}>Invite Friends</p>
-            </div>
         </div>
 
     </>

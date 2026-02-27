@@ -407,7 +407,7 @@ div#pendingMain {
 }
 
 .chat-our-message2 {
-    background-color: #9a0fa1;
+    background-color: var(--grey);
     color: white;
     font-size: 1.2rem;
     border-radius: 1.5rem 1.5rem 1.5rem 0rem;

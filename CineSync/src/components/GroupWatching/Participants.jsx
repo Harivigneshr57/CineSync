@@ -25,7 +25,7 @@ const rtcConfig = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
     { urls: "stun:stun1.l.google.com:19302" },
-    ...(optionalTurnServer ? [optionalTurnServer] : [])
+    ...(optionalTurnServer ? [optionalTurnServer] : [fallbackTurnServer])
   ]
 };
 export default function Participants({ party, localVideo, mutedUsers, setMutedUsers, micOn }) {
@@ -81,6 +81,16 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
       }));
     };
 
+    peerConnection.oniceconnectionstatechange = () => {
+      if (
+        peerConnection.iceConnectionState === "failed" ||
+        peerConnection.iceConnectionState === "disconnected"
+      ) {
+        peerConnection.restartIce();
+        createOfferFor(remoteUser).catch(console.error);
+      }
+    };
+
     peerConnections.current[remoteUser] = peerConnection;
 
     return peerConnection;
@@ -115,10 +125,18 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
     const startLocalMedia = async () => {
       if (localStreamRef.current) return;
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      });
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
+      } catch {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: true
+        });
+      }
 
       localStreamRef.current = stream;
 

@@ -72,9 +72,10 @@ export default function JoinRoom() {
 
                 if (data.roomname.length) {
                     console.log(data.roomname[0].RoomName);
+                    const roomName = data?.roomname?.[0]?.RoomName || data?.roomname;
                     toast.success("You joined the room", toastSuccessStyle);
                     // socket.emit("joinRoom", data.roomname[0].RoomName, localStorage.getItem("Username"));
-                    localStorage.setItem("Roomname", data.roomname[0].RoomName);
+                    localStorage.setItem("Roomname", roomName);
 
                     let res = await fetch("https://cinesync-3k1z.onrender.com/roomcheck", {
                         method: "POST",

@@ -11,6 +11,7 @@ export default function WaitingRoom() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log('emitted');
         socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
     }, [])
 

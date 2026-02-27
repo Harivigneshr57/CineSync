@@ -27,7 +27,27 @@ export default function InviteMovie({ code, onStep, step, movie, room }) {
         console.log(localStorage.getItem("Roomname"));
         socket.emit("Startparty",localStorage.getItem("Roomname"));
         navigate("/mainRoom");
+        startRoom();
     }
+
+
+    async function startRoom() {
+    const startRes = await fetch("http://localhost:3458/startparty", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            roomname:localStorage.getItem("Roomname"),
+        })
+    });
+    const joinData = await startRes.json();
+    if(joinData == "Updated successfully"){
+        console.log("Updated");
+    }
+    else{
+        console.log("not Updated");
+    }
+}
+
     return (
         <>
             <div className="config">

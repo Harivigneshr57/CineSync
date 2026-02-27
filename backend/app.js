@@ -655,6 +655,21 @@ io.on("connection", (socket) => {
   })
 
 });
+
+app.post("/startparty",(req,res)=>{
+  const {roomname} = req.body;
+  let tostart = `UPDATE Rooms SET RoomStatus = 'Running' WHERE RoomName = ?;`;
+  db.query(tostart,[roomname],(err,result)=>{
+    if(err){
+      return res.json("Error in start update");
+    }
+    else{
+      return res.json("Updated successfully");
+    }
+  })
+
+})
+
 app.post("/getHostName",(req,res)=>{
   let {roomname} = req.body;
   let role = "Host";

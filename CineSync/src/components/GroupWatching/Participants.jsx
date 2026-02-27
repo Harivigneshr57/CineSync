@@ -1,31 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 import { socket } from "../Home/socket";
-const optionalTurnServer =
-  import.meta.env.VITE_TURN_URL &&
-  import.meta.env.VITE_TURN_USERNAME &&
-  import.meta.env.VITE_TURN_CREDENTIAL
-    ? {
-        urls: import.meta.env.VITE_TURN_URL,
-        username: import.meta.env.VITE_TURN_USERNAME,
-        credential: import.meta.env.VITE_TURN_CREDENTIAL
-      }
-    : null;
+// const optionalTurnServer =
+//   import.meta.env.VITE_TURN_URL &&
+//   import.meta.env.VITE_TURN_USERNAME &&
+//   import.meta.env.VITE_TURN_CREDENTIAL
+//     ? {
+//         urls: import.meta.env.VITE_TURN_URL,
+//         username: import.meta.env.VITE_TURN_USERNAME,
+//         credential: import.meta.env.VITE_TURN_CREDENTIAL
+//       }
+//     : null;
 
-    const fallbackTurnServer = {
-      urls: [
-        "turn:openrelay.metered.ca:80",
-        "turn:openrelay.metered.ca:443",
-        "turn:openrelay.metered.ca:443?transport=tcp"
-      ],
-      username: "openrelayproject",
-      credential: "openrelayproject"
-    };
+//     const fallbackTurnServer = {
+//       urls: [
+//         "turn:openrelay.metered.ca:80",
+//         "turn:openrelay.metered.ca:443",
+//         "turn:openrelay.metered.ca:443?transport=tcp"
+//       ],
+//       username: "openrelayproject",
+//       credential: "openrelayproject"
+//     };
 
 const rtcConfig = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
-    { urls: "stun:stun1.l.google.com:19302" },
-    ...(optionalTurnServer ? [optionalTurnServer] : [fallbackTurnServer])
+    { urls: "stun:stun1.l.google.com:19302" }
+    // ...(optionalTurnServer ? [optionalTurnServer] : [fallbackTurnServer])
   ]
 };
 export default function Participants({ party, localVideo, mutedUsers, setMutedUsers, micOn }) {

@@ -2,9 +2,7 @@ import { useRef, useState } from 'react'
 import Button from '../Login-SignIn/Button';
 import { socket } from '../Home/socket';
 import toast from 'react-hot-toast';
-import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from "../Login-SignIn/UserContext";
 
 export default function JoinRoom() {
     let inputOne = useRef(null);
@@ -13,7 +11,7 @@ export default function JoinRoom() {
     let inputFour = useRef(null);
     let button = useRef(null);
     const navigate = useNavigate();
-    const { user, setAsRoom } = useContext(UserContext);
+    
 
     const toastErrorStyle = {
         style: {
@@ -71,43 +69,11 @@ export default function JoinRoom() {
                 console.log("Room Name " + data.roomname.length);
 
                 if (data.roomname.length) {
-                    console.log(data.roomname[0].RoomName);
+                    console.log(data.roomname);
                     toast.success("You joined the room", toastSuccessStyle);
                     // socket.emit("joinRoom", data.roomname[0].RoomName, localStorage.getItem("Username"));
-                    localStorage.setItem("Roomname", data.roomname[0].RoomName);
-
-                    let res = await fetch("https://cinesync-3k1z.onrender.com/roomcheck", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            roomCode: roomcode
-                        })
-                    })
-                    let results = await res.json();
-                    
-                    if (results.result.length === 1) {
-                        console.log(localStorage.getItem("Roomname"));
-                        let hostdetail = await fetch("https://cinesync-3k1z.onrender.com/getHostName", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                roomname: localStorage.getItem("Roomname")
-                            })
-                        })
-
-                        let hostname = await hostdetail.json();
-                        console.log(hostname.hostname[0].username);
-                        socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
-                        socket.emit("middlejoin",localStorage.getItem("Username"),localStorage.getItem("Roomname"),hostname.hostname[0].username);
-                        navigate("/mainRoom");
-                    } else {
-                        navigate("/waitingRoom");
-                    }
-                    setAsRoom(true);
+                    localStorage.setItem("Roomname",data.roomname);
+                    navigate("/waitingRoom");
                 }
                 else {
                     toast.error("No Rooms Exist in this code !!", toastErrorStyle);

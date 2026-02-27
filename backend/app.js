@@ -610,6 +610,15 @@ io.on("connection", (socket) => {
   socket.on("VideoSeek", ({ room, time }) => {
     socket.broadcast.to(room).emit("updateSeek", time);
   });
+  socket.on("middlejoin",(username,roomname,hostname)=>{
+    io.to(users[hostname]).emit("latejoin",username);
+  })
+  
+  // socket.emit("toSetTime",currenttime,username);
+
+  socket.on("toSetTime",(time,username)=>{
+    io.to(users[username]).emit("setCurrentTime",time);
+  })
 
   socket.on("disconnect", () => {
 
@@ -646,6 +655,38 @@ io.on("connection", (socket) => {
   })
 
 });
+app.post("/getHostName",(req,res)=>{
+  let {roomname} = req.body;
+  let role = "Host";
+  let gethostname = `SELECT username from users where ROWID = (Select userID from participants where Role = ? AND RoomID = (select RoomID from Rooms where RoomName = ?))`;
+
+  db.query(gethostname,[role,roomname],(err,result)=>{
+    if(err){
+      return res.json({"Error":err})
+    }
+    else{
+      console.log(result);
+      return res.json({
+        hostname:result
+      });
+    }
+  })
+})
+app.post("/roomcheck",(req,res)=>{
+  const {roomCode} = req.body;
+  console.log(roomCode);
+  let tocheck = `SELECT * FROM Rooms WHERE RoomCode = ? AND RoomStatus=?`;
+  db.query(tocheck,[roomCode,"Running"],(err,result)=>{
+    if(err){
+      return res.json("Error in check");
+    }
+    else{
+      return res.json({
+        result:result
+      });
+    }
+  })
+})
 app.get("/getAllMovies", (req, res) => {
 
   const sql = `

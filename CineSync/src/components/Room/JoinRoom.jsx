@@ -87,9 +87,7 @@ export default function JoinRoom() {
                     })
                     let results = await res.json();
                     
-                    if (results.result.length === 0) {
-                        navigate("/waitingRoom");
-                    } else {
+                    if (results.result.length === 1) {
                         console.log(localStorage.getItem("Roomname"));
                         let hostdetail = await fetch("https://cinesync-3k1z.onrender.com/getHostName", {
                             method: "POST",
@@ -106,6 +104,8 @@ export default function JoinRoom() {
                         socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
                         socket.emit("middlejoin",localStorage.getItem("Username"),localStorage.getItem("Roomname"),hostname.hostname[0].username);
                         navigate("/mainRoom");
+                    } else {
+                        navigate("/waitingRoom");
                     }
                     setAsRoom(true);
                 }

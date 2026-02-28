@@ -140,6 +140,12 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
 
       localStreamRef.current = stream;
 
+      if (localVideo) {
+        localVideo.current = {
+          srcObject: stream
+        };
+      }
+
       if (localVideo?.current) {
         localVideo.current.srcObject = stream;
       }
@@ -240,6 +246,10 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach((track) => track.stop());
         localStreamRef.current = null;
+      }
+
+      if (localVideo) {
+        localVideo.current = null;
       }
     };
   }, [roomName, username, localVideo]);

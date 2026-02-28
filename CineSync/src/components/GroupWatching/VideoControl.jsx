@@ -168,7 +168,7 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
     setEmoji(prev => [...prev, newEmoji]);
   
     socket.emit("sendEmoji", {
-      room: roomName,
+      room: localStorage.getItem('Roomname'),
       emoji: emoji
     });
   }

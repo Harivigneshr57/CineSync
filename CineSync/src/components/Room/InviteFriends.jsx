@@ -28,8 +28,8 @@ export default function InviteFriends(props) {
     function handleFriend(friendname) {
         console.log("reciever_name: " + friendname + " movie_name: " + props.movie.title + " sender_name: " + localStorage.getItem("Username") + " Room code :" + props.code + " Room name: " + props.room);
         setFriend(friendname);
-        socket.emit("sendInvite",props.room,localStorage.getItem("Username"),props.movie.title,friendname,props.movie.video,props.movie.image);
-        sendNotification(props.room, localStorage.getItem("Username"), friendname, props.movie.title,props.movie.image,props.movie.video);
+        socket.emit("sendInvite",props.room,localStorage.getItem("Username"),props.movie.title,friendname,props.movie.video,props.movie.url);
+        sendNotification(props.room, localStorage.getItem("Username"), friendname, props.movie.title,props.movie.url,props.movie.video);
     }
 
     async function sendNotification(room_name, sender_name, reciever_name, movie_name,image,video) {

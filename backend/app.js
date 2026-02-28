@@ -613,6 +613,10 @@ io.on("connection", (socket) => {
   socket.on("middlejoin",(username,roomname,hostname)=>{
     io.to(users[hostname]).emit("latejoin",username);
   })
+
+  socket.on('sendEmoji',(room,emoji)=>{
+    socket.broadcast.to(room).emit('receiveEmoji',emoji);
+  })
   
   // socket.emit("toSetTime",currenttime,username);
 

@@ -173,6 +173,10 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
     });
   }
 
+  socket.on('receiveEmoji',emoji=>{
+    sendEmoji(emoji);
+  })
+
   function toggleMic() {
     const stream = localVideo?.current?.srcObject;
     const nextMicOn = !micOn;

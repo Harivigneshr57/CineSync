@@ -34,6 +34,7 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
   const [mute, setMute] = useState(false);
   const [videoVol, setvideoVol] = useState(75);
   const [fullscreens, setFullScreen] = useState(true);
+  const[emojis, setEmoji]=useState([]);
 
   useEffect(() => {
     const video = reference.current;
@@ -158,6 +159,20 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
     });
   }
 
+  function sendEmoji(emoji) {
+    console.log("Hello",emoji);
+    const newEmoji = {
+      id: Date.now(),
+      value: emoji
+    };
+    setEmoji(prev => [...prev, newEmoji]);
+  
+    socket.emit("sendEmoji", {
+      room: roomName,
+      emoji: emoji
+    });
+  }
+
   function toggleMic() {
     const stream = localVideo?.current?.srcObject;
     const nextMicOn = !micOn;
@@ -195,6 +210,8 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
 
   }, []);
   return (
+    <>
+    <FloatingEmoji emoji={emojis}></FloatingEmoji>
     <div className="videoControls">
 
       <div id="mainIp">
@@ -273,6 +290,13 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
 
           </div>
         </div>
+        <div className="emojiDiv">
+          <h3 onClick={()=>sendEmoji('❤️')}>❤️</h3>
+          <h3 onClick={()=>sendEmoji('😂')}>😂</h3>
+          <h3 onClick={()=>sendEmoji('😮')}>😮</h3>
+          <h3 onClick={()=>sendEmoji('😢')}>😢</h3>
+          <h3 onClick={()=>sendEmoji('😡')}>😡</h3>
+        </div>
         <div className="callOptions">
             <Button id={"audio"} onClick={toggleMic} style={{background:micOn?'var(--major)':'var(--error)'}}>
               {micOn?<i className="fa-solid fa-microphone"></i>:<i class="fa-solid fa-microphone-slash"></i>}
@@ -294,5 +318,7 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
         </div>
       </div>
     </div>
+    <FloatingEmoji emoji={emojis}></FloatingEmoji>
+    </>
   );
 }

@@ -73,7 +73,6 @@ export default function WaitingRoom() {
         initRoom();
 
         socket.on("newJoin", (friend) => {
-            toast.succes()
             setConnectedMemebers(prev => {
 
                 const exists = prev.some(

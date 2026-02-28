@@ -24,7 +24,7 @@ export default function SelectMovies({ onMovie }) {
         const formatted = res.map(movie => ({
           id: movie.ROWID,
           title: movie.title,
-          image: movie.movie_poster,
+          url: movie.movie_poster,
           genre: movie.Category_Name,
           description: movie.overview,
           director: movie.director,
@@ -47,7 +47,7 @@ export default function SelectMovies({ onMovie }) {
     <div id="selectMovieContainer">
       {movies.map((movie,i )=> (
         <div key={i} onClick={() => select(movie)}>
-          <img src={movie.image}             style={{
+          <img src={movie.url}             style={{
               backgroundImage: `url(${movie.image})`,
               border:
                 selectedMovieId === movie.id

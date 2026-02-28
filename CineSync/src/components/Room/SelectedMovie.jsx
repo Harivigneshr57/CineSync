@@ -1,13 +1,5 @@
-import Avenger from '../../assets/Avenger.png';
-import Interstellar from '../../assets/bigMovie.png';
-import KGF from '../../assets/KGF.png';
-import Leo from '../../assets/Leo.png';
-import LoveToday from '../../assets/LoveToday.png';
-import Master from '../../assets/Master.png';
-import SpiderMan from '../../assets/SpiderMan.png';
-import Thunivu from '../../assets/Thunivu.png';
 export default function SelectedMovie({movie,confirmDiv}){
-    if(movie.image==undefined){
+    if(movie.url==undefined){
         return(
             <>
                 <div className="empty flex">
@@ -24,11 +16,12 @@ export default function SelectedMovie({movie,confirmDiv}){
     }
     return(
         <>
+        {console.log(movie)}
             <div className="selectedMovie" style={{filter:confirmDiv?`blur(10px)`:''}}>
-                <img src={movie.image} alt={movie.image} />
+                <img src={movie.url} alt={movie.image} />
                 <div>
                     <p>• {movie.genre} • {movie.year} </p>
-                    <h1>{movie.title.toUpperCase()}</h1>
+                    <h1>{movie.title?movie.title.toUpperCase():movie.title}</h1>
                     <h6>{movie.description}</h6>
                     <hr />
                     <div className="char">

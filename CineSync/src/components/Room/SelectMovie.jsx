@@ -12,7 +12,7 @@ export default function SelectMovie({step,onMovie,onStep,movie}){
                 <Stage step={step}></Stage>
                 <h2>Movies</h2>
                 <SelectMovies onMovie={onMovie}></SelectMovies>
-                {movie.image==undefined?<button id="configuration" style={{cursor:"not-allowed"}} disabled={true}>Select a Movie</button>:<button id="configuration" onClick={next}>Continue to Configuration <i class="fa-solid fa-arrow-right"></i></button>}
+                {movie.url==undefined?<button id="configuration" style={{cursor:"not-allowed"}} disabled={true}>Select a Movie</button>:<button id="configuration" onClick={next}>Continue to Configuration <i class="fa-solid fa-arrow-right"></i></button>}
             </div>
         </>
     )

@@ -1097,7 +1097,8 @@ app.post("/getRoomName", (req, res) => {
     SELECT 
       r.RoomName as roomname,
       m.movie_url,
-      m.movie_poster
+      m.movie_poster,
+      m.title
     FROM Rooms r
     JOIN Movies m
       ON r.movie_id = m.ROWID

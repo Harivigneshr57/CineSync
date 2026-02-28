@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const port = process.env.PORT || 3458;
+const jwt = require("jsonwebtoken");
 const app = express();
 app.set("trust proxy", 1); 
 const db = require("./db/database");
@@ -14,10 +15,21 @@ app.use(express.urlencoded({ extended: true }));
 const http=require('http');
 const multer = require("multer");
 const upload = multer({ limits: { fileSize: 5 * 1024 * 1024 } });
+const JWT_SECRET = process.env.JWT_SECRET || "change-this-jwt-secret";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
 app.use(cors({
   origin: "*",
   credentials: true
 }));
+
+function generateAccessToken(user) {
+  return jwt.sign(
+    { userId: user.ROWID, username: user.username },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES_IN }
+  );
+}
+
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -74,10 +86,39 @@ app.post("/signin", async (req, res) => {
       });
     }
 
+const accessToken = generateAccessToken(user);
+
+
     return res.status(200).json({
       message: "Login successful",
       username: user.username,
+      accessToken
     });
+  });
+});
+
+function requireAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+
+  if (!token) {
+    return res.status(401).json({ message: "Access token missing" });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Invalid access token" });
+    }
+
+    req.user = decoded;
+    next();
+  });
+}
+
+app.get("/session", requireAuth, (req, res) => {
+  return res.status(200).json({
+    userId: req.user.userId,
+    username: req.user.username
   });
 });
 

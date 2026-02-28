@@ -69,6 +69,7 @@ export default function SignIn() {
         else if (data.message === "Login successful") {
           localStorage.setItem("Username", data.username);
           toast.success("Login Successful !!", toastSuccessStyle);
+          localStorage.setItem("token", data.accessToken);
           changeUser();
           home();
         }

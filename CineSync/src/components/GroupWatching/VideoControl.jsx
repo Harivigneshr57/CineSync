@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import Button from "../Login-SignIn/Button";
 import { socket } from "../Home/socket";
-
+import FloatingEmoji from "./FloatingEmoji";
 export default function VideoControl({reference, references,chat,setChat,emitSeek,party,setParty,micOn,setMicOn,camOn,setCamOn,mutedUsers,setMutedUsers,localVideo}) {
 
   function toggleFullscreen() {

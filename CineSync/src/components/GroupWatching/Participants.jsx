@@ -41,6 +41,25 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
   const localStreamRef = useRef(null);
   const pendingIceCandidates = useRef({});
 
+  const ensureLocalTracks = (peerConnection) => {
+    const stream = localStreamRef.current;
+    if (!stream) return;
+
+    const senderTrackIds = new Set(
+      peerConnection
+        .getSenders()
+        .map((sender) => sender.track?.id)
+        .filter(Boolean)
+    );
+
+    stream.getTracks().forEach((track) => {
+      if (!senderTrackIds.has(track.id)) {
+        peerConnection.addTrack(track, stream);
+      }
+    });
+  };
+
+
   function toggleRemoteMute(member) {
     setMutedUsers((prev) => ({
       ...prev,
@@ -55,11 +74,7 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
 
     const peerConnection = new RTCPeerConnection(rtcConfig);
 
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach((track) => {
-        peerConnection.addTrack(track, localStreamRef.current);
-      });
-    }
+    ensureLocalTracks(peerConnection);
 
     peerConnection.onicecandidate = (event) => {
       if (!event.candidate) return;
@@ -139,6 +154,10 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
       }
 
       localStreamRef.current = stream;
+
+      Object.values(peerConnections.current).forEach((pc) => {
+        ensureLocalTracks(pc);
+      });
 
       if (localVideo) {
         localVideo.current = {

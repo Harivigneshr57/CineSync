@@ -105,7 +105,6 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode, conf
                     <h6>Room Name</h6>
                     <input type="text" name="roomName" id="roomName" value={room} onChange={(e) => setRoom(e.target.value)} placeholder="Enter Your Room Name" />
                     <InteractiveFeatures video={video} audio={audio} chat={chat} reaction={reaction} setAudio={setAudio} setVideo={setVideo} setChat={setChat} setReaction={setReaction}></InteractiveFeatures>
-                    <MiniGame game={game} setGame={setGame}></MiniGame>
                 </div>
                 <Button id='inviteFriends' onClick={check}>Continue to Invite Friends    <i class="fa-solid fa-arrow-right"></i></Button>
             </div>

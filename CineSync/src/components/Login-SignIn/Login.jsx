@@ -54,13 +54,14 @@ export default function Login(){
       
           const data = await response.json();
           console.log(data);
+          setLoading(false);
       
           if (data.message === "User already exists") {
             toast.error("UserName Already Taken !!", toastErrorStyle);
             ref.current.disabled = false;
           } 
           else if (data.message === "Signup successful") {
-            toast.success("SignUp Successful, you can SignIn !!", toastSuccessStyle);
+            toast.success("SignUp Successful, Welcome !!", toastSuccessStyle);
             localStorage.setItem("Username",data.username);
             changeUser();
             navigates();
@@ -152,7 +153,7 @@ export default function Login(){
                     <input type="text" placeholder="Enter Your UserName" id="loginName" style={{width:"30rem"}}  value={username} onChange={(e) => setName(e.target.value)}/>
                     <div className="loginPass flex">
                         <input type="password" placeholder="Enter Your Password" id="loginPassword" style={{width:"24rem"}} value={password} onChange={(e)=>{setPassword(e.target.value)}}/>
-                        <Button className="bigbutton" onClick={loginCheck} disabled={loading} id="signUp" ref={ref}>Sign Up</Button>
+                        <Button className="bigbutton" onClick={loginCheck} disabled={loading}  id="signUp" ref={ref}>{loading?'Signuping...':'Sign Up'}</Button>
                     </div>
                     <p>Ready to Start? Use for free</p>
                 </div>

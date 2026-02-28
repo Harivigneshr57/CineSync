@@ -10,6 +10,7 @@ export default function SignIn() {
     const [username,setName] = useState('');
     const [password,setPassword] = useState('');
     const {user,changeUser} = useContext(UserContext);
+    const [loading, setLoading] = useState(false);
     const toastErrorStyle = {
       style: {
         borderRadius: "1rem",
@@ -36,50 +37,52 @@ export default function SignIn() {
       }
     };
     async function signIn() {
-        console.log("Hiii");
-        let data;
-        try {
-          const response = await fetch(
-            "https://cinesync-3k1z.onrender.com/signin",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                username,
-                password
-              })
-            }
-          )
-          .then(res => res.json())
-          .then(dat => data = dat);
-        console.log(data);
-      
-          console.log("Signin response:", data);
-      
-          if (data.message == "User not found") { 
-            toast.error("Login Failed, No user Found !!",toastErrorStyle)
-            return;
+      if (loading) return; // prevent double click
+    
+      setLoading(true);
+    
+      try {
+        const response = await fetch(
+          "https://cinesync-3k1z.onrender.com/signin",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              username,
+              password
+            })
           }
-          if(data.message == "Invalid password"){
-            toast.error("Login Failed, InValid Password !!",toastErrorStyle)
-            return
-          }
-          if(data.message == "Login successful"){
-            localStorage.setItem('Username',data.username)
-            toast.success("Login Successful !!",toastSuccessStyle);
-            changeUser();
-            home();
-          }
-          else{
-            toast.error('Server Error, Try Later !!',toastErrorStyle)
-          }
-      
-        } catch (err) {
-          toast.error('Server Error, Try Later !!',toastErrorStyle)
+        );
+    
+        const data = await response.json();
+    
+        console.log("Signin response:", data);
+    
+        if (data.message === "User not found") {
+          toast.error("Login Failed, No user Found !!", toastErrorStyle);
         }
+        else if (data.message === "Invalid password") {
+          toast.error("Login Failed, Invalid Password !!", toastErrorStyle);
+        }
+        else if (data.message === "Login successful") {
+          localStorage.setItem("Username", data.username);
+          toast.success("Login Successful !!", toastSuccessStyle);
+          changeUser();
+          home();
+        }
+        else {
+          toast.error("Server Error, Try Later !!", toastErrorStyle);
+        }
+    
+      } catch (err) {
+        console.error(err);
+        toast.error("Server Error, Try Later !!", toastErrorStyle);
+      } finally {
+        setLoading(false); 
       }
+    }
       
     let navigate = useNavigate();
     function navigates(){
@@ -88,16 +91,20 @@ export default function SignIn() {
     function home(){
         navigate("/home");
     }
-    function signInCheck(){
-        if(username.length == 0){
-          toast.error('InValid UserName, UserName Required !!',toastErrorStyle)
-            return;
-        }
-        else if(password.length == 0){
-          toast.error('InValid Password, Password Required !!',toastErrorStyle)
-            return;
-        }
-        signIn();
+    function signInCheck() {
+      if (loading) return;
+    
+      if (!username.trim()) {
+        toast.error("UserName Required !!", toastErrorStyle);
+        return;
+      }
+    
+      if (!password.trim()) {
+        toast.error("Password Required !!", toastErrorStyle);
+        return;
+      }
+    
+      signIn();
     }
     return (
         <>
@@ -120,7 +127,7 @@ export default function SignIn() {
                     <label>Password</label>
                     <input type="password" placeholder="********" id="signInPass" onChange={(e)=>{setPassword(e.target.value)}}/>
                 </div>
-                <Button className="login-btn" id="login-btn" onClick={signInCheck}>Sign In</Button>
+                <Button className="login-btn"id="login-btn"onClick={signInCheck}disabled={loading}>{loading ? "Signing in..." : "Sign In"}</Button>
                 <p className="new-user">New here? <span id="join" onClick={navigates}>Join the club</span></p>
             </div>
         </main>

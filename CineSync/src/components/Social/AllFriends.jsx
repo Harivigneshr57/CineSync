@@ -3,12 +3,13 @@ import { UserContext } from "../Login-SignIn/UserContext";
 import def from "../../assets/onnapak.png";
 
 
-export function FriendPanel({ currentUser, handleUser, displayChat,refresh }) {
+export function FriendPanel({ currentUser, handleUser, displayChat,refresh, setLoadings }) {
 
 
     const { user } = useContext(UserContext);
     const [friends, setFriends] = useState([]);
     useEffect(() => {
+        setLoadings(true);
         if (!user) return;
         // console.log("hi===============",user);
         fetch("https://cinesync-3k1z.onrender.com/allFriends", {
@@ -21,6 +22,7 @@ export function FriendPanel({ currentUser, handleUser, displayChat,refresh }) {
             return res.json();
         }).then((data) => {
             // console.log("FULL RESPONSE:", data);
+            setLoadings(false);
         
             if (data.result) {
                 setFriends(data.result);
@@ -75,7 +77,7 @@ export function MyFriend(props) {
         </>
     )
 }
-export default function AllFriends({ currentUser, handleUser, displayChat, refresh }) {
+export default function AllFriends({ currentUser, handleUser, displayChat, refresh,setLoadings }) {
     return (
         <>
             <div id="allFriendsBox">
@@ -83,7 +85,7 @@ export default function AllFriends({ currentUser, handleUser, displayChat, refre
                     <h3>All Friends</h3>
                 </div>
                 <div className='social-allfriends-panel'>
-                    <FriendPanel refresh={refresh} currentUser={currentUser} handleUser={handleUser} displayChat={displayChat}></FriendPanel>
+                    <FriendPanel refresh={refresh} setLoadings={setLoadings} currentUser={currentUser} handleUser={handleUser} displayChat={displayChat}></FriendPanel>
                 </div>
             </div>
         </>

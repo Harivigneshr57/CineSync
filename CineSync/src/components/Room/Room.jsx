@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { useLocation } from "react-router-dom";
 import SideBar from "../Home/SideBar"
 import ConfigMovie from "./ConfigMovie";

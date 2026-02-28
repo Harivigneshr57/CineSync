@@ -1,110 +1,116 @@
 import MovieCard from "./MovieCard";
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../Login-SignIn/UserContext";
-export default function MainMovieDiv({overview,setOverview,overviewMovie,setOverviewMovie,ref,ref2}) {
-    const [movies, setMovies] = useState([]);
-    const [moviename, setmovieName]=useState("");
-    const [showDiv, setShowDiv] = useState(false);
-    useEffect(() => {
-        const fetmovie = async () => {
-            await fetch("https://cinesync-3k1z.onrender.com/getAllMovies")
-                .then((res) => {
-                    return res.json();
-                }).then((data) => {
-                    console.log(data.movies);
-                    setMovies(data.movies);
-                }).catch((err) => {
-                    console.log(err);
-                })
-        }
-        fetmovie();
-    }, [])
-    let filterMovieArray=[];
-    if(moviename.trim().length){
-        
-        
-        filterMovieArray = movies?.filter((ele) => ele.title.toLowerCase().includes(moviename.toLowerCase()));
-    }
-    else{
+import { useEffect, useState } from "react";
+import Loading from "../Home/Loading";
 
-        filterMovieArray=movies;
+export default function MainMovieDiv({
+  overview,
+  setOverview,
+  overviewMovie,
+  setOverviewMovie,
+  searchRef,
+  inputRef
+}) {
 
+  const [movies, setMovies] = useState([]);
+  const [moviename, setmovieName] = useState("");
+  const [showDiv, setShowDiv] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    }
+  /* ================= FETCH MOVIES ================= */
 
-    let categoryNameArray = [];
+  useEffect(() => {
+    async function fetmovie() {
+      try {
+        setLoading(true);
 
-    let categorizedArray = [];
+        const res = await fetch(
+          "https://cinesync-3k1z.onrender.com/getAllMovies"
+        );
 
+        const data = await res.json();
+        setMovies(data.movies || []);
 
-    function searchMovie(e){
-        const value=e.target.value;
-        setmovieName(value);
-        console.log("Movie type "+value);
-
-        if (!value.trim()) {
-            setShowDiv(false);
-        } else {
-            setShowDiv(true);
-        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
     }
 
+    fetmovie();
+  }, []);
 
+  /* ================= SEARCH ================= */
 
-    if (filterMovieArray) {
-        (filterMovieArray.map(movie => {
-            categorizedArray.push([]);
-            if (!categoryNameArray.includes(movie.Category_Name)) {
-                categoryNameArray.push(movie.Category_Name);
-            }
-    
-    
-        }));
-        filterMovieArray.map((movie) => {
+  function searchMovie(e) {
+    const value = e.target.value;
+    setmovieName(value);
 
-            categoryNameArray.map((cat) => {
+    setShowDiv(!!value.trim());
+  }
 
-                if (movie.Category_Name == cat) {
+  /* ================= FILTER ================= */
 
-                    categorizedArray[categoryNameArray.indexOf(cat)].push(movie);
-                }
-            })
-        })
+  const filterMovieArray =
+    moviename.trim().length > 0
+      ? movies.filter((ele) =>
+          ele.title.toLowerCase().includes(moviename.toLowerCase())
+        )
+      : movies;
+
+  /* ================= CATEGORY GROUPING ================= */
+
+  const categorized = {};
+
+  filterMovieArray.forEach((movie) => {
+    if (!categorized[movie.Category_Name]) {
+      categorized[movie.Category_Name] = [];
     }
-    // console.log(categorizedArray);
+    categorized[movie.Category_Name].push(movie);
+  });
 
+  /* ================= LOADING ================= */
 
-    let category = "";
+  if (loading) return <Loading />;
 
+  /* ================= UI ================= */
 
+  return (
+    <>
+      <div ref={searchRef} id="searchBarDiscover">
+        <input
+          ref={inputRef}
+          onChange={searchMovie}
+          style={{ width: "40rem" }}
+          id="disSearch"
+          placeholder="Enter movie Name..."
+        />
+      </div>
 
-    return (
-        <>
-               <div ref={ref}
-        id="searchBarDiscover">
-            <input onChange={searchMovie} ref={ref2} style={{width:"40rem"}}   id="disSearch" placeholder="Enter movie Name..."></input>
+      {Object.keys(categorized).map((category, index) => (
+        <div id="catMovie" key={index}>
+          <h1 className="movieCat">{category}</h1>
 
+          <div id="movieitems">
+            {categorized[category].map((movie, i) => (
+              <MovieCard
+                key={i}
+                video={movie.movie_url}
+                url={movie.movie_poster}
+                title={movie.title}
+                genre={movie.Category_Name}
+                year={movie.year}
+                description={movie.overview}
+                rating={movie.rating}
+                director={movie.director}
+                lead={movie.lead_cast}
+                setOverview={setOverview}
+                setOverviewMovie={setOverviewMovie}
+              />
+            ))}
+          </div>
         </div>
-            {
-                categorizedArray.map((movie, index) => {
-                    return(
-                      (movie.length>0?(
-                    <div id="catMovie" key={index}>
-                        <h1 class="movieCat">{movie[0].Category_Name}</h1>
-                        <div id="movieitems">
-                            {movie.map((singleMovie,index) => {
-                                console.log(singleMovie.movie_poster,singleMovie.title,singleMovie);
-                              return(
-                                <MovieCard video={singleMovie.movie_url} url={singleMovie.movie_poster} key={index} title={singleMovie.title} image={movie} genre={singleMovie.Category_Name} year={singleMovie.year} setOverview={setOverview} setOverviewMovie={setOverviewMovie} description={singleMovie.overview} rating={singleMovie.rating} director={singleMovie.director} lead={singleMovie.lead_cast}></MovieCard>
-                                )
-                            })}
-
-                        </div>
-                    </div>
-                      ):"")
-                    )
-                })
-            }
-        </>
-    )
+      ))}
+    </>
+  );
 }

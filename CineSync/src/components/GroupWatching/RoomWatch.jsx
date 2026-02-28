@@ -93,21 +93,6 @@ export default function RoomWatch() {
 
         setmessage("");
     }
-    async function fetching(moviename) {
-      const response = await fetch("https://ragaibot-production.up.railway.app/ai_chat/ask", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-              'prompt': "Avengers End Game",
-              'x-api-key': "99eedd3892d5a820b347415779c22655fcc7fc9b93991e9c08154bd633b18ca9"
-          })
-      });
-
-      const result = await response.json();
-      console.log(result);
-  }
   socket.on("latejoin", (username) => {
     let currenttime = video.current.currentTime;
     toast.success("" + currenttime);
@@ -136,7 +121,32 @@ socket.on("setCurrentTime",(time)=>{
                  }
                );
         };
-
+        async function fetching(moviename) {
+          try {
+            const response = await fetch(
+              "https://rag-ai-bot-elpx.onrender.com/ai_chat/ask",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  prompt: "summary of Avengers End Game",
+                  "x-api-key":
+                    "99eedd3892d5a820b347415779c22655fcc7fc9b93991e9c08154bd633b18ca9"
+                })
+              }
+            );
+        
+            if (!response.ok) throw new Error("API failed");
+        
+            const result = await response.json();
+            console.log(result);
+          } catch (err) {
+            console.log("AI service unavailable:", err.message);
+          }
+        }
+        fetching('avengers');
         socket.on('frndLeave', handleFriendLeave);
 
         return () => {

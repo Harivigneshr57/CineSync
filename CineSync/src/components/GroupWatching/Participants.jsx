@@ -28,7 +28,7 @@ const rtcConfig = {
     // ...(optionalTurnServer ? [optionalTurnServer] : [fallbackTurnServer])
   ]
 };
-export default function Participants({ party, localVideo, mutedUsers, setMutedUsers, micOn }) {
+export default function Participants({ party, localVideo, mutedUsers, setMutedUsers, micOn ,camOn}) {
   const [participants, setParticipants] = useState([]);
   const [remoteStreams, setRemoteStreams] = useState({});
 
@@ -260,13 +260,20 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
   if (!party) {
     return null;
   }
+  const localInitial = username?.trim()?.charAt(0)?.toUpperCase() || "?";
 
   return (
     <div className="roomParticipants">
       <div className="participantsHead">Participants ({participants.length})</div>
       <div className="participantsBody">
         <div className="participantCard">
-          <video ref={localVideoRef} autoPlay muted playsInline />
+        {camOn ? (
+            <video ref={localVideoRef} autoPlay muted playsInline />
+          ) : (
+            <div className="participantAvatar" aria-label="Camera off avatar">
+              {localInitial}
+            </div>
+          )}
           <p>{username} (You)</p>
         </div>
 

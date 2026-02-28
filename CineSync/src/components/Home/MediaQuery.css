@@ -1,0 +1,220 @@
+@media (max-width: 1280px) {
+    .movieInfoAction {
+      width: 96%;
+      padding: 3rem;
+    }
+  
+    .trendingMovies {
+      padding: 4rem 6rem;
+    }
+  }
+  
+  @media (max-width: 1024px) {
+    aside {
+      width: 4.5rem;
+    }
+  
+    aside:hover {
+      width: 12rem;
+    }
+  
+    .bigMovieContainer {
+      padding-left: 4.5rem;
+    }
+  
+    .movieInfoAction {
+      align-items: flex-end;
+      padding: 2.5rem;
+    }
+  
+    .movieInfoAction .bigMovieDetail {
+      max-width: 26rem;
+    }
+  
+    .movieDesc {
+      font-size: 0.95rem;
+    }
+  
+    .trendingMovies {
+      padding: 3rem 3.5rem 4rem 5.5rem;
+      gap: 2rem;
+    }
+  
+    .trends .moviecards {
+      width: 17rem;
+    }
+  
+    .homeMovieContainer {
+      width: 15rem;
+      height: 20rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    aside {
+      width: 100%;
+      height: auto;
+      bottom: 0;
+      top: auto;
+      border-right: none;
+      border-top: 1px solid rgb(255 255 255 / 0.08);
+      padding: 0.65rem 1rem;
+      flex-direction: row;
+      align-items: center;
+    }
+  
+    aside:hover {
+      width: 100%;
+    }
+  
+    aside:hover .logo {
+      margin-left: 0;
+    }
+  
+    .logo,
+    .main-nav,
+    .user-nav {
+      width: auto;
+    }
+  
+    .main-nav,
+    .user-nav {
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+  
+    aside button {
+      padding: 0.55rem 0.8rem;
+      font-size: 1rem;
+      gap: 0.65rem;
+    }
+  
+    .bigMovieContainer {
+      padding-left: 0;
+      min-height: 62vh;
+    }
+  
+    .movieInfoAction {
+      width: 100%;
+      height: 100%;
+      padding: 1.25rem 1rem 5.5rem;
+      align-items: flex-end;
+      justify-content: flex-end;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent 55%);
+    }
+  
+    .movieInfoAction .bigMovieDetail {
+      max-width: 100%;
+    }
+  
+    .movieName h1 {
+      font-size: clamp(1.75rem, 8vw, 2.5rem);
+    }
+  
+    .movieDesc {
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+  
+    .watchButtons {
+      width: 100%;
+    }
+  
+    #friendWatch,
+    #soloPlay {
+      flex: 1;
+      padding: 0.8rem;
+      font-size: 0.9rem;
+    }
+  
+    .fbButtons {
+      align-self: center;
+      gap: 1rem;
+    }
+  
+    .fbButtons button {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  
+    .trendingMovies {
+      padding: 2rem 1rem 6rem;
+      gap: 1.5rem;
+    }
+  
+    .trends {
+      gap: 1rem;
+    }
+  
+    .trends .moviecards {
+      width: 14rem;
+    }
+  
+    .homeMovieContainer {
+      width: 12.5rem;
+      height: 17rem;
+    }
+  
+    .exit-overlay {
+      width: min(92vw, 32rem);
+      padding: 1rem;
+      font-size: 1.35rem;
+    }
+  
+    .exit-buttons {
+      gap: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    aside {
+      justify-content: center;
+      gap: 0.5rem;
+    }
+  
+    .main-nav,
+    .user-nav {
+      gap: 0.25rem;
+    }
+  
+    aside button {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      border-radius: 999px;
+    }
+  
+    .premieres {
+      gap: 0.5rem;
+    }
+  
+    .tonight {
+      font-size: 0.65rem;
+      padding: 0.4rem 0.55rem;
+    }
+  
+    .movieDesc {
+      font-size: 0.82rem;
+    }
+  
+    .watchButtons {
+      flex-direction: column;
+    }
+  
+    .trendingMovies {
+      padding: 1.5rem 0.75rem 6rem;
+    }
+  
+    .trends .moviecards {
+      width: 12rem;
+    }
+  
+    .homeMovieContainer {
+      width: 11rem;
+      height: 15rem;
+    }
+  
+    .cancel-btn,
+    .confirm-btn {
+      padding: 0.8rem 1.2rem;
+    }
+  }

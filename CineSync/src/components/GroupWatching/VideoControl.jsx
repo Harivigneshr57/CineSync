@@ -166,16 +166,19 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
       value: emoji
     };
     setEmoji(prev => [...prev, newEmoji]);
-  
+    
     socket.emit("sendEmoji", {
       room: localStorage.getItem('Roomname'),
       emoji: emoji
     });
   }
 
-  socket.on('receiveEmoji',emoji=>{
-    sendEmoji(emoji);
-  })
+  useEffect(()=>{
+    socket.on('receiveEmoji',emoji=>{
+      sendEmoji(`${emoji}`);
+    })
+  
+  },[])
 
   function toggleMic() {
     const stream = localVideo?.current?.srcObject;

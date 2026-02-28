@@ -3,6 +3,7 @@ import BigMovie from "./BigMovie"
 import TrendingMovie from "./TrendingMovie"
 import TamilBlockBustors from "./TamilBlockBusters"
 import './home.css'
+import './MediaQuery.css'
 import { useEffect, useContext, useState } from "react";
 import { UserContext } from "../Login-SignIn/UserContext";
 import { socket } from "./socket";

@@ -1,6 +1,7 @@
 import MovieCard from "./MovieCard";
 import { useEffect, useState } from "react";
 import Loading from "../Home/Loading";
+import EmptyState from "../Common/EmptyState";
 
 export default function MainMovieDiv({
   overview,
@@ -13,7 +14,6 @@ export default function MainMovieDiv({
 
   const [movies, setMovies] = useState([]);
   const [moviename, setmovieName] = useState("");
-  const [showDiv, setShowDiv] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -42,7 +42,6 @@ export default function MainMovieDiv({
     const value = e.target.value;
     setmovieName(value);
 
-    setShowDiv(!!value.trim());
   }
 
   const filterMovieArray =
@@ -79,7 +78,7 @@ export default function MainMovieDiv({
 
       {!hasMovies && (
         <div id="catMovie">
-          <h1 className="movieCat">No movies found</h1>
+           <EmptyState message="Movies Not Found" className="discover-empty-state" />
         </div>
       )}
 

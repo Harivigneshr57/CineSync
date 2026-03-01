@@ -350,4 +350,8 @@ span {
 .profile-edit-form input {
     background-color: var(--grey);
     border: 1px solid #657081;
-}
+  }
+  .profile-favorites-empty {
+    width: 100%;
+    min-height: 12rem;
+  }

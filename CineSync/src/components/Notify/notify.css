@@ -18,6 +18,10 @@
     align-items: center;
     border-radius: 0.5rem;
 }
+
+.notify-empty {
+    min-height: 12rem;
+}
  
  .clear:hover{
     color:var(--major);

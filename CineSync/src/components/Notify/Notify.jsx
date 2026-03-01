@@ -15,6 +15,33 @@ export default function Notify() {
     function handleDeclineInvitation(roomName) {
         setRoomDetails((prev) => prev.filter((room) => room.room_name !== roomName));
     }
+    async function handleClearAllInvitations() {
+        const username = localStorage.getItem("Username");
+
+        if (!username) {
+            setRoomDetails([]);
+            return;
+        }
+
+        try {
+            const response = await fetch("https://cinesync-3k1z.onrender.com/clearInvitations", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to clear invitations");
+            }
+
+            setRoomDetails([]);
+        } catch (err) {
+            console.log("Error while clearing invitations", err);
+        }
+    }
+
     useEffect(()=>{
         socket.on("sendingInvite",(room_name,movie_name,sender_name,video,image)=>{
             setRoomDetails(prev => [
@@ -41,7 +68,7 @@ export default function Notify() {
             <SideBar></SideBar>
             <div className="notTitle">
                 <h2>Watch party Invites</h2>
-                <p className="clear" onClick={() => setRoomDetails([])}>Clear All</p>
+                <p className="clear" onClick={handleClearAllInvitations}>Clear All</p>
             </div>
 
             <div id="notMain">

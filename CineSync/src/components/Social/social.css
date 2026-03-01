@@ -433,3 +433,13 @@ div#pendingMain {
 .social-search-empty {
     cursor: default;
 }
+
+.social-friends-empty,
+.social-invitations-empty,
+.social-search-empty {
+    min-height: 10rem;
+}
+
+.social-invitations-empty {
+    width: 100%;
+}

@@ -811,6 +811,29 @@ app.get("/getAllMovies", (req, res) => {
   });
 });
 
+app.post("/clearInvitations", (req, res) => {
+  let { username } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ error: "Username is required" });
+  }
+
+  let deleteInvitations = "DELETE FROM RoomInvitations WHERE receiver_name = ?";
+
+  try {
+    db.query(deleteInvitations, [username], (err) => {
+      if (err) {
+        return res.json({ error: err });
+      }
+
+      return res.json({ message: "All invitations cleared" });
+    });
+  }
+  catch (err) {
+    return res.status(500).json({ error: "Error in server side while clearing invitations" });
+  }
+})
+
 app.get("/getAllMovie", (req, res) => {
 
   const sql = `

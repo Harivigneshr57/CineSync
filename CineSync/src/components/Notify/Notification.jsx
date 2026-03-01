@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext,useState, useEffect } from "react";
 import Madharasi from "../../assets/images/Madharasi.png";
 import Onnapak from "../../assets/onnapak.png";
 import {socket} from "../Home/socket";
@@ -6,7 +6,7 @@ import { UserContext } from "../Login-SignIn/UserContext";
 import { useNavigate } from "react-router-dom";
 export default function Notification({roomName, ownerName,movieName,moviestatus,timeStamp,image,video,onDecline}){
     const [currentRoom ,setcurrentRoom] = useState("");
-    const {changeRoomVideo,setRoomName,setMovieName,changeRoomDetail} = useContext(UserContext);
+    const {changeRoomVideo,setRoomName,setMovieName,changeRoomDetail,setAsRoom} = useContext(UserContext);
     let nav =useNavigate();
 
     async function declineinvitation(){
@@ -34,6 +34,7 @@ export default function Notification({roomName, ownerName,movieName,moviestatus,
         console.log("The room user want to join: "+room);
         localStorage.setItem("Roomname",room);
         console.log(video)
+        setAsRoom(true);
         changeRoomVideo(video);
         localStorage.setItem('MovieName',movie);
         localStorage.setItem('MovieImage',image);

@@ -50,29 +50,23 @@ export default function JoinRoom() {
 
             let data;
             try {
-                const response = await fetch(
-                    "https://cinesync-3k1z.onrender.com/getRoomName",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            roomCode: roomcode
-                        })
-                    }
-                )
-                    .then(res => res.json())
-                    .then(dat => data = dat);
-                    console.log(data.movie_url,data.movie_poster);
-                    localStorage.setItem('MovieImage',data.movie_poster);
-                    localStorage.setItem('movieVideo',data.movie_url);
-                    localStorage.setItem('MovieName',data.title)
+                const response = await fetch("https://cinesync-3k1z.onrender.com/getRoomName", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ roomCode: roomcode })
+                });
+
+
+                const data = await response.json();
+                console.log(data.movie_url, data.movie_poster);
+                localStorage.setItem('MovieImage', data.movie_poster);
+                localStorage.setItem('movieVideo', data.movie_url);
+                localStorage.setItem('MovieName', data.title)
                 console.log("Room Name " + data.roomname.length);
 
-                if (data.roomname.length) {
+                if (data.roomname) {
                     console.log(data.roomname[0].RoomName);
-                    const roomName = data?.roomname?.[0]?.RoomName || data?.roomname;
+                    const roomName = data.roomname;
                     toast.success("You joined the room", toastSuccessStyle);
                     // socket.emit("joinRoom", data.roomname[0].RoomName, localStorage.getItem("Username"));
                     localStorage.setItem("Roomname", roomName);
@@ -87,7 +81,7 @@ export default function JoinRoom() {
                         })
                     })
                     let results = await res.json();
-                    
+
                     if (results.result.length === 1) {
                         console.log(localStorage.getItem("Roomname"));
                         let hostdetail = await fetch("https://cinesync-3k1z.onrender.com/getHostName", {
@@ -101,10 +95,11 @@ export default function JoinRoom() {
                         })
 
                         let hostname = await hostdetail.json();
-                        console.log(hostname.hostname[0].username);
+                        console.log(hostname);
                         socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
-                        socket.emit("middlejoin",localStorage.getItem("Username"),localStorage.getItem("Roomname"),hostname.hostname[0].username);
-                        navigate("/mainRoom");
+                        socket.emit("middlejoin", localStorage.getItem("Username"), localStorage.getItem("Roomname"), hostname.hostname[0].username);
+                        // navigate("/mainRoom");
+                        navigate("/summary");
                     } else {
                         navigate("/waitingRoom");
                     }

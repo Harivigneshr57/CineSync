@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../Login-SignIn/UserContext';
 import Invitation from './Invitation'
+import EmptyState from '../Common/EmptyState';
 
 export default function InvitationGroup({onAcceptDone}) {
     const { user } = useContext(UserContext);
@@ -80,7 +81,7 @@ export default function InvitationGroup({onAcceptDone}) {
         <>
            {invitations.length === 0 ? (
                 <div style={{width:"50rem",borderRadius:"15px",padding:"3rem",display:"flex",justifyContent:"center",alignItems:"center"}}>
-                    <p style={{textAlign:'center'}}>No invitations</p>
+                     <EmptyState message="No invitations" iconClass="fa-solid fa-envelope-open-text" />
                 </div>
             ) : (
                 invitations.map((inv) => (

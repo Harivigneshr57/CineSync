@@ -63,6 +63,8 @@ export default function MainMovieDiv({
 
   if (loading) return <Loading />;
 
+  const hasMovies = filterMovieArray.length > 0;
+
   return (
     <>
       <div ref={searchRef} id="searchBarDiscover">
@@ -74,6 +76,13 @@ export default function MainMovieDiv({
           placeholder="Enter movie Name..."
         />
       </div>
+
+      {!hasMovies && (
+        <div id="catMovie">
+          <h1 className="movieCat">No movies found</h1>
+        </div>
+      )}
+
 
       {Object.keys(categorized).map((category, index) => (
         <div id="catMovie" key={index}>

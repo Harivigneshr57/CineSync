@@ -662,10 +662,26 @@ io.on("connection", (socket) => {
   socket.on("middlejoin",(username,roomname,hostname)=>{
     io.to(users[hostname]).emit("latejoin",username);
   })
+  
+  // socket.emit("toSetTime",currenttime,username);
+
+  socket.on("summary",(result,username)=>{
+    io.to(users[username]).emit("summaryFromHost",result);
+  })
 
   socket.on('sendEmoji',(room,emoji)=>{
     socket.broadcast.to(room).emit('receiveEmoji',emoji);
   })
+
+  socket.on("cameraStateChanged", ({ room, username, state }) => {
+    if (!room || !username) return;
+
+    socket.to(room).emit("cameraStateChanged", {
+      username,
+      state: !!state
+    });
+  });
+
   
   // socket.emit("toSetTime",currenttime,username);
 
@@ -1053,7 +1069,7 @@ app.post("/removeFavorite",(req,res)=>{
       });
     });
 
-    
+
 app.post("/sendInvitation", (req, res) => {
   let { room_name, sender_name, reciever_name, movie_name,video,image } = req.body;
 

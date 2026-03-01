@@ -7,10 +7,14 @@ export default function OverView({ overview, overviewMovie, setOverview }) {
   const { setMovie } = useContext(UserContext);
   const {user}=useContext(UserContext);
   let nav = useNavigate();
+  const hasMovieSelection = Boolean(overviewMovie?.title && overviewMovie?.year);
   const [isFavorite, setIsFavorite] = useState(false);
   
   useEffect(() => {
-    if (!user || !overviewMovie) return;
+    if (!user || !hasMovieSelection || !overview) {
+        setIsFavorite(false);
+        return;
+      }  
   
     const findIsFavorite = async () => {
       try {
@@ -25,7 +29,7 @@ export default function OverView({ overview, overviewMovie, setOverview }) {
         });
   
         const data = await res.json();
-        setIsFavorite(data.isFavorite || false);
+       setIsFavorite(Boolean(data.isFavorite ?? data.result));
   
       } catch (error) {
         setIsFavorite(false);
@@ -36,19 +40,27 @@ export default function OverView({ overview, overviewMovie, setOverview }) {
   }, [overviewMovie, user]);  
   async function addToFavorite() {
 
-    await fetch("https://cinesync-3k1z.onrender.com/addFavorite", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: user.username, movie_name: overviewMovie.title, movieYear: overviewMovie.year })
-    }).then((res) => res.json())
-      .then((data) => {
-        toast.success('Added to Favourite !!')
-        // console.log(data);
-        setIsFavorite(true);
-      })
+    if (!user || !hasMovieSelection) return;
+
+    try {
+      const res = await fetch("https://cinesync-3k1z.onrender.com/addFavorite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user.username, movie_name: overviewMovie.title, movieYear: overviewMovie.year })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Unable to add favorite");
+
+      toast.success('Added to Favourite !!')
+      setIsFavorite(true);
+    } catch (error) {
+      toast.error('Failed to add favorite');
+    }
   }
   
   async function removeFavorite() {
+    if (!user || !hasMovieSelection) return;
     try {
       const res = await fetch("https://cinesync-3k1z.onrender.com/removeFavorite", {
         method: "POST",

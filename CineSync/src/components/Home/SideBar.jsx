@@ -13,7 +13,9 @@ export default function SideBar({ isinvite }) {
     const [nextRoute, setNextRoute] = useState(null);
 
     function handleNavigation(path) {
-        if (isRoom) {
+        const hasActiveRoom = isRoom || Boolean(localStorage.getItem("Roomname"));
+
+        if (hasActiveRoom) {
             setNextRoute(path);
             setShowExitModal(true);
         } else {
@@ -25,6 +27,7 @@ export default function SideBar({ isinvite }) {
         setAsRoom(false);
         localStorage.removeItem("Roomname");
         setShowExitModal(false);
+        setNextRoute(null);
         navigate(nextRoute);
     }
 

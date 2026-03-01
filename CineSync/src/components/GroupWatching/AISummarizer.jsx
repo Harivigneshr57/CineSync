@@ -1,58 +1,130 @@
+import { useEffect, useState } from "react";
 import Genre from "./Genre";
+import { socket } from "../Home/socket";
+import Loading from "../Home/Loading";
+import './group.css';
+
 export default function AISummarizer() {
 
-    let genries = ["Crime","Drama","Action"]
-    return <>
-        <div className="parent-summary">
-            <div className="main-summary">
+    const [isdisplay, setdisplaysummary] = useState(false);
+    const [summaryData, setSummaryData] = useState(null);
+
+    useEffect(() => {
+        const handleSummary = (result) => {
+            // console.log("Raw Summary:", result);
+
+            let parsedData;
+
+            if (typeof result.response === "string") {
+                parsedData = JSON.parse(result.response);
+            } else {
+                parsedData = result;
+            }
+
+            // console.log("Parsed Summary:", parsedData);
+
+            setSummaryData(parsedData);
+            setdisplaysummary(true);
+        };
+
+        socket.on("summaryFromHost", handleSummary);
+
+        return () => {
+            socket.off("summaryFromHost", handleSummary);
+        };
+    }, []);
+    if (!summaryData) {
+
+        return (
+            <div className="parent-summary">
+
+                <Loading style={isdisplay ? { display: "none" } : { display: "block" }} />
+
+            </div>
+        );
+    }
+    else {
+        return (
+            <div className="parent-summary">
+            <div
+                className="main-summary"
+                style={isdisplay ? { display: "flex" } : { display: "none" }}
+            >
                 <div className="summary-imageholder">
-                    <img className="summary-movie-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD39Rw-yrW0S1h4-oXlIPZeQntoi1jwavDgk2TqVNDB1bzTHyKGEqQ8LR1j2tQSjpYAPsScQHlTmYw8GlFm0luJmUCvem7cCHzW129Owa85n9Bj8Z9DUaMgrtcdv0CyElzb_ePde7wpSCDpviHWbJTEKhxUs43XhwAmU4WMqmwkEbS3F63eLQ4bUlBDuaVey36gst8bM07M4snsUj3Wf-UdO5f9RBKTolF5_gn3vdVhMbBAQWTlocaPdeTaS__6rJW4R1wApPaoTsc" alt="" />
+                    <img
+                        className="summary-movie-image"
+                        src={localStorage.getItem("MovieImage")}
+                        alt="movie"
+                    />
                 </div>
+
                 <div className="movie-details">
-                    <h3 className="movieName">Vada Chennai <span> (2018)</span></h3>
-                    <div style={{ display: "flex", gap: "1rem"}} className="movie-top">
-                        {genries.map((genre,i)=>{
-                           return  <Genre genre={genre} key={i}></Genre>
-                        })}
+
+                    <h3 className="movieName">
+                        {summaryData?.movie_title}
+                        {summaryData?.release_year &&
+                            <span> ({summaryData.release_year})</span>}
+                    </h3>
+
+                    <div style={{ display: "flex", gap: "1rem" }} className="movie-top">
+                        {summaryData?.genre?.map((g, i) => (
+                            <Genre genre={g} key={i} />
+                        ))}
                     </div>
-                    <div  className="tone-icon">
-                        <p className="summary-tone"><i className="fa-regular fa-face-smile" id="icon"></i><span> Tone: Gritty, realistic, and intense</span></p>
-                        <p className="summary-tone" style={{marginLeft:"1px"}}><i className="fa-solid fa-location-dot" id ="icon"></i><span> Setting: North Chennai, 1980s-early 2000s</span></p>
+
+                    <div className="tone-icon">
+                        <p className="summary-tone">
+                            <i className="fa-regular fa-face-smile" id="icon"></i>
+                            <span> Tone: {summaryData?.tone}</span>
+                        </p>
+
+                        <p className="summary-tone" style={{ marginLeft: "1px" }}>
+                            <i className="fa-solid fa-location-dot" id="icon"></i>
+                            <span> Setting: {summaryData?.setting}</span>
+                        </p>
                     </div>
+
                     <hr />
+
                     <div className="plot-summary-main">
                         <div className="plot-summary-first">
-                            <i className="fa-solid fa-clipboard-list" id="icon"></i><span> Plot summary</span>
+                            <i className="fa-solid fa-clipboard-list" id="icon"></i>
+                            <span> Plot Summary</span>
                         </div>
                         <div>
                             <p className="plot-summary">
-                                Anbu, a skilled carrom player, is drawn into the violent world of North Chennai's underworld. The narrative follows his evolution from an aspiring sportsman to a central figure in a long-standing gang war, navigating loyalty and betrayal.
+                                {summaryData?.plot_summary}
                             </p>
                         </div>
                     </div>
+
                     <div className="plot-summary-main">
                         <div className="plot-summary-first">
-                        <i className="fa-solid fa-down-left-and-up-right-to-center" id="icon"></i><span>Main Conflict
-</span>
+                            <i className="fa-solid fa-down-left-and-up-right-to-center" id="icon"></i>
+                            <span> Main Conflict</span>
                         </div>
                         <div>
                             <p className="plot-summary">
-                            The power struggle between rival gang leaders seeking control over North Chennai. Political ambitions and greed collide with the lives of local residents, forcing Anbu to choose a side in a battle that spans decades.
+                                {summaryData?.main_conflict}
                             </p>
                         </div>
                     </div>
+
                     <div className="plot-summary-main">
                         <div className="plot-summary-first">
-                            <i className="fa-solid fa-clipboard-list" id="icon"></i><span> Resolution</span>
+                            <i className="fa-solid fa-clipboard-check" id="icon"></i>
+                            <span> Resolution</span>
                         </div>
                         <div>
                             <p className="plot-summary">
-                                Anbu, a skilled carrom player, is drawn into the violent world of North Chennai's underworld. The narrative follows his evolution from an aspiring sportsman to a central figure in a long-standing gang war, navigating loyalty and betrayal.
+                                {summaryData?.resolution}
                             </p>
                         </div>
                     </div>
+
                 </div>
             </div>
-        </div>
-    </>
+            </div>
+        );
+    }
 }

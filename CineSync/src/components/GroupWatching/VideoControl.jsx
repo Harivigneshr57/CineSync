@@ -102,6 +102,41 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
     }
   }
 
+  useEffect(() => {
+    const handleShortcuts = (event) => {
+      const activeTag = document.activeElement?.tagName;
+      const isTypingField =
+        activeTag === "INPUT" ||
+        activeTag === "TEXTAREA" ||
+        document.activeElement?.isContentEditable;
+
+      if (isTypingField) return;
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        pauses();
+        return;
+      }
+
+      if (event.code === "ArrowLeft") {
+        event.preventDefault();
+        backward();
+        return;
+      }
+
+      if (event.code === "ArrowRight") {
+        event.preventDefault();
+        forward();
+      }
+    };
+
+    document.addEventListener("keydown", handleShortcuts);
+
+    return () => {
+      document.removeEventListener("keydown", handleShortcuts);
+    };
+  }, [reference, emitSeek, pauses, backward, forward]);
+
   function forward() {
     const video = reference.current;
     if (video) video.currentTime += 10;

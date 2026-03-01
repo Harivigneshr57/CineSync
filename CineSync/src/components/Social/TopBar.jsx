@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { UserContext } from "../Login-SignIn/UserContext";
 import { useContext } from "react";
 import SuggestUser from "./SuggestUser";
+import EmptyState from "../Common/EmptyState";
 
 export default function TopBar() {
 
@@ -83,21 +84,29 @@ export default function TopBar() {
                 </div>
             </div>
             <div style={{ display: showDiv ? "block" : "none" }} id="dropdown">
-                {filterNameArray.map((ele) => {
-                    const isFriend = friends.some(
-                        friend => friend.username === ele.username
-                    );
+            {filterNameArray.length === 0 ? (
+                    <EmptyState
+                        message="No users found"
+                        iconClass="fa-solid fa-magnifying-glass"
+                        className="social-search-empty"
+                    />
+                ) : (
+                    filterNameArray.map((ele) => {
+                        const isFriend = friends.some(
+                            friend => friend.username === ele.username
+                        );
 
-                    return (
-                        <SuggestUser
-                            key={ele.username}
-                            img={ele.image}
-                            name={ele.username}
-                            bio={ele.bio}
-                            isFriend={isFriend}
-                        />
-                    );
-                })}
+                        return (
+                            <SuggestUser
+                                key={ele.username}
+                                img={ele.image}
+                                name={ele.username}
+                                bio={ele.bio}
+                                isFriend={isFriend}
+                            />
+                        );
+                    })
+                )}
 
 
             </div>

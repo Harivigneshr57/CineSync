@@ -173,3 +173,8 @@ h3.roomNameNot {
     display: flex;
     flex-wrap: wrap;
 }
+
+.notify-empty {
+    width: 100%;
+    margin: 2rem;
+}

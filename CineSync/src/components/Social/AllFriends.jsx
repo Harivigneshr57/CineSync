@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from "../Login-SignIn/UserContext";
 import def from "../../assets/onnapak.png";
+import EmptyState from '../Common/EmptyState';
 
 
 export function FriendPanel({ currentUser, handleUser, displayChat,refresh, setLoadings }) {
@@ -44,7 +45,7 @@ export function FriendPanel({ currentUser, handleUser, displayChat,refresh, setL
         <>
             <div id="friendsPanel">
                 {friends.length==0?(
-                    <p style={{textAlign:'center'}}> No Friends</p>
+                    <EmptyState message="No friends" iconClass="fa-solid fa-user-group" />
                 ):(
                     friends.map((friend, i) => (
                         <MyFriend 

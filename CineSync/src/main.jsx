@@ -15,6 +15,7 @@ import Room from "./components/Room/Room.jsx";
 import WaitingRoom from './components/WaitingRoom/WaitingRoom.jsx';
 import Notify from './components/Notify/Notify.jsx';
 import MainRoom from './components/GroupWatching/RoomWatch.jsx';
+import Summary from './components/GroupWatching/AISummarizer.jsx';
 
 function isAuthenticated() {
   const token = localStorage.getItem("token");
@@ -59,6 +60,8 @@ createRoot(document.getElementById('root')).render(
           <Route path="/waitingRoom" element={<ProtectedRoute><WaitingRoom /></ProtectedRoute>} />
           <Route path="/notification" element={<ProtectedRoute><Notify /></ProtectedRoute>} />
           <Route path='/mainRoom' element={<ProtectedRoute><MainRoom /></ProtectedRoute>} />
+          <Route path='/summary' element={<ProtectedRoute><Summary /></ProtectedRoute>} />
+
         </Routes> 
 
       </BrowserRouter>

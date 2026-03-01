@@ -5,10 +5,11 @@ import { UserContext } from "../Login-SignIn/UserContext";
 import { useContext } from "react";
 import './notify.css';
 import { socket } from "../Home/socket";
+import EmptyState from "../Common/EmptyState";
 
 
 export default function Notify() {
-    
+
     const { roomDetails ,setRoomDetails} = useContext(UserContext);
 
     function handleDeclineInvitation(roomName) {
@@ -31,38 +32,44 @@ export default function Notify() {
 
         return () => {
             socket.off("sendingInvite");
-        };
-
+        }; 
     },[roomDetails])
+
 
     return (
         <div id="notificationMain">
             <SideBar></SideBar>
             <div className="notTitle">
                 <h2>Watch party Invites</h2>
-                <p className="clear">Clear All</p>
+                <p className="clear" onClick={() => setRoomDetails([])}>Clear All</p>
             </div>
 
             <div id="notMain">
-                {roomDetails.map((rooms, i) => {
-                    let timestamp = "";
-                    console.log("Time: " + rooms.created_at)
-                    const date = new Date(rooms.created_at);
-                    const hours = date.getUTCHours();
-                    const minutes = date.getUTCMinutes();
-
-                    if (hours < 0) {
-                        timestamp = minutes + "m";
-                    }
-                    else if (hours => 24) {
-                        timestamp = Math.floor(hours / 24) + "d";
-                    }
-                    else {
-                        timestamp = hours + "h";
-                    }
-
-                    return <Notification key={i} roomName={rooms.room_name} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} image={rooms.image} video={rooms.video} onDecline={handleDeclineInvitation}></Notification>
-                })}
+            {roomDetails.length === 0 ? (
+                    <EmptyState
+                        message="No invitations"
+                        iconClass="fa-solid fa-bell-slash"
+                        className="notify-empty"
+                    />
+                ) : (
+                    roomDetails.map((rooms, i) => {
+                        let timestamp = "";
+                        console.log("Time: " + rooms.created_at)
+                        const date = new Date(rooms.created_at);
+                        const hours = date.getUTCHours();
+                        const minutes = date.getUTCMinutes();
+                        if (hours < 0) {
+                            timestamp = minutes + "m";
+                        }
+                        else if (hours => 24) {
+                            timestamp = Math.floor(hours / 24) + "d";
+                        }
+                        else {
+                            timestamp = hours + "h";
+                        }
+                        return <Notification key={i} roomName={rooms.room_name} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} image={rooms.image} video={rooms.video} onDecline={handleDeclineInvitation}></Notification>
+                    })
+                )}
             </div>
         </div>
     )

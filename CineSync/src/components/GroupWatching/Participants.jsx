@@ -293,6 +293,9 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
   useEffect(() => {
     if (localVideoRef.current && localStreamRef.current) {
       localVideoRef.current.srcObject = localStreamRef.current;
+      localVideoRef.current
+      .play()
+      .catch(() => {});
     }
 
     Object.entries(remoteStreams).forEach(([member, stream]) => {
@@ -301,7 +304,7 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
         element.srcObject = stream;
       }
     });
-  }, [remoteStreams, party]);
+  }, [remoteStreams, party,camOn]);
 
   if (!party) {
     return null;

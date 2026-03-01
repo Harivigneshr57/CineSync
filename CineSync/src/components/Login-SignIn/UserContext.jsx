@@ -29,6 +29,24 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         changeUser();
       }, [window.onload]);
+
+      useEffect(() => {
+        const hasActiveRoom = Boolean(localStorage.getItem("Roomname"));
+        setAsRoom(hasActiveRoom);
+    }, []);
+
+    useEffect(() => {
+        const syncRoomState = () => {
+            const hasActiveRoom = Boolean(localStorage.getItem("Roomname"));
+            setAsRoom(hasActiveRoom);
+        };
+
+        window.addEventListener("storage", syncRoomState);
+
+        return () => {
+            window.removeEventListener("storage", syncRoomState);
+        };
+    }, []);
       
       return (
         <UserContext.Provider value={{ 

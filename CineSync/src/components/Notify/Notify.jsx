@@ -102,14 +102,14 @@ export default function Notify() {
             </div>
 
             <div id="notMain">
-            {safeRoomDetails.length === 0 ? (
+            {roomDetails.length === 0 ? (
                     <EmptyState
                         message="No invitations"
                         iconClass="fa-solid fa-bell-slash"
                         className="notify-empty"
                     />
                 ) : (
-                    safeRoomDetails.map((rooms, i) => {
+                    roomDetails.map((rooms, i) => {
                         let timestamp = "";
                         const date = new Date(rooms.created_at || rooms.timestamp || Date.now());
                         const hours = date.getUTCHours();

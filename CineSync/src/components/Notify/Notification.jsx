@@ -1,5 +1,4 @@
-import { useContext,useState, useEffect } from "react";
-import Madharasi from "../../assets/images/Madharasi.png";
+import { useContext } from "react";
 import Onnapak from "../../assets/onnapak.png";
 import {socket} from "../Home/socket";
 import { UserContext } from "../Login-SignIn/UserContext";
@@ -42,6 +41,7 @@ export default function Notification({ roomName, roomCode, ownerName, movieName,
                 toast.error("Room not found");
                 return;
             }
+
             localStorage.setItem("Roomname", roomData.roomname);
             setAsRoom(true);
             changeRoomVideo(roomData.movie_url || video);
@@ -50,58 +50,53 @@ export default function Notification({ roomName, roomCode, ownerName, movieName,
             localStorage.setItem('movieVideo', roomData.movie_url || video);
             setRoomName(roomData.roomname);
             setMovieName(roomData.title || movieName);
+
+            const roomStatusRes = await fetch("https://cinesync-3k1z.onrender.com/roomcheck", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ roomCode })
+            });
+            const roomStatusData = await roomStatusRes.json();
+            const hasStarted = Array.isArray(roomStatusData?.result) && roomStatusData.result.length === 1;
+
+            await fetch("https://cinesync-3k1z.onrender.com/addToRoom", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    roomname: roomData.roomname,
+                    username: localStorage.getItem("Username"),
+                    Role: "member",
+                    status: 0
+                })
+            });
+
+            socket.emit("joinRoom", roomData.roomname, localStorage.getItem("Username"));
+
+            if (hasStarted) {
+                const hostRes = await fetch("https://cinesync-3k1z.onrender.com/getHostName", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ roomname: roomData.roomname })
+                });
+
+                const hostData = await hostRes.json();
+                const hostName = hostData?.hostname?.[0]?.username;
+
+                if (hostName) {
+                    localStorage.setItem("HostName", hostName);
+                    socket.emit("middlejoin", localStorage.getItem("Username"), roomData.roomname, hostName);
+                }
+
+                nav("/summary");
+                return;
+            }
+
             nav("/waitingRoom");
         } catch (error) {
             console.log(error);
             toast.error("Unable to join room right now");
         }
     }
-
-    useEffect(() => {
-
-        async function rendernotification() {
-            try {
-                const response = await fetch("https://cinesync-3k1z.onrender.com/getInvitations", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        username: localStorage.getItem("Username"),
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || "Failed to fetch notifications");
-                }
-
-                const data = await response.json();
-                console.log(data.allnotification);
-                changeRoomDetail(data.allnotification);
-            }
-            catch (err) {
-                console.log("Error in get message");
-            }
-        }
-        rendernotification();
-
-
-        const username = localStorage.getItem("Username");
-
-        socket.emit("addtoserver", username);
-
-        socket.on("sendingInvite", (room_name, movie_name, sender_name) => {
-            console.log("Invite received");
-            console.log(room_name, movie_name, sender_name);
-            setMessage(true);
-        });
-
-        return () => {
-            socket.off("sendingInvite");
-        };
-
-    }, []);
 
     return(
         <>

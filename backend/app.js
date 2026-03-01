@@ -1323,7 +1323,7 @@ app.post("/getRoomName", (req, res) => {
     FROM Rooms r
     JOIN Movies m
       ON r.movie_id = m.ROWID
-    WHERE r.RoomCode = ? AND r.password = ?
+    WHERE r.RoomCode = ? AND r.RoomPassword = ?
   `;
 
   db.query(query, [roomCode, password], (err, result) => {

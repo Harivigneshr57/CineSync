@@ -11,6 +11,7 @@ import { socket } from "../Home/socket";
 
 export default function ConfigMovie({ setRoom, room, roomPassword, setRoomPassword, step, onStep, setCode, confirmDiv,setconfirmDiv,image,movie}) {
     const [hostControl, setHostControl] = useState(true);
+    const {setAsRoom,changeMovieImage,user} = useContext(UserContext);
     const toastErrorStyle = {
         style: {
             borderRadius: "1rem",

@@ -90,9 +90,10 @@ export default function JoinRoom() {
 
                         let hostname = await hostdetail.json();
                         console.log(hostname.hostname[0].username);
+                        localStorage.setItem("HostName", hostname.hostname[0].username);
                         socket.emit("joinRoom", localStorage.getItem("Roomname"), localStorage.getItem("Username"));
                         socket.emit("middlejoin",localStorage.getItem("Username"),localStorage.getItem("Roomname"),hostname.hostname[0].username);
-                        navigate("/mainRoom");
+                        navigate("/summary");
                     } else {
                         navigate("/waitingRoom");
                     }

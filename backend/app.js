@@ -729,6 +729,12 @@ io.on("connection", (socket) => {
     socket.broadcast.to(room).emit("updateSeek", time);
   });
 
+  socket.on("requestResumeTime", (username, hostName) => {
+    if (!users[hostName]) return;
+    io.to(users[hostName]).emit("provideCurrentTime", username);
+  });
+
+
   socket.on("setHostControl", ({ roomName, enabled }) => {
     if (!roomName || typeof enabled !== "boolean") return;
 

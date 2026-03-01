@@ -300,6 +300,29 @@ export default function RoomWatch() {
     }, []);
 
 
+    useEffect(() => {
+      const handleProvideCurrentTime = (targetUsername) => {
+          if (!video.current) return;
+          socket.emit("toSetTime", video.current.currentTime, targetUsername);
+      };
+
+      socket.on("provideCurrentTime", handleProvideCurrentTime);
+
+      return () => {
+          socket.off("provideCurrentTime", handleProvideCurrentTime);
+      };
+  }, []);
+
+  useEffect(() => {
+    const pendingResume = localStorage.getItem("pendingResumeFromHost");
+    const hostName = localStorage.getItem("HostName");
+
+    if (pendingResume === "true" && hostName && username) {
+      socket.emit("requestResumeTime", username, hostName);
+      localStorage.removeItem("pendingResumeFromHost");
+    }
+  }, [username]);
+
     return (
         <>
             <div className="roomWatch">

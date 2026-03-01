@@ -12,20 +12,7 @@ export default function AISummarizer() {
     const navigate = useNavigate();
 
     const continueToRoom = () => {
-        const userInput = prompt("Enter the time (in seconds) where you want to continue:");
-
-        if (userInput === null) {
-            return;
-        }
-
-        const resumeTime = Number(userInput);
-
-        if (!Number.isFinite(resumeTime) || resumeTime < 0) {
-            alert("Please enter a valid time in seconds.");
-            return;
-        }
-
-        localStorage.setItem("resumeTime", resumeTime.toString());
+        localStorage.setItem("pendingResumeFromHost", "true");
         navigate("/mainRoom");
     };
 

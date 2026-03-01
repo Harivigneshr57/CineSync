@@ -173,6 +173,7 @@ export default function RoomWatch() {
       };
 
       socket.on("hostControlDenied", handleHostControlDenied);
+      socket.emit("requestHostControl", room);
 
       return () => {
           socket.off("hostControlDenied", handleHostControlDenied);

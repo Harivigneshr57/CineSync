@@ -20,7 +20,7 @@ export default function AISummarizer() {
     useEffect(() => {
         const fallbackTimer = setTimeout(() => {
             setSummaryError("We could not fetch the host summary right now. Please continue to the room.");
-        }, 15000);
+        }, 20000);
         const handleSummary = (result) => {
             let parsedData = null;
 

@@ -1174,24 +1174,42 @@ app.post("/removeFavorite",(req,res)=>{
     });
 
 
-app.post("/sendInvitation", (req, res) => {
-  let { room_name, room_code, sender_name, reciever_name, movie_name,video,image } = req.body;
-
-  let savenotification = "INSERT INTO RoomInvitations (sender_name, receiver_name,room_name,room_code,movie_name,video,image) VALUES (?,?,?,?,?,?,?);";
-
-  db.query(savenotification, [sender_name, reciever_name, room_name, room_code, movie_name, video,image], (err, result) => {
-    if (err) {
-      console.log("Error while inserting notification", err);
-      return res.json({
-        error: err
-      })
-    }
-    return res.json({
-      result
-    })
-  })
-
-})
+    app.post("/sendInvitation", (req, res) => {
+      const {
+        room_name,
+        room_code,
+        sender_name,
+        reciever_name,
+        receiver_name,
+        movie_name,
+        video,
+        image
+      } = req.body;
+    
+      const invitationReceiver = receiver_name || reciever_name;
+    
+      if (!room_name || !room_code || !sender_name || !invitationReceiver || !movie_name) {
+        return res.status(400).json({
+          error: "room_name, room_code, sender_name, receiver_name and movie_name are required"
+        });
+      }
+    
+      const savenotification = "INSERT INTO RoomInvitations (sender_name, receiver_name,room_name,room_code,movie_name,video,image) VALUES (?,?,?,?,?,?,?);";
+    
+      db.query(savenotification, [sender_name, invitationReceiver, room_name, room_code, movie_name, video, image], (err, result) => {
+        if (err) {
+          console.log("Error while inserting notification", err);
+          return res.status(500).json({
+            error: err
+          });
+        }
+        return res.json({
+          result
+        });
+      });
+    
+    });
+    
 
 app.get("/getFeelsForever",(req,res)=>{
 

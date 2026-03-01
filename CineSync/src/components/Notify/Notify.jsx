@@ -12,8 +12,8 @@ export default function Notify() {
 
     const { roomDetails ,setRoomDetails} = useContext(UserContext);
 
-    function handleDeclineInvitation(roomName) {
-        setRoomDetails((prev) => prev.filter((room) => room.room_name !== roomName));
+    function handleDeclineInvitation(roomCode) {
+        setRoomDetails((prev) => prev.filter((room) => room.room_code !== roomCode));
     }
     async function handleClearAllInvitations() {
         const username = localStorage.getItem("Username");
@@ -43,10 +43,10 @@ export default function Notify() {
     }
 
     useEffect(()=>{
-        socket.on("sendingInvite",(room_name,movie_name,sender_name,video,image)=>{
+        socket.on("sendingInvite",(room_code,movie_name,sender_name,video,image)=>{
             setRoomDetails(prev => [
                 {
-                    room_name,
+                    room_code,
                     sender_name,
                     movie_name,
                     timestamp:"2026-02-18T04:55:24.000Z",
@@ -94,7 +94,7 @@ export default function Notify() {
                         else {
                             timestamp = hours + "h";
                         }
-                        return <Notification key={i} roomName={rooms.room_name} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} image={rooms.image} video={rooms.video} onDecline={handleDeclineInvitation}></Notification>
+                        return <Notification key={i} roomName={rooms.room_name} roomCode={rooms.room_code} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} image={rooms.image} video={rooms.video} onDecline={handleDeclineInvitation}></Notification>
                     })
                 )}
             </div>

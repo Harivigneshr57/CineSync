@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { data } from "react-router-dom";
 import { socket } from "../Home/socket";
 
-export default function ConfigMovie({ setRoom, room, step, onStep, setCode, confirmDiv,setconfirmDiv,image,movie}) {
+export default function ConfigMovie({ setRoom, room, roomPassword, setRoomPassword, step, onStep, setCode, confirmDiv,setconfirmDiv,image,movie}) {
     const [audio, setAudio] = useState(false);
     const [video, setVideo] = useState(false);
     const [reaction, setReaction] = useState(false);
@@ -34,6 +34,9 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode, conf
         if (room.length < 5) {
             toast.error("Room Name Should Contain AtLeast 5 Char !!", toastErrorStyle)
         }
+        else if (roomPassword.length < 4) {
+            toast.error("Room password should contain at least 4 characters", toastErrorStyle);
+        }
         else {
             setconfirmDiv(true);
         }
@@ -45,7 +48,7 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode, conf
         let res = await fetch("https://cinesync-3k1z.onrender.com/addRoom", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username:user.username, room: room, audio: audio, video: video, reaction: reaction, chat: chat, game: game, movieId : movie.id })
+            body: JSON.stringify({ username:user.username, room: room, password: roomPassword, audio: audio, video: video, reaction: reaction, chat: chat, game: game, movieId : movie.id })
         })
 
         let data = await res.json();
@@ -104,6 +107,8 @@ export default function ConfigMovie({ setRoom, room, step, onStep, setCode, conf
                 <div className="configurations">
                     <h6>Room Name</h6>
                     <input type="text" name="roomName" id="roomName" value={room} onChange={(e) => setRoom(e.target.value)} placeholder="Enter Your Room Name" />
+                    <h6>Room Password</h6>
+                    <input type="password" name="roomPassword" id="roomPassword" value={roomPassword} onChange={(e) => setRoomPassword(e.target.value)} placeholder="Enter Room Password" />
                     <InteractiveFeatures video={video} audio={audio} chat={chat} reaction={reaction} setAudio={setAudio} setVideo={setVideo} setChat={setChat} setReaction={setReaction}></InteractiveFeatures>
                 </div>
                 <Button id='inviteFriends' onClick={check}>Continue to Invite Friends    <i class="fa-solid fa-arrow-right"></i></Button>

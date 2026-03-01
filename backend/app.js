@@ -6,6 +6,7 @@ const path = require("path");
 const port = process.env.PORT || 3458;
 const jwt = require("jsonwebtoken");
 const app = express();
+const { randomUUID } = require("crypto");
 app.set("trust proxy", 1); 
 const db = require("./db/database");
 const e = require("express");
@@ -603,7 +604,55 @@ io.on("connection", (socket) => {
       return;
     }
 
-    socket.to(roomName).emit("frndLeave", `${username} exited the room`);
+    const checkHostQuery = `
+    SELECT p.Role
+    FROM participants p
+    JOIN Rooms r ON r.RoomID = p.RoomID
+    JOIN users u ON u.ROWID = p.userID
+    WHERE r.RoomName = ? AND u.username = ?
+    LIMIT 1
+  `;
+
+  db.query(checkHostQuery, [roomName, username], (err, result) => {
+    if (err) {
+      console.log("Error while checking host role on exit", err);
+      socket.to(roomName).emit("frndLeave", `${username} exited the room`);
+      return;
+    }
+
+    const isHost = result?.length > 0 && result[0].Role === "Host";
+
+    if (!isHost) {
+      socket.to(roomName).emit("frndLeave", `${username} exited the room`);
+      return;
+    }
+
+    const deleteParticipantsQuery = `
+      DELETE FROM participants
+      WHERE RoomID = (SELECT RoomID FROM Rooms WHERE RoomName = ?)
+    `;
+
+    db.query(deleteParticipantsQuery, [roomName], (participantsErr) => {
+      if (participantsErr) {
+        console.log("Error while deleting participants on host exit", participantsErr);
+        socket.to(roomName).emit("roomClosed", "Room closed as host closed the room");
+        return;
+      }
+
+      const deleteRoomQuery = `DELETE FROM Rooms WHERE RoomName = ?`;
+      db.query(deleteRoomQuery, [roomName], (deleteRoomErr) => {
+        if (deleteRoomErr) {
+          console.log("Error while deleting room on host exit", deleteRoomErr);
+        }
+
+        socket.to(roomName).emit("roomClosed", "Room closed as host closed the room");
+
+        if (roomUsers[roomName]) {
+          delete roomUsers[roomName];
+        }
+      });
+    });
+  });
   });
 
 
@@ -715,11 +764,11 @@ io.on("connection", (socket) => {
 
   });
 
-  socket.on("sendInvite", (room_name, sender_name, movie_name, receiver_name) => {
+  socket.on("sendInvite", (room_code, sender_name, movie_name, receiver_name, video, image) => {
     let friend = users[receiver_name];
     console.log(users, " Send Invite");
     if (friend) {
-      io.to(friend).emit("sendingInvite", room_name, movie_name, sender_name);
+      io.to(friend).emit("sendingInvite", room_code, movie_name, sender_name, video, image);
     }
   })
 
@@ -878,7 +927,7 @@ ORDER BY m.title;
 
 app.post("/addRoom", async (req, res) => {
   try {
-    const { username, room, audio, video, reaction, chat, game, movieId } = req.body;
+    const { username, room, password, audio, video, reaction, chat, game, movieId } = req.body;
 
     if (!username) {
       return res.status(400).json({ message: "User not found" });
@@ -886,6 +935,10 @@ app.post("/addRoom", async (req, res) => {
 
     if (!room) {
       return res.status(400).json({ message: "Room Name is Required" });
+    }
+
+    if (!password) {
+      return res.status(400).json({ message: "Room password is required" });
     }
 
     const user = await queryAsync(
@@ -910,7 +963,7 @@ app.post("/addRoom", async (req, res) => {
       });
     }
 
-    const roomCode = await createRoom(room, userID, chat, video, audio, reaction, game, movieId);
+    const roomCode = await createRoom(room, password, userID, chat, video, audio, reaction, game, movieId);
 
     return res.status(200).json({
       message: "Room added successfully",
@@ -933,27 +986,13 @@ function queryAsync(sql, values) {
 }
 
 
-async function createRoom(room, userID, chat, video, audio, reaction, game,movie_id) {
-  let roomCode;
-  let exists = true;
-
-  while (exists) {
-    roomCode = Math.floor(Math.random() * 9000) + 1000;
-
-    const result = await queryAsync(
-      "select * from Rooms where RoomCode=? and RoomStatus!=?",
-      [roomCode, "End"]
-    );
-
-    exists = result.length > 0;
-  }
-
+async function createRoom(room, password, userID, chat, video, audio, reaction, game,movie_id) {
+  const roomCode = randomUUID();
   await queryAsync(
-    "insert into Rooms(RoomName,RoomCode,OwnerID,Chat,VideoCall,Audiocall,Emoji,PredictionGame,movie_id) values(?,?,?,?,?,?,?,?,?)",
-    [room, roomCode, userID, chat, video, audio, reaction, game, movie_id]
-  );
-
-  return roomCode;
+  "insert into Rooms(RoomName,RoomCode,RoomPassword,OwnerID,Chat,VideoCall,Audiocall,Emoji,PredictionGame,movie_id) values(?,?,?,?,?,?,?,?,?,?)",
+  [room, roomCode, password, userID, chat, video, audio, reaction, game, movie_id]
+);
+return roomCode;
 }
 
 // app.post("/inviteToFriend",async(req,res)=>{
@@ -1094,11 +1133,11 @@ app.post("/removeFavorite",(req,res)=>{
 
 
 app.post("/sendInvitation", (req, res) => {
-  let { room_name, sender_name, reciever_name, movie_name,video,image } = req.body;
+  let { room_name, room_code, sender_name, reciever_name, movie_name,video,image } = req.body;
 
-  let savenotification = "INSERT INTO RoomInvitations (sender_name, receiver_name,room_name,movie_name,video,image) VALUES (?,?,?,?,?,?);";
+  let savenotification = "INSERT INTO RoomInvitations (sender_name, receiver_name,room_name,room_code,movie_name,video,image) VALUES (?,?,?,?,?,?,?);";
 
-  db.query(savenotification, [sender_name, reciever_name, room_name, movie_name, video,image], (err, result) => {
+  db.query(savenotification, [sender_name, reciever_name, room_name, room_code, movie_name, video,image], (err, result) => {
     if (err) {
       console.log("Error while inserting notification", err);
       return res.json({
@@ -1145,7 +1184,7 @@ app.post("/getInvitations", (req, res) => {
   }
 
   let getNotification = `
-    SELECT sender_name, room_name, movie_name, created_at,video,image
+  SELECT sender_name, room_name, room_code, movie_name, created_at,video,image
     FROM RoomInvitations
     WHERE receiver_name = ?
     ORDER BY created_at DESC
@@ -1170,7 +1209,7 @@ app.post("/getInvitations", (req, res) => {
 
 app.post("/declineInvitation", (req, res) => {
   let { invitation } = req.body;
-  let deleteInvitation = "DELETE FROM RoomInvitations WHERE room_name = ?";
+  let deleteInvitation = "DELETE FROM RoomInvitations WHERE room_code = ?";
 
   try {
     db.query(deleteInvitation, [invitation], (err, result) => {
@@ -1269,7 +1308,45 @@ app.post("/addToRoom",(req,res)=>{
 
 app.post("/getRoomName", (req, res) => {
 
+  const { roomCode, password } = req.body;
+
+  if (!roomCode || !password) {
+    return res.status(400).json({ message: "roomCode and password are required" });
+  }
+
+  const query = `
+    SELECT 
+      r.RoomName as roomname,
+      m.movie_url,
+      m.movie_poster,
+      m.title
+    FROM Rooms r
+    JOIN Movies m
+      ON r.movie_id = m.ROWID
+    WHERE r.RoomCode = ? AND r.password = ?
+  `;
+
+  db.query(query, [roomCode, password], (err, result) => {
+
+    if (err) {
+      return res.json({ error: err });
+    }
+
+    if (result.length === 0) {
+      return res.json({ message: "Room not found" });
+    }
+
+    res.json(result[0]);
+  });
+});
+
+app.post("/getRoomById", (req, res) => {
+
   const { roomCode } = req.body;
+
+  if (!roomCode) {
+    return res.status(400).json({ message: "roomCode is required" });
+  }
 
   const query = `
     SELECT 
@@ -1296,7 +1373,6 @@ app.post("/getRoomName", (req, res) => {
     res.json(result[0]);
   });
 });
-
 
 
 

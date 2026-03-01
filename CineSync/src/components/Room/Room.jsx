@@ -13,6 +13,7 @@ export default function Room() {
     const [movie, setMovie] = useState({});
     const [room, setRoom] = useState('');
     const [confirmDiv, setconfirmDiv] = useState(false);
+    const [roomPassword, setRoomPassword] = useState('');
 
     function onSetMovie(movie) {
         setMovie(movie);
@@ -35,7 +36,7 @@ export default function Room() {
         <>
             <div id="room">
                 <SideBar></SideBar>
-                {step == 1 ? <SelectMovie onStep={onSetStep} onMovie={onSetMovie} step={step} movie={movie}></SelectMovie> : step == 2 ? <ConfigMovie image={movie.image} setRoom={setRoom} room={room} setCode={setCode} onStep={setStep} step={step} confirmDiv={confirmDiv} setconfirmDiv={setconfirmDiv} movie={movie}></ConfigMovie> : <InviteMovie room={room} movie={movie} code={code} onStep={setStep} step={step}></InviteMovie>}
+                {step == 1 ? <SelectMovie onStep={onSetStep} onMovie={onSetMovie} step={step} movie={movie}></SelectMovie> : step == 2 ? <ConfigMovie image={movie.image} setRoom={setRoom} room={room} roomPassword={roomPassword} setRoomPassword={setRoomPassword} setCode={setCode} onStep={setStep} step={step} confirmDiv={confirmDiv} setconfirmDiv={setconfirmDiv} movie={movie}></ConfigMovie> : <InviteMovie room={room} movie={movie} code={code} onStep={setStep} step={step}></InviteMovie>}
                 {step == 3 ? <HostView></HostView> : <SelectedMovie confirmDiv={confirmDiv} setconfirmDiv={setconfirmDiv} movie={movie}></SelectedMovie>}
 
             </div>

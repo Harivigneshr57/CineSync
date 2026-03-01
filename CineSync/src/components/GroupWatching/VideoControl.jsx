@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import Button from "../Login-SignIn/Button";
 import { socket } from "../Home/socket";
 import FloatingEmoji from "./FloatingEmoji";
-export default function VideoControl({reference, references,chat,setChat,emitSeek,party,setParty,micOn,setMicOn,camOn,setCamOn,mutedUsers,setMutedUsers,localVideo}) {
+export default function VideoControl({reference, references,chat,setChat,emitSeek,party,setParty,micOn,setMicOn,camOn,setCamOn,mutedUsers,setMutedUsers,localVideo,showControls}) {
 
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
@@ -258,7 +258,7 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
   return (
     <>
     <FloatingEmoji emoji={emojis}></FloatingEmoji>
-    <div className="videoControls">
+    <div className="videoControls" style={{ display: showControls ? "flex" : "none" }}>
 
       <div id="mainIp">
         <input

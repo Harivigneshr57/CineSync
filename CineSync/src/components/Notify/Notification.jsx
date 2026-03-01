@@ -3,45 +3,58 @@ import Madharasi from "../../assets/images/Madharasi.png";
 import Onnapak from "../../assets/onnapak.png";
 import {socket} from "../Home/socket";
 import { UserContext } from "../Login-SignIn/UserContext";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-export default function Notification({roomName, ownerName,movieName,moviestatus,timeStamp,image,video,onDecline}){
-    const [currentRoom ,setcurrentRoom] = useState("");
-    const {changeRoomVideo,setRoomName,setMovieName,changeRoomDetail,setAsRoom} = useContext(UserContext);
-    let nav =useNavigate();
+export default function Notification({ roomName, roomCode, ownerName, movieName, moviestatus, timeStamp, image, video, onDecline }) {
+    const { changeRoomVideo, setRoomName, setMovieName, setAsRoom } = useContext(UserContext);
+    let nav = useNavigate();
 
-    async function declineinvitation(){
+    async function declineinvitation() {
         try {
             const response = await fetch("https://cinesync-3k1z.onrender.com/declineInvitation", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ invitation: roomName }),
+                body: JSON.stringify({ invitation: roomCode }),
             });
 
             if (!response.ok) {
                 throw new Error("Failed to decline invitation");
             }
 
-            onDecline(roomName);
+            onDecline(roomCode);
         } catch (err) {
             console.log("Error while declining invitation", err);
         }
     }
 
 
-    function acceptInvitation(room,video,movie){
-        console.log("The room user want to join: "+room);
-        localStorage.setItem("Roomname",room);
-        console.log(video)
-        setAsRoom(true);
-        changeRoomVideo(video);
-        localStorage.setItem('MovieName',movie);
-        localStorage.setItem('MovieImage',image);
-        localStorage.setItem('movieVideo',video);
-        setRoomName(room);
-        setMovieName(movie);
-        nav("/waitingRoom");
+    async function acceptInvitation() {
+        try {
+            const roomRes = await fetch("https://cinesync-3k1z.onrender.com/getRoomById", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ roomCode })
+            });
+            const roomData = await roomRes.json();
+            if (!roomData.roomname) {
+                toast.error("Room not found");
+                return;
+            }
+            localStorage.setItem("Roomname", roomData.roomname);
+            setAsRoom(true);
+            changeRoomVideo(roomData.movie_url || video);
+            localStorage.setItem('MovieName', roomData.title || movieName);
+            localStorage.setItem('MovieImage', roomData.movie_poster || image);
+            localStorage.setItem('movieVideo', roomData.movie_url || video);
+            setRoomName(roomData.roomname);
+            setMovieName(roomData.title || movieName);
+            nav("/waitingRoom");
+        } catch (error) {
+            console.log(error);
+            toast.error("Unable to join room right now");
+        }
     }
 
     useEffect(() => {
@@ -93,25 +106,26 @@ export default function Notification({roomName, ownerName,movieName,moviestatus,
     return(
         <>
         <div className="notificatinDiv">
-            <img className="notImage" src={image} alt="Movie Image"></img>
-            <div className="notDetail">
-                <div className="notDet">
-                    <div className="notDetLeft">
-                        <div className="notOwner">
-                            <img src={Onnapak} alt="profile"></img>
-                            <p>{ownerName}<span> invited you</span></p>
+                <img className="notImage" src={image} alt="Movie Image"></img>
+                <div className="notDetail">
+                    <div className="notDet">
+                        <div className="notDetLeft">
+                            <div className="notOwner">
+                                <img src={Onnapak} alt="profile"></img>
+                                <p>{ownerName}<span> invited you</span></p>
+                            </div>
+                            <h3 className="roomNameNot">{roomName}</h3>
+                            <p className="movieTitleNot">Room ID: {roomCode}</p>
+                            <p className="movieTitleNot">{movieName}<span className="timeForMovie">{moviestatus}</span></p>
                         </div>
-                        <h3 className="roomNameNot">{roomName}</h3>
-                        <p className="movieTitleNot">{movieName}<span className="timeForMovie">{moviestatus}</span></p>
+                        <p className="timeStamp">{timeStamp}</p>
                     </div>
-                    <p className="timeStamp">{timeStamp}</p>
-                </div>
-                <div className="buttonDiv">
-                    <button className="joinNot" onClick={()=>{acceptInvitation(roomName,video,movieName)}}>Join Room</button>
-                    <button className="declineNot" onClick={declineinvitation} >Decline</button>
-                </div>
+                    <div className="buttonDiv">
+                        <button className="joinNot" onClick={acceptInvitation}>Join Room</button>
+                        <button className="declineNot" onClick={declineinvitation} >Decline</button>
+                    </div>
+                    </div>
             </div>
-        </div>
         </>
     )
 }

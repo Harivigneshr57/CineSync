@@ -2,7 +2,6 @@ import { useContext } from "react";
 import MovieCard from "./../Discover/MovieCard";
 import { UserContext } from "../Login-SignIn/UserContext";
 import { useState,useEffect } from "react";
-import EmptyState from "../Common/EmptyState";
  
 
  
@@ -52,7 +51,9 @@ return <>
             rating={movie.rating}
         />
     ))
-    ) : <EmptyState message="Favorites Not Found" className="profile-favorites-empty" />}
+) : <div id="no-member">
+    <h3>Favorites Not Found</h3>
+    </div>}
             </div>
         </div>
         </>

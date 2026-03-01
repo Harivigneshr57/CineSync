@@ -592,6 +592,7 @@ io.on("connection", (socket) => {
       roomUsers[roomName].push(username);
     }
     console.log(username + ` joined room: ${roomName}`);
+    socket.to(roomName).emit("newJoin", username);
     socket.to(roomName).emit("newJoin", friend);
     emitRoomUsers(roomName);
   });

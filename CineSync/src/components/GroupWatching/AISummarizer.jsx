@@ -9,6 +9,7 @@ export default function AISummarizer() {
 
     const [isdisplay, setdisplaysummary] = useState(false);
     const [summaryData, setSummaryData] = useState(null);
+    const [summaryError, setSummaryError] = useState("");
     const navigate = useNavigate();
 
     const continueToRoom = () => {
@@ -17,29 +18,52 @@ export default function AISummarizer() {
     };
 
     useEffect(() => {
+        const fallbackTimer = setTimeout(() => {
+            setSummaryError("We could not fetch the host summary right now. Please continue to the room.");
+        }, 15000);
         const handleSummary = (result) => {
-            // console.log("Raw Summary:", result);
+            let parsedData = null;
 
-            let parsedData;
-
-            if (typeof result.response === "string") {
-                parsedData = JSON.parse(result.response);
-            } else {
-                parsedData = result;
+            try {
+                if (typeof result?.response === "string") {
+                    parsedData = JSON.parse(result.response);
+                } else if (result?.response && typeof result.response === "object") {
+                    parsedData = result.response;
+                } else if (result && typeof result === "object") {
+                    parsedData = result;
+                }
+            } catch (error) {
+                console.log("Failed to parse summary payload:", error);
             }
 
-            // console.log("Parsed Summary:", parsedData);
+            if (!parsedData || typeof parsedData !== "object") {
+                setSummaryError("Summary format was invalid. Continue to room and sync with host.");
+                return;
+            }
 
             setSummaryData(parsedData);
             setdisplaysummary(true);
+            setSummaryError("");
+            clearTimeout(fallbackTimer);
         };
 
         socket.on("summaryFromHost", handleSummary);
 
         return () => {
+            clearTimeout(fallbackTimer);
             socket.off("summaryFromHost", handleSummary);
         };
     }, []);
+    if (summaryError && !summaryData) {
+        return (
+            <div className="parent-summary" style={{ display: "flex", flexDirection: "column", gap: "1rem", justifyContent: "center", alignItems: "center" }}>
+                <p style={{ color: "white", maxWidth: "40rem", textAlign: "center" }}>{summaryError}</p>
+                <button className="continue-watch-btn" onClick={continueToRoom}>
+                    Continue to room
+                </button>
+            </div>
+        );
+    }
     if (!summaryData) {
 
         return (

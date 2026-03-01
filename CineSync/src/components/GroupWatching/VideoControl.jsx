@@ -3,7 +3,7 @@ import Button from "../Login-SignIn/Button";
 import { socket } from "../Home/socket";
 import FloatingEmoji from "./FloatingEmoji";
 export default function VideoControl({reference, references,chat,setChat,emitSeek,party,setParty,micOn,setMicOn,camOn,setCamOn,mutedUsers,setMutedUsers,localVideo,showControls,hostControlEnabled,roomRole}) {
-
+  const canControlPlayback = !hostControlEnabled || roomRole === "Host";
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       references.current.requestFullscreen();
@@ -243,48 +243,53 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
     <FloatingEmoji emoji={emojis}></FloatingEmoji>
     <div className="videoControls" style={{ display: showControls ? "flex" : "none" }}>
 
-      <div id="mainIp">
-        <input
-          type="range"
-          className="top-progress"
-          min={0}
-          max={100}
-          value={videoRange}
-          onChange={movementOfRange}
-        />
+    {canControlPlayback && (
+        <div id="mainIp">
+          <input
+            type="range"
+            className="top-progress"
+            min={0}
+            max={100}
+            value={videoRange}
+            onChange={movementOfRange}
+          />
 
-        <div
-          id="backColorDiv"
-          style={{
-            background: `linear-gradient(
-              90deg,
-              var(--major) ${videoRange}%,
-              white ${videoRange}%
-            )`,
-          }}
-        />
-      </div>
+          <div
+            id="backColorDiv"
+            style={{
+              background: `linear-gradient(
+                90deg,
+                var(--major) ${videoRange}%,
+                white ${videoRange}%
+              )`,
+            }}
+          />
+        </div>
+      )}
 
       <div className="otherControls">
 
         <div className="leftSide">
 
-        <Button id={"backward"} onClick={backward} style={hostControlEnabled && roomRole !== "Host" ? { opacity: 0.5 } : {}}>
-            <i className="fa-solid fa-backward"></i>
-          </Button>
+        {canControlPlayback && (
+            <>
+              <Button id={"backward"} onClick={backward}>
+                <i className="fa-solid fa-backward"></i>
+              </Button>
 
+              <Button id={"pause"} onClick={pauses}>
+                {play ? (
+                  <i className="fa-solid fa-pause"></i>
+                ) : (
+                  <i className="fa-solid fa-play"></i>
+                )}
+              </Button>
 
-          <Button id={"pause"} onClick={pauses} style={hostControlEnabled && roomRole !== "Host" ? { opacity: 0.5 } : {}}>
-            {play ? (
-              <i className="fa-solid fa-pause"></i>
-            ) : (
-              <i className="fa-solid fa-play"></i>
-            )}
-          </Button>
-
-          <Button id={"forward"} onClick={forward} style={hostControlEnabled && roomRole !== "Host" ? { opacity: 0.5 } : {}}>
-            <i className="fa-solid fa-forward"></i>
-          </Button>
+              <Button id={"forward"} onClick={forward}>
+                <i className="fa-solid fa-forward"></i>
+              </Button>
+            </>
+          )}
 
           <p>{currentTime} / {duration}</p>
 

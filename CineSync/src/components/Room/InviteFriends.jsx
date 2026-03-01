@@ -25,14 +25,12 @@ export default function InviteFriends(props) {
     }, [user]);
 
     function handleFriend(friendname) {
-        const movieName = props.movie?.title || props.movie?.name;
-        console.log("receiver_name: " + friendname + " movie_name: " + movieName + " sender_name: " + localStorage.getItem("Username") + " Room code :" + props.code + " Room name: " + props.room);
-        setFriend(friendname);
-        socket.emit("sendInvite", props.code, localStorage.getItem("Username"), movieName, friendname, props.movie.video, props.movie.url);
-        sendNotification(props.room, props.code, localStorage.getItem("Username"), friendname, movieName, props.movie.url, props.movie.video);
+        console.log("reciever_name: " + friendname + " movie_name: " + props.movie.title + " sender_name: " + localStorage.getItem("Username") + " Room code :" + props.code + " Room name: " + props.room);
+        socket.emit("sendInvite",props.code,localStorage.getItem("Username"),props.movie.title,friendname,props.movie.video,props.movie.url);
+        sendNotification(props.room, props.code, localStorage.getItem("Username"), friendname, props.movie.title,props.movie.url,props.movie.video);
     }
 
-    async function sendNotification(room_name, room_code, sender_name, receiver_name, movie_name, image, video) {
+    async function sendNotification(room_name, room_code, sender_name, receiver_name, movie_name,image,video) {
 
         try {
 
@@ -48,7 +46,6 @@ export default function InviteFriends(props) {
                     room_name,
                     sender_name,
                     receiver_name,
-                    reciever_name: receiver_name,
                     room_code,
                     movie_name,
                     video,
@@ -59,16 +56,12 @@ export default function InviteFriends(props) {
 
             const data = await response.json();
 
-            if (!response.ok || data.error) {
-                throw new Error(data.error || "Failed to send invitation");
-            }
-
-            console.log("Invitation sent", data);
+            console.log(data);
 
         }
         catch (err) {
 
-            console.log("Error while sending invitation", err);
+            console.log(err);
 
         }
     }

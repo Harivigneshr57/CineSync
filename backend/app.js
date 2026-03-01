@@ -598,6 +598,14 @@ io.on("connection", (socket) => {
     emitRoomUsers(roomName);
   });
 
+  socket.on("exit", (username, roomName) => {
+    if (!username || !roomName) {
+      return;
+    }
+
+    socket.to(roomName).emit("frndLeave", `${username} exited the room`);
+  });
+
 
   socket.on('leaveRoom',(username,roomName)=>{
     socket.leave(roomName);
@@ -985,6 +993,67 @@ async function getRoom(room, userID, chat, video, audio, reaction, game) {
   return roomCode
 }
 
+
+app.post("/removeFavorite",(req,res)=>{
+  const {username,movie_name,movieYear}=req.body;
+  if (!username) {
+    console.log("No username provided!");
+    return res.status(400).json({ error: "Username required" });
+  }
+  console.log(username,movie_name,movieYear)
+  db.query("SELECT ROWID FROM users WHERE username=?", [username], (err, userResult) => {
+    if (err) return res.status(500).json({ error: err });
+    if (!userResult.length)
+      return res.json({ error: "User not found" });
+
+    const userID = userResult[0].ROWID;
+    db.query("select ROWID from Movies where title=? and year=?",[movie_name,movieYear],(err,result)=>{
+      if(err)return res.status(500).json({ error: err });
+      if(! result.length) return res.json({error:"Movie Not Found"});
+      let movie_id=result[0].ROWID;
+
+
+      db.query("Delete from FavoriteMovie where userID=? and movieID=?", [userID,movie_id], (err, nameResult) => {
+        if (err) return res.status(500).json({ error: err });
+        return res.json({ result: userID });
+      });
+    })
+
+    });
+  });
+
+  app.post("/searchFavorite",(req,res)=>{
+    const {username,movie_name,movieYear}=req.body;
+    if (!username) {
+      console.log("No username provided!");
+      return res.status(400).json({ error: "Username required" });
+    }
+    console.log(username,movie_name,movieYear)
+    db.query("SELECT ROWID FROM users WHERE username=?", [username], (err, userResult) => {
+      if (err) return res.status(500).json({ error: err });
+      if (!userResult.length)
+        return res.json({ error: "User not found" });
+  
+      const userID = userResult[0].ROWID;
+      db.query("select ROWID from Movies where title=? and year=?",[movie_name,movieYear],(err,result)=>{
+        if(err)return res.status(500).json({ error: err });
+        if(! result.length) return res.json({error:"Movie Not Found"});
+        let movie_id=result[0].ROWID;
+  
+  
+        db.query("select * from FavoriteMovie where userID=? and movieID=?", [userID,movie_id], (err, nameResult) => {
+          if (err) return res.status(500).json({ error: err });
+          if(nameResult.length ==0){
+            return res.status(200).json({ error: 'movie not favorite' });
+          }
+          return res.json({ result: userID });
+        });
+      })
+  
+      });
+    });
+
+    
 app.post("/sendInvitation", (req, res) => {
   let { room_name, sender_name, reciever_name, movie_name,video,image } = req.body;
 
@@ -1003,6 +1072,31 @@ app.post("/sendInvitation", (req, res) => {
   })
 
 })
+
+app.get("/getFeelsForever",(req,res)=>{
+
+  db.query(
+    `SELECT movie_poster, title, rating, year, overview, director, lead_cast 
+     FROM Movies 
+     WHERE ROWID IN (
+        SELECT movie_id 
+        FROM MovieCategoryRelation 
+        WHERE category_id = 9
+     )
+     LIMIT 5`,
+    (err, movieResult) => {
+
+      if (err) return res.status(500).json({ error: err });
+
+      if (!movieResult.length)
+        return res.json({ result: [] });
+
+      return res.json({ result: movieResult });
+    }
+  );
+
+});
+
 
 app.post("/getInvitations", (req, res) => {
   let { username } = req.body;

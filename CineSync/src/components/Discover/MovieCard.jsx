@@ -16,9 +16,14 @@ export default function MovieCard({ url, title, genre, year, setOverview, setOve
 
   return (
     <div onClick={overview} className="movie-card">
-        <div className="poster" onClick={overview}>
-            <img src={url} alt="rendering ......" onClick={overview}/>
+      <div className="poster">
+        <img src={url} alt="rendering ......" />
+  
+        <div className="title-overlap">
+          <h3>{title}</h3>
         </div>
+  
+      </div>
     </div>
   );
 }

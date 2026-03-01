@@ -31,6 +31,7 @@ const rtcConfig = {
 export default function Participants({ party, localVideo, mutedUsers, setMutedUsers, micOn ,camOn}) {
   const [participants, setParticipants] = useState([]);
   const [remoteStreams, setRemoteStreams] = useState({});
+  const [cameraStates, setCameraStates] = useState({});
 
   const roomName = localStorage.getItem("Roomname");
   const username = localStorage.getItem("Username");
@@ -97,18 +98,24 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
     };
 
     peerConnection.oniceconnectionstatechange = () => {
-      if (
-        peerConnection.iceConnectionState === "failed" ||
-        peerConnection.iceConnectionState === "disconnected"
-      ) {
+      if (peerConnection.iceConnectionState === "failed") {
         peerConnection.restartIce();
-        createOfferFor(remoteUser).catch(console.error);
+        if (peerConnection.signalingState === "stable") {
+          createOfferFor(remoteUser).catch(console.error);
+        }
       }
     };
 
     peerConnections.current[remoteUser] = peerConnection;
 
     return peerConnection;
+  };
+
+  const handleRemoteCameraState = ({ username: remoteUser, state }) => {
+    setCameraStates((prev) => ({
+      ...prev,
+      [remoteUser]: !!state
+    }));
   };
 
   const createOfferFor = async (remoteUser) => {
@@ -249,6 +256,7 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
     socket.on("webrtcOffer", handleOffer);
     socket.on("webrtcAnswer", handleAnswer);
     socket.on("webrtcIceCandidate", handleIceCandidate);
+    socket.on("cameraStateChanged", handleRemoteCameraState);
 
     return () => {
       socket.emit("leaveRoom", username, roomName);
@@ -256,6 +264,7 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
       socket.off("webrtcOffer", handleOffer);
       socket.off("webrtcAnswer", handleAnswer);
       socket.off("webrtcIceCandidate", handleIceCandidate);
+      socket.off("cameraStateChanged", handleRemoteCameraState);
 
       Object.values(peerConnections.current).forEach((pc) => pc.close());
       peerConnections.current = {};
@@ -272,6 +281,14 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
       }
     };
   }, [roomName, username, localVideo]);
+
+  useEffect(() => {
+    socket.emit("cameraStateChanged", {
+      room: roomName,
+      username,
+      state: camOn
+    });
+  }, [roomName, username, camOn]);
 
   useEffect(() => {
     if (localVideoRef.current && localStreamRef.current) {
@@ -310,14 +327,20 @@ export default function Participants({ party, localVideo, mutedUsers, setMutedUs
           .filter((member) => member !== username)
           .map((member) => (
             <div className="participantCard" key={member}>
-              <video
-                ref={(el) => {
-                  remoteVideoRefs.current[member] = el;
-                }}
-                autoPlay
-                playsInline
-                muted={!micOn || !!mutedUsers?.[member]}
-              />
+             {cameraStates[member] === false ? (
+                <div className="participantAvatar" aria-label={`${member} camera off avatar`}>
+                  {member?.trim()?.charAt(0)?.toUpperCase() || "?"}
+                </div>
+              ) : (
+                <video
+                  ref={(el) => {
+                    remoteVideoRefs.current[member] = el;
+                  }}
+                  autoPlay
+                  playsInline
+                  muted={!micOn || !!mutedUsers?.[member]}
+                />
+              )}
               <p>
                 {member}
                 <button

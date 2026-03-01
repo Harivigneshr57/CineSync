@@ -16,8 +16,6 @@ export default function MainMovieDiv({
   const [showDiv, setShowDiv] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  /* ================= FETCH MOVIES ================= */
-
   useEffect(() => {
     async function fetmovie() {
       try {
@@ -40,8 +38,6 @@ export default function MainMovieDiv({
     fetmovie();
   }, []);
 
-  /* ================= SEARCH ================= */
-
   function searchMovie(e) {
     const value = e.target.value;
     setmovieName(value);
@@ -49,16 +45,12 @@ export default function MainMovieDiv({
     setShowDiv(!!value.trim());
   }
 
-  /* ================= FILTER ================= */
-
   const filterMovieArray =
     moviename.trim().length > 0
       ? movies.filter((ele) =>
           ele.title.toLowerCase().includes(moviename.toLowerCase())
         )
       : movies;
-
-  /* ================= CATEGORY GROUPING ================= */
 
   const categorized = {};
 
@@ -69,11 +61,7 @@ export default function MainMovieDiv({
     categorized[movie.Category_Name].push(movie);
   });
 
-  /* ================= LOADING ================= */
-
   if (loading) return <Loading />;
-
-  /* ================= UI ================= */
 
   return (
     <>

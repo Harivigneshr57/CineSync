@@ -1,7 +1,7 @@
 import SideBar from "./SideBar"
 import BigMovie from "./BigMovie"
 import TrendingMovie from "./TrendingMovie"
-import TamilBlockBustors from "./TamilBlockBusters"
+import TamilBlockBustors from "./FeelsForever"
 import './home.css'
 import './MediaQuery.css'
 import { useEffect, useContext, useState } from "react";

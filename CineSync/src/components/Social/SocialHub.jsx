@@ -5,14 +5,14 @@ import SideBar from "../Home/SideBar"
 import Chathead from "./Chathead"
 import Chatmeassages from "./Chatmessages"
 import './social.css'
-import { useState ,useRef,useEffect} from "react"
+import { useState ,useEffect} from "react"
 import Loading from "../Home/Loading"
 
 export default function SocialHub() {
     const [refresh, setRefresh] = useState(false);
     const [currentUser, setUser] = useState("");
     const [chatBox, setchatBox] = useState(false);
-    const [loading,setLoadings] = useState(false);
+    const [loading,setLoadings] = useState(true);
     const [messageArray, setArray] = useState([]);
     let username = localStorage.getItem("Username");
 
@@ -63,9 +63,14 @@ export default function SocialHub() {
                 <SideBar></SideBar>
                 <div id="socialMain">
                     <TopBar></TopBar>
-                    <div className="social-friends-column">
+                    {loading && (
+                        <div className="social-loading-wrapper" style={{width:'100%'},{height:'100vh'}}>
+                            <Loading></Loading>
+                        </div>
+                    )}
+                    <div className="social-friends-column" style={{ visibility: loading ? 'hidden' : 'visible' }}>
                         <AllFriends setLoadings={setLoadings} handleUser={handleUser} refresh={refresh} currentUser={currentUser} displayChat={displayChat} ></AllFriends>
-                        <PendingInvite setLoadings={setLoadings} onAcceptDone={() => setRefresh(!refresh)}></PendingInvite>
+                        <PendingInvite onAcceptDone={() => setRefresh(!refresh)}></PendingInvite>
                     </div>
                     <div className="chat" style={{ display: chatBox ? 'block' : 'none' }} >
                         <Chathead hideChat={hideChat} currentUser={currentUser}></Chathead>

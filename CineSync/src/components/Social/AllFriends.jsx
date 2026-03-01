@@ -10,28 +10,34 @@ export function FriendPanel({ currentUser, handleUser, displayChat,refresh, setL
     const [friends, setFriends] = useState([]);
     useEffect(() => {
         setLoadings(true);
-        if (!user) return;
-        // console.log("hi===============",user);
-        fetch("https://cinesync-3k1z.onrender.com/allFriends", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: user.username })
-        }).then((res) => {
-
-            // console.log(res);
-            return res.json();
-        }).then((data) => {
-            // console.log("FULL RESPONSE:", data);
+        if (!user) {
             setLoadings(false);
+            return;
+        }
         
-            if (data.result) {
-                setFriends(data.result);
-            } else {
-                setFriends([]);   
+        async function fetchFriends() {
+            setLoadings(true);
+            try {
+                const res = await fetch("https://cinesync-3k1z.onrender.com/allFriends", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: user.username })
+                });
+                const data = await res.json();
+                if (data.result) {
+                    setFriends(data.result);
+                } else {
+                    setFriends([]);
+                }
+            } catch (err) {
+                console.log("Error fetching friends", err);
+                setFriends([]);
+            } finally {
+                setLoadings(false);
             }
-        })
-        
-    }, [user, refresh]);
+        }
+        fetchFriends();
+    }, [user, refresh, setLoadings]);
 
  
     return (

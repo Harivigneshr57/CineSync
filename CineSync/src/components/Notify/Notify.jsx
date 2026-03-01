@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import SideBar from "../Home/SideBar";
 import Notification from "./Notification";
 import { UserContext } from "../Login-SignIn/UserContext";
@@ -8,14 +8,12 @@ import { socket } from "../Home/socket";
 
 
 export default function Notify() {
+    
     const { roomDetails ,setRoomDetails} = useContext(UserContext);
-    const [invitation, setInvitation] = useState("");
-    // {roomName, ownerName,movieName,moviestatus,timeStamp}
 
-    function handleInvitation(roomname) {
-        setInvitation(roomname);
+    function handleDeclineInvitation(roomName) {
+        setRoomDetails((prev) => prev.filter((room) => room.room_name !== roomName));
     }
-
     useEffect(()=>{
         socket.on("sendingInvite",(room_name,movie_name,sender_name,video,image)=>{
             setRoomDetails(prev => [
@@ -63,7 +61,7 @@ export default function Notify() {
                         timestamp = hours + "h";
                     }
 
-                    return <Notification key={i} roomName={rooms.room_name} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} image={rooms.image} video={rooms.video}></Notification>
+                    return <Notification key={i} roomName={rooms.room_name} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} image={rooms.image} video={rooms.video} onDecline={handleDeclineInvitation}></Notification>
                 })}
             </div>
         </div>

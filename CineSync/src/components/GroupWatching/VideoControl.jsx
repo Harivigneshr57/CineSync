@@ -159,24 +159,28 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
     });
   }
 
-  function sendEmoji(emoji) {
-    console.log("Hello",emoji);
+  function appendEmoji(emoji) {
     const newEmoji = {
       id: Date.now(),
       value: emoji
     };
     setEmoji(prev => [...prev, newEmoji]);
-    
-    socket.emit("sendEmoji", {
-      room: localStorage.getItem('Roomname'),
-      emoji: emoji
-    });
+  }
+  function sendEmoji(emoji) {
+    appendEmoji(emoji);
+    socket.emit("sendEmoji", localStorage.getItem('Roomname'), emoji);
   }
 
   useEffect(()=>{
-    socket.on('receiveEmoji',emoji=>{
-      sendEmoji(`${emoji}`);
-    })
+    const handleReceiveEmoji = (emoji) => {
+      appendEmoji(`${emoji}`);
+    };
+
+    socket.on('receiveEmoji', handleReceiveEmoji);
+
+    return () => {
+      socket.off('receiveEmoji', handleReceiveEmoji);
+    };
   
   },[])
 

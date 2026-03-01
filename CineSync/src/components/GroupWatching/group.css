@@ -717,3 +717,26 @@ hr {
     padding: 25px;
   }
 }
+
+
+.summary-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.continue-watch-btn {
+  background: var(--major);
+  color: var(--white);
+  border: 1px solid var(--white);
+  border-radius: 8px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.continue-watch-btn:hover {
+  filter: brightness(1.15);
+}

@@ -2,12 +2,32 @@ import { useEffect, useState } from "react";
 import Genre from "./Genre";
 import { socket } from "../Home/socket";
 import Loading from "../Home/Loading";
+import { useNavigate } from "react-router-dom";
 import './group.css';
 
 export default function AISummarizer() {
 
     const [isdisplay, setdisplaysummary] = useState(false);
     const [summaryData, setSummaryData] = useState(null);
+    const navigate = useNavigate();
+
+    const continueToRoom = () => {
+        const userInput = prompt("Enter the time (in seconds) where you want to continue:");
+
+        if (userInput === null) {
+            return;
+        }
+
+        const resumeTime = Number(userInput);
+
+        if (!Number.isFinite(resumeTime) || resumeTime < 0) {
+            alert("Please enter a valid time in seconds.");
+            return;
+        }
+
+        localStorage.setItem("resumeTime", resumeTime.toString());
+        navigate("/mainRoom");
+    };
 
     useEffect(() => {
         const handleSummary = (result) => {
@@ -121,7 +141,11 @@ export default function AISummarizer() {
                             </p>
                         </div>
                     </div>
-
+                    <div className="summary-actions">
+                        <button className="continue-watch-btn" onClick={continueToRoom}>
+                            Continue
+                        </button>
+                    </div>
                 </div>
             </div>
             </div>

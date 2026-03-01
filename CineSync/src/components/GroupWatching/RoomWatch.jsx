@@ -189,6 +189,14 @@ export default function RoomWatch() {
         };
     }, []);
     useEffect(() => {
+      const resumeTime = Number(localStorage.getItem("resumeTime"));
+  
+      if (video.current && Number.isFinite(resumeTime) && resumeTime >= 0) {
+        video.current.currentTime = resumeTime;
+        localStorage.removeItem("resumeTime");
+      }
+    }, []);
+    useEffect(() => {
         const handleFriendLeave = (msg) => {
             console.log(msg + 'msg');
             toast(

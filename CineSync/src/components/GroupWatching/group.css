@@ -740,3 +740,45 @@ hr {
 .continue-watch-btn:hover {
   filter: brightness(1.15);
 }
+
+.hostControlSetting{
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+}
+
+.hostControlSetting p{
+  margin: 0;
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.hostControlSetting button{
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  padding: 0.2rem 0.6rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hostControlSetting button.enabled{
+  background: #16A34A;
+}
+
+.hostControlSetting button.disabled{
+  background: #ef4444;
+}
+
+.hostControlSetting button:disabled{
+  opacity: 0.7;
+  cursor: not-allowed;
+}

@@ -547,6 +547,7 @@ app.post("/getmessage", (req, res) => {
 });
 let users = {};
 let roomUsers = {};
+const roomControlSettings = {};
 
 function emitRoomUsers(roomName) {
   const members = roomUsers[roomName] || [];
@@ -597,6 +598,9 @@ io.on("connection", (socket) => {
 
   socket.on("requestRoomUsers", (roomName) => {
     emitRoomUsers(roomName);
+    if (roomControlSettings[roomName] !== undefined) {
+      io.to(roomName).emit("hostControlUpdated", roomControlSettings[roomName]);
+    }
   });
 
   socket.on("exit", (username, roomName) => {
@@ -650,6 +654,7 @@ io.on("connection", (socket) => {
         if (roomUsers[roomName]) {
           delete roomUsers[roomName];
         }
+        delete roomControlSettings[roomName];
       });
     });
   });
@@ -661,6 +666,7 @@ io.on("connection", (socket) => {
     roomUsers[roomName] = (roomUsers[roomName] || []).filter((member) => member !== username);
     if (roomUsers[roomName]?.length === 0) {
       delete roomUsers[roomName];
+      delete roomControlSettings[roomName];
     } else {
       emitRoomUsers(roomName);
     }
@@ -697,17 +703,44 @@ io.on("connection", (socket) => {
     io.to(room).emit("partystarted");
   });
 
-  socket.on("VideoPaused", (roomname, username) => {
+  socket.on("VideoPaused", (roomname, role) => {
+    if (roomControlSettings[roomname] && role !== "Host") {
+      socket.emit("hostControlDenied");
+      return;
+    }
+
     socket.broadcast.to(roomname).emit("pauseTheVideo");
   });
   
-  socket.on("VideoPlayed", (roomname, username) => {
+  socket.on("VideoPlayed", (roomname, role) => {
+    if (roomControlSettings[roomname] && role !== "Host") {
+      socket.emit("hostControlDenied");
+      return;
+    }
+
     socket.broadcast.to(roomname).emit("playTheVideo");
   });
+  socket.on("VideoSeek", ({ room, time, role }) => {
+    if (roomControlSettings[room] && role !== "Host") {
+      socket.emit("hostControlDenied");
+      return;
+    }
 
-  socket.on("VideoSeek", ({ room, time }) => {
     socket.broadcast.to(room).emit("updateSeek", time);
   });
+
+  socket.on("setHostControl", ({ roomName, enabled }) => {
+    if (!roomName || typeof enabled !== "boolean") return;
+
+    roomControlSettings[roomName] = enabled;
+    io.to(roomName).emit("hostControlUpdated", enabled);
+  });
+
+  socket.on("requestHostControl", (roomName) => {
+    if (!roomName || roomControlSettings[roomName] === undefined) return;
+    socket.emit("hostControlUpdated", roomControlSettings[roomName]);
+  });
+
   socket.on("middlejoin",(username,roomname,hostname)=>{
     io.to(users[hostname]).emit("latejoin",username);
   })
@@ -745,6 +778,7 @@ io.on("connection", (socket) => {
       roomUsers[roomName] = roomUsers[roomName].filter((member) => member !== username);
       if (roomUsers[roomName].length === 0) {
         delete roomUsers[roomName];
+        delete roomControlSettings[roomName];
       } else {
         emitRoomUsers(roomName);
       }
@@ -927,7 +961,7 @@ ORDER BY m.title;
 
 app.post("/addRoom", async (req, res) => {
   try {
-    const { username, room, password, audio, video, reaction, chat, game, movieId } = req.body;
+    const { username, room, password, hostControl = true, movieId } = req.body;
 
     if (!username) {
       return res.status(400).json({ message: "User not found" });
@@ -963,7 +997,8 @@ app.post("/addRoom", async (req, res) => {
       });
     }
 
-    const roomCode = await createRoom(room, password, userID, chat, video, audio, reaction, game, movieId);
+    const roomCode = await createRoom(room, password, userID, hostControl, movieId);
+    roomControlSettings[room] = Boolean(hostControl);
 
     return res.status(200).json({
       message: "Room added successfully",
@@ -986,11 +1021,11 @@ function queryAsync(sql, values) {
 }
 
 
-async function createRoom(room, password, userID, chat, video, audio, reaction, game,movie_id) {
+async function createRoom(room, password, userID, hostControl, movie_id) {
   const roomCode = randomUUID();
   await queryAsync(
   "insert into Rooms(RoomName,RoomCode,RoomPassword,OwnerID,Chat,VideoCall,Audiocall,Emoji,PredictionGame,movie_id) values(?,?,?,?,?,?,?,?,?,?)",
-  [room, roomCode, password, userID, chat, video, audio, reaction, game, movie_id]
+  [room, roomCode, password, userID, false, false, false, false, false, movie_id]
 );
 return roomCode;
 }

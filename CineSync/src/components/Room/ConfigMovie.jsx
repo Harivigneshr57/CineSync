@@ -10,12 +10,7 @@ import { data } from "react-router-dom";
 import { socket } from "../Home/socket";
 
 export default function ConfigMovie({ setRoom, room, roomPassword, setRoomPassword, step, onStep, setCode, confirmDiv,setconfirmDiv,image,movie}) {
-    const [audio, setAudio] = useState(false);
-    const [video, setVideo] = useState(false);
-    const [reaction, setReaction] = useState(false);
-    const [chat, setChat] = useState(false);
-    const [game, setGame] = useState(false);
-    const { user,changeMovieImage,setAsRoom} = useContext(UserContext);
+    const [hostControl, setHostControl] = useState(true);
     const toastErrorStyle = {
         style: {
             borderRadius: "1rem",
@@ -48,7 +43,7 @@ export default function ConfigMovie({ setRoom, room, roomPassword, setRoomPasswo
         let res = await fetch("https://cinesync-3k1z.onrender.com/addRoom", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username:user.username, room: room, password: roomPassword, audio: audio, video: video, reaction: reaction, chat: chat, game: game, movieId : movie.id })
+            body: JSON.stringify({ username:user.username, room: room, password: roomPassword, hostControl: hostControl, movieId : movie.id })
         })
 
         let data = await res.json();
@@ -67,6 +62,8 @@ export default function ConfigMovie({ setRoom, room, roomPassword, setRoomPasswo
                     socket.emit("joinRoom", room, user.username);
                     console.log(room);
                     localStorage.setItem("Roomname",room);
+                    localStorage.setItem("RoomRole", "Host");
+                    localStorage.setItem("HostControlEnabled", String(hostControl));
                     addToRoom(room);
                     console.log("trying to join host");
                 }
@@ -109,7 +106,7 @@ export default function ConfigMovie({ setRoom, room, roomPassword, setRoomPasswo
                     <input type="text" name="roomName" id="roomName" value={room} onChange={(e) => setRoom(e.target.value)} placeholder="Enter Your Room Name" />
                     <h6>Room Password</h6>
                     <input type="password" name="roomPassword" id="roomPassword" value={roomPassword} onChange={(e) => setRoomPassword(e.target.value)} placeholder="Enter Room Password" />
-                    <InteractiveFeatures video={video} audio={audio} chat={chat} reaction={reaction} setAudio={setAudio} setVideo={setVideo} setChat={setChat} setReaction={setReaction}></InteractiveFeatures>
+                    <InteractiveFeatures hostControl={hostControl} setHostControl={setHostControl}></InteractiveFeatures>
                 </div>
                 <Button id='inviteFriends' onClick={check}>Continue to Invite Friends    <i class="fa-solid fa-arrow-right"></i></Button>
             </div>

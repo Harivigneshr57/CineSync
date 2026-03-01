@@ -73,6 +73,8 @@ export default function RoomWatch() {
     const [mutedUsers, setMutedUsers] = useState({});
     const [chat, setChat] = useState(false);
     const [party, setParty] = useState(false);
+    const [hostControlEnabled, setHostControlEnabled] = useState(localStorage.getItem("HostControlEnabled") === "true");
+    const roomRole = localStorage.getItem("RoomRole") || "Member";
     let video = useRef(null);
     let container = useRef(null);
 
@@ -150,6 +152,40 @@ export default function RoomWatch() {
             console.log("AI service unavailable:", err.message);
         }
     }
+    useEffect(() => {
+      socket.emit("requestHostControl", room);
+
+      const handleHostControlUpdated = (enabled) => {
+          setHostControlEnabled(Boolean(enabled));
+          localStorage.setItem("HostControlEnabled", String(Boolean(enabled)));
+      };
+
+      socket.on("hostControlUpdated", handleHostControlUpdated);
+
+      return () => {
+          socket.off("hostControlUpdated", handleHostControlUpdated);
+      };
+  }, [room]);
+
+  useEffect(() => {
+      const handleHostControlDenied = () => {
+          toast.error("Only host can control play, pause and seek right now", toastErrorStyle);
+      };
+
+      socket.on("hostControlDenied", handleHostControlDenied);
+
+      return () => {
+          socket.off("hostControlDenied", handleHostControlDenied);
+      };
+  }, []);
+
+  function toggleHostControl() {
+      if (roomRole !== "Host") return;
+      const nextValue = !hostControlEnabled;
+      setHostControlEnabled(nextValue);
+      localStorage.setItem("HostControlEnabled", String(nextValue));
+      socket.emit("setHostControl", { roomName: room, enabled: nextValue });
+  }
 
     useEffect(() => {
         
@@ -269,7 +305,17 @@ export default function RoomWatch() {
             <div className="roomWatch">
                 <SideBar></SideBar>
                 <TopBar></TopBar>
-                <VideoArea reference={video} references={container} chat={chat} setChat={setChat} party={party} setParty={setParty} micOn={micOn} setMicOn={setMicOn} camOn={camOn} setCamOn={setCamOn} mutedUsers={mutedUsers} setMutedUsers={setMutedUsers} localVideo={localVideo}></VideoArea>
+                <div className="hostControlSetting">
+                    <p>Host-only controls</p>
+                    <button
+                        disabled={roomRole !== "Host"}
+                        onClick={toggleHostControl}
+                        className={hostControlEnabled ? "enabled" : "disabled"}
+                    >
+                        {hostControlEnabled ? "ON" : "OFF"}
+                    </button>
+                </div>
+                <VideoArea reference={video} references={container} chat={chat} setChat={setChat} party={party} setParty={setParty} micOn={micOn} setMicOn={setMicOn} camOn={camOn} setCamOn={setCamOn} mutedUsers={mutedUsers} setMutedUsers={setMutedUsers} localVideo={localVideo} hostControlEnabled={hostControlEnabled} roomRole={roomRole}></VideoArea>
                 <Chat allmessages={allmessages} chat={chat} setmessage={setmessage} setChat={setChat} chatBoxRef={chatBoxRef} sendMessageToRoom={sendMessageToRoom} setParty={setParty}></Chat>
                 <Participants chat={chat} setChat={setChat} party={party} setParty={setParty} micOn={micOn} setMicOn={setMicOn} camOn={camOn} setCamOn={setCamOn} mutedUsers={mutedUsers} setMutedUsers={setMutedUsers} localVideo={localVideo}></Participants>
             </div>

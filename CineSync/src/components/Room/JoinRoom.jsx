@@ -60,6 +60,8 @@ export default function JoinRoom() {
                     localStorage.setItem('MovieImage',data.movie_poster);
                     localStorage.setItem('movieVideo',data.movie_url);
                     localStorage.setItem('MovieName',data.title)
+                    localStorage.setItem('RoomRole', 'Member');
+                    localStorage.setItem('HostControlEnabled', 'false');
                 console.log("Room Name " + data.roomname.length);
 
                 toast.success("You joined the room", toastSuccessStyle);

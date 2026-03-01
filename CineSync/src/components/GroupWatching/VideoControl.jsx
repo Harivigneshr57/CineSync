@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import Button from "../Login-SignIn/Button";
 import { socket } from "../Home/socket";
 import FloatingEmoji from "./FloatingEmoji";
-export default function VideoControl({reference, references,chat,setChat,emitSeek,party,setParty,micOn,setMicOn,camOn,setCamOn,mutedUsers,setMutedUsers,localVideo,showControls}) {
+export default function VideoControl({reference, references,chat,setChat,emitSeek,party,setParty,micOn,setMicOn,camOn,setCamOn,mutedUsers,setMutedUsers,localVideo,showControls,hostControlEnabled,roomRole}) {
 
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
@@ -81,6 +81,8 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
     const video = reference.current;
     if (!video) return;
 
+    if (hostControlEnabled && roomRole !== "Host") return;
+
     if (!video.paused) {
       video.pause();
       setPlay(false);
@@ -88,7 +90,7 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
       socket.emit(
         "VideoPaused",
         localStorage.getItem("Roomname"),
-        localStorage.getItem("Username")
+        roomRole
       );
     } else {
       video.play();
@@ -97,7 +99,7 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
       socket.emit(
         "VideoPlayed",
         localStorage.getItem("Roomname"),
-        localStorage.getItem("Username")
+        roomRole
       );
     }
   }
@@ -138,16 +140,19 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
   }, [reference, emitSeek, pauses, backward, forward]);
 
   function forward() {
+    if (hostControlEnabled && roomRole !== "Host") return;
     const video = reference.current;
     if (video) video.currentTime += 10;
   }
 
   function backward() {
+    if (hostControlEnabled && roomRole !== "Host") return;
     const video = reference.current;
     if (video) video.currentTime -= 10;
   }
 
   function movementOfRange(e) {
+    if (hostControlEnabled && roomRole !== "Host") return;
 
     const video = reference.current;
     if (!video || !video.duration) return;
@@ -179,19 +184,6 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
   function roomParty(){
     setParty(true);
     setChat(false)
-  }
-
-  const isRemoteSeek = useRef(false);
-
-  function handleSeek() {
-    if (isRemoteSeek.current) {
-      isRemoteSeek.current = false;
-      return;
-    }
-    socket.emit("seek", {
-      room: roomName,
-      time: videoRef.current.currentTime
-    });
   }
 
   function appendEmoji(emoji) {
@@ -246,15 +238,6 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
     setCamOn(track.enabled);
   }
 
-  useEffect(() => {
-    socket.on("seek", (time) => {
-      isRemoteSeek.current = true;
-      videoRef.current.currentTime = time;
-    });
-
-    return () => socket.off("seek");
-
-  }, []);
   return (
     <>
     <FloatingEmoji emoji={emojis}></FloatingEmoji>
@@ -286,11 +269,12 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
 
         <div className="leftSide">
 
-          <Button id={"backward"} onClick={backward}>
+        <Button id={"backward"} onClick={backward} style={hostControlEnabled && roomRole !== "Host" ? { opacity: 0.5 } : {}}>
             <i className="fa-solid fa-backward"></i>
           </Button>
 
-          <Button id={"pause"} onClick={pauses}>
+
+          <Button id={"pause"} onClick={pauses} style={hostControlEnabled && roomRole !== "Host" ? { opacity: 0.5 } : {}}>
             {play ? (
               <i className="fa-solid fa-pause"></i>
             ) : (
@@ -298,7 +282,7 @@ export default function VideoControl({reference, references,chat,setChat,emitSee
             )}
           </Button>
 
-          <Button id={"forward"} onClick={forward}>
+          <Button id={"forward"} onClick={forward} style={hostControlEnabled && roomRole !== "Host" ? { opacity: 0.5 } : {}}>
             <i className="fa-solid fa-forward"></i>
           </Button>
 

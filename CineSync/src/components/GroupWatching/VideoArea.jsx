@@ -3,7 +3,7 @@ import { socket } from "../Home/socket";
 import VideoControl from "./VideoControl";
 import { UserContext } from "../Login-SignIn/UserContext";
 
-export default function VideoArea({ reference, references, chat, setChat,party,setParty,micOn,setMicOn,camOn,setCamOn,mutedUsers,setMutedUsers,localVideo }) {
+export default function VideoArea({ reference, references, chat, setChat,party,setParty,micOn,setMicOn,camOn,setCamOn,mutedUsers,setMutedUsers,localVideo,hostControlEnabled,roomRole }) {
     const roomVideo = localStorage.getItem('movieVideo'); 
     const isRemoteSeek = useRef(false);
     const roomName = localStorage.getItem("Roomname");
@@ -34,11 +34,13 @@ export default function VideoArea({ reference, references, chat, setChat,party,s
 
         socket.emit("VideoSeek", {
             room: roomName,
-            time: time
+            time: time,
+            role: roomRole
         });
     }
 
     useEffect(() => {
+        if (!reference.current) return;
 
         socket.on("updateSeek", (time) => {
 
@@ -75,7 +77,7 @@ export default function VideoArea({ reference, references, chat, setChat,party,s
                 ref={reference}
                 autoPlay
                 controls={false}
-                onSeeked={() => emitSeek(reference.current.currentTime)}
+                onSeeked={() => reference.current && emitSeek(reference.current.currentTime)}
                 src={roomVideo}
             />
 
@@ -95,6 +97,8 @@ export default function VideoArea({ reference, references, chat, setChat,party,s
                     setMutedUsers={setMutedUsers}
                     localVideo={localVideo}
                     showControls={showControls}
+                    hostControlEnabled={hostControlEnabled}
+                    roomRole={roomRole}
                 />
 
         </div>

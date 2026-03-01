@@ -741,6 +741,12 @@ io.on("connection", (socket) => {
 
     roomControlSettings[roomName] = enabled;
     io.to(roomName).emit("hostControlUpdated", enabled);
+    const updateHostControlQuery = `UPDATE Rooms SET Audiocall = ? WHERE RoomName = ?`;
+    db.query(updateHostControlQuery, [enabled ? 1 : 0, roomName], (err) => {
+      if (err) {
+        console.log("Error while persisting host control setting", err);
+      }
+    });
   });
 
   socket.on("requestHostControl", (roomName) => {
@@ -1032,7 +1038,7 @@ async function createRoom(room, password, userID, hostControl, movie_id) {
   const roomCode = randomUUID();
   await queryAsync(
   "insert into Rooms(RoomName,RoomCode,RoomPassword,OwnerID,Chat,VideoCall,Audiocall,Emoji,PredictionGame,movie_id) values(?,?,?,?,?,?,?,?,?,?)",
-  [room, roomCode, password, userID, false, false, false, false, false, movie_id]
+  [room, roomCode, password, userID, false, false, Boolean(hostControl), false, false, movie_id]
 );
 return roomCode;
 }
@@ -1379,7 +1385,8 @@ app.post("/getRoomName", (req, res) => {
       r.RoomName as roomname,
       m.movie_url,
       m.movie_poster,
-      m.title
+      m.title,
+      r.Audiocall as hostControl
     FROM Rooms r
     JOIN Movies m
       ON r.movie_id = m.ROWID

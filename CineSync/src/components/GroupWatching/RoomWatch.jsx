@@ -73,7 +73,10 @@ export default function RoomWatch() {
     const [mutedUsers, setMutedUsers] = useState({});
     const [chat, setChat] = useState(false);
     const [party, setParty] = useState(false);
-    const [hostControlEnabled, setHostControlEnabled] = useState(localStorage.getItem("HostControlEnabled") === "true");
+    const [hostControlEnabled, setHostControlEnabled] = useState(() => {
+      const savedValue = localStorage.getItem("HostControlEnabled");
+      return savedValue === null ? true : savedValue === "true";
+  });
     const roomRole = localStorage.getItem("RoomRole") || "Member";
     let video = useRef(null);
     let container = useRef(null);

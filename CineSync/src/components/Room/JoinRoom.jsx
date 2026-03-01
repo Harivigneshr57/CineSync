@@ -111,13 +111,24 @@ export default function JoinRoom() {
                         <i className="fa-solid fa-key"></i>
                     </div>
                     <h1>Join a Room</h1>
-                    <p>Enter the 4-digit code to enter room</p>
-                    <div className="inputs flex">
-                        <input type="number" max={1} ref={inputOne} onChange={() => inputTwo.current.focus()} />
-                        <input type="number" max={1} ref={inputTwo} onChange={() => inputThree.current.focus()} />
-                        <input type="number" max={1} ref={inputThree} onChange={() => inputFour.current.focus()} />
-                        <input type="number" max={1} ref={inputFour} onChange={() => button.current.focus()} />
-                    </div>
+                    <p>Enter room ID and password to enter room</p>
+                <div className="inputs flex" style={{ flexDirection: "column", gap: "1rem", width: "100%" }}>
+                    <input
+                        type="text"
+                        ref={roomIdInput}
+                        value={roomId}
+                        onChange={(e) => setRoomId(e.target.value)}
+                        placeholder="Enter Room ID"
+                    />
+                    <input
+                        type="password"
+                        ref={passwordInput}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && button.current.focus()}
+                        placeholder="Enter Room Password"
+                    />
+                </div>
                     <Button id={"joinRoom"} ref={button} onClick={() => { joinRoom() }}>Join Room</Button>
                 </div>
             </>

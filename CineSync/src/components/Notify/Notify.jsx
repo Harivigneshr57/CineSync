@@ -39,6 +39,8 @@ export default function Notify() {
 
             const data = await response.json();
             setRoomDetails(data.allnotification || []);
+        console.log(roomDetails,"noti");
+
         } catch (err) {
             console.log("Error while fetching invitations", err);
         }
@@ -102,14 +104,14 @@ export default function Notify() {
             </div>
 
             <div id="notMain">
-            {roomDetails.length === 0 ? (
+            {safeRoomDetails.length === 0 ? (
                     <EmptyState
                         message="No invitations"
                         iconClass="fa-solid fa-bell-slash"
                         className="notify-empty"
                     />
                 ) : (
-                    roomDetails.map((rooms, i) => {
+                    safeRoomDetails.map((rooms, i) => {
                         let timestamp = "";
                         const date = new Date(rooms.created_at || rooms.timestamp || Date.now());
                         const hours = date.getUTCHours();

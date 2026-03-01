@@ -26,6 +26,7 @@ export default function WaitingRoom() {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         roomname: localStorage.getItem("Roomname"),
+                        roomCode: localStorage.getItem("RoomCode"),
                         username: localStorage.getItem("Username"),
                         Role: "member",
                         status: 0

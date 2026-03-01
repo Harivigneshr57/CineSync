@@ -48,6 +48,7 @@ export default function Notification({ roomName, roomCode, ownerName, movieName,
             localStorage.setItem('MovieName', roomData.title || movieName);
             localStorage.setItem('MovieImage', roomData.movie_poster || image);
             localStorage.setItem('movieVideo', roomData.movie_url || video);
+            localStorage.setItem("RoomCode", roomCode);
             setRoomName(roomData.roomname);
             setMovieName(roomData.title || movieName);
 
@@ -64,6 +65,7 @@ export default function Notification({ roomName, roomCode, ownerName, movieName,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     roomname: roomData.roomname,
+                    roomCode: roomCode,
                     username: localStorage.getItem("Username"),
                     Role: "member",
                     status: 0

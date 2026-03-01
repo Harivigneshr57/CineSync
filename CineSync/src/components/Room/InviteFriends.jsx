@@ -7,7 +7,6 @@ import { socket } from "../Home/socket";
 export default function InviteFriends(props) {
     const { user } = useContext(UserContext);
     const [friends, setFriends] = useState([]);
-    const [friendToInvite, setFriend] = useState("");
 
     useEffect(() => {
         if (!user) return;
@@ -26,13 +25,14 @@ export default function InviteFriends(props) {
     }, [user]);
 
     function handleFriend(friendname) {
-        console.log("reciever_name: " + friendname + " movie_name: " + props.movie.title + " sender_name: " + localStorage.getItem("Username") + " Room code :" + props.code + " Room name: " + props.room);
+        const movieName = props.movie?.title || props.movie?.name;
+        console.log("receiver_name: " + friendname + " movie_name: " + movieName + " sender_name: " + localStorage.getItem("Username") + " Room code :" + props.code + " Room name: " + props.room);
         setFriend(friendname);
-        socket.emit("sendInvite",props.code,localStorage.getItem("Username"),props.movie.title,friendname,props.movie.video,props.movie.url);
-        sendNotification(props.room, props.code, localStorage.getItem("Username"), friendname, props.movie.title,props.movie.url,props.movie.video);
+        socket.emit("sendInvite", props.code, localStorage.getItem("Username"), movieName, friendname, props.movie.video, props.movie.url);
+        sendNotification(props.room, props.code, localStorage.getItem("Username"), friendname, movieName, props.movie.url, props.movie.video);
     }
 
-    async function sendNotification(room_name, room_code, sender_name, reciever_name, movie_name,image,video) {
+    async function sendNotification(room_name, room_code, sender_name, receiver_name, movie_name, image, video) {
 
         try {
 
@@ -47,7 +47,8 @@ export default function InviteFriends(props) {
                 body: JSON.stringify({
                     room_name,
                     sender_name,
-                    reciever_name,
+                    receiver_name,
+                    reciever_name: receiver_name,
                     room_code,
                     movie_name,
                     video,
@@ -58,12 +59,16 @@ export default function InviteFriends(props) {
 
             const data = await response.json();
 
-            console.log(data);
+            if (!response.ok || data.error) {
+                throw new Error(data.error || "Failed to send invitation");
+            }
+
+            console.log("Invitation sent", data);
 
         }
         catch (err) {
 
-            console.log(err);
+            console.log("Error while sending invitation", err);
 
         }
     }

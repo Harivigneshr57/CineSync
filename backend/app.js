@@ -621,7 +621,55 @@ io.on("connection", (socket) => {
   db.query(checkHostQuery, [roomName, username], (err, result) => {
     if (err) {
       console.log("Error while checking host role on exit", err);
-      socket.to(roomName).emit("frndLeave", `${username} exited the room`);
+      const checkHostQuery = `
+      SELECT p.Role
+      FROM participants p
+      JOIN Rooms r ON r.RoomID = p.RoomID
+      JOIN users u ON u.ROWID = p.userID
+      WHERE r.RoomName = ? AND u.username = ?
+      LIMIT 1
+    `;
+
+    db.query(checkHostQuery, [roomName, username], (err, result) => {
+      if (err) {
+        console.log("Error while checking host role on exit", err);
+        socket.to(roomName).emit("frndLeave", `${username} exited the room`);
+        return;
+      }
+
+      const isHost = result?.length > 0 && result[0].Role === "Host";
+
+      if (!isHost) {
+        socket.to(roomName).emit("frndLeave", `${username} exited the room`);
+        return;
+      }
+
+      const deleteParticipantsQuery = `
+        DELETE FROM participants
+        WHERE RoomID = (SELECT RoomID FROM Rooms WHERE RoomName = ?)
+      `;
+
+      db.query(deleteParticipantsQuery, [roomName], (participantsErr) => {
+        if (participantsErr) {
+          console.log("Error while deleting participants on host exit", participantsErr);
+          socket.to(roomName).emit("roomClosed", "Room closed as host closed the room");
+          return;
+        }
+
+        const deleteRoomQuery = `DELETE FROM Rooms WHERE RoomName = ?`;
+        db.query(deleteRoomQuery, [roomName], (deleteRoomErr) => {
+          if (deleteRoomErr) {
+            console.log("Error while deleting room on host exit", deleteRoomErr);
+          }
+
+          socket.to(roomName).emit("roomClosed", "Room closed as host closed the room");
+
+          if (roomUsers[roomName]) {
+            delete roomUsers[roomName];
+          }
+        });
+      });
+    });
       return;
     }
 

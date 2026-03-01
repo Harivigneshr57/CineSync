@@ -16,6 +16,34 @@ export default function Notify() {
     function handleDeclineInvitation(roomCode) {
         setRoomDetails((prev = []) => prev.filter((room) => room.room_code !== roomCode));
     }
+    async function fetchInvitations() {
+        const username = localStorage.getItem("Username");
+
+        if (!username) {
+            setRoomDetails([]);
+            return;
+        }
+
+        try {
+            const response = await fetch("https://cinesync-3k1z.onrender.com/getInvitations", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch invitations");
+            }
+
+            const data = await response.json();
+            setRoomDetails(data.allnotification || []);
+        } catch (err) {
+            console.log("Error while fetching invitations", err);
+        }
+    }
+
     async function handleClearAllInvitations() {
         const username = localStorage.getItem("Username");
 
@@ -44,6 +72,7 @@ export default function Notify() {
     }
 
     useEffect(()=>{
+        fetchInvitations();
         socket.on("sendingInvite",(room_code,movie_name,sender_name,video,image)=>{
             setRoomDetails((prev = []) => [
                 {
@@ -82,14 +111,12 @@ export default function Notify() {
                 ) : (
                     safeRoomDetails.map((rooms, i) => {
                         let timestamp = "";
-                        console.log("Time: " + rooms.created_at)
-                        const date = new Date(rooms.created_at);
+                        const date = new Date(rooms.created_at || rooms.timestamp || Date.now());
                         const hours = date.getUTCHours();
-                        const minutes = date.getUTCMinutes();
-                        if (hours < 0) {
-                            timestamp = minutes + "m";
+                        if (hours < 1) {
+                            timestamp = "now";
                         }
-                        else if (hours => 24) {
+                        else if (hours >= 24) {
                             timestamp = Math.floor(hours / 24) + "d";
                         }
                         else {

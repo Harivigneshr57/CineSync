@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../Login-SignIn/UserContext";
 import logo from "../../assets/logo.png";
 import Button from "../Login-SignIn/Button";
@@ -11,7 +11,7 @@ export default function SideBar({ isinvite }) {
 
     const [showExitModal, setShowExitModal] = useState(false);
     const [nextRoute, setNextRoute] = useState(null);
-    cons [exitVal,setExitVal]=useState(true);
+    const [exitVal,setExitVal]=useState(true);
 
     function handleNavigation(path) {
         if(!showExitDiv){

@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "../Login-SignIn/Button";
 import { socket } from "../Home/socket";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../Login-SignIn/UserContext";
 
 export default function TopBar() {
+    const {setAsRoom} = useContext(UserContext);
   const nav = useNavigate();
   const [showExitPrompt, setShowExitPrompt] = useState(false);
   cons [exitVal,setExitVal]=useState(true);
@@ -18,6 +20,7 @@ export default function TopBar() {
 
   function confirmExitRoom() {
     socket.emit("exit", localStorage.getItem("Username"), localStorage.getItem("Roomname"));
+    setAsRoom(false);
     setShowExitPrompt(false);
     nav("/room");
   }

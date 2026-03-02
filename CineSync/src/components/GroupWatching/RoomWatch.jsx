@@ -59,11 +59,13 @@ export default function RoomWatch() {
 
     useEffect(() => {
       const handleRoomClosed = (msg) => {
+
         toast.error(msg || "Room closed as host closed the room", toastErrorStyle);
         navigate("/room");
       };
 
       socket.on("roomClosed", handleRoomClosed);
+      
 
       return () => {
         socket.off("roomClosed", handleRoomClosed);

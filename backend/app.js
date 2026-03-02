@@ -1223,7 +1223,6 @@ app.post("/removeFavorite",(req,res)=>{
           return res.json({ result: userID });
         });
       })
-  
       });
     });
 

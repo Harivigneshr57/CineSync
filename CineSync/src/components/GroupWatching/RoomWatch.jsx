@@ -44,6 +44,41 @@ export default function RoomWatch() {
         }
     };
 
+    useEffect(()=>{
+      socket.on("message-summary-server",(summary)=>{
+          console.log(summary);
+          let summarizedMessage = {role:"Summarized Chat",message:summary};
+          setmessages(summarizedMessage);
+      })
+  },[])
+
+  async function fetchingMessageSummary(prompt, username) {
+      try {
+          const response = await fetch(
+              "https://rag-ai-bot-elpx.onrender.com/ai_chat/ask",
+              {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                      prompt: prompt,
+                      "x-api-key":
+                          "99eedd3892d5a820b347415779c22655fcc7fc9b93991e9c08154bd633b18ca9"
+                  })
+              }
+          );
+
+          if (!response.ok) throw new Error("API failed");
+
+          const result = await response.json();
+          console.log(result);
+          socket.emit("message-summary", result, username);
+      } catch (err) {
+          console.log("AI service unavailable:", err.message);
+      }
+  }
+
 
     useEffect(() => {
         const handleNewJoin = (friend) => {
@@ -197,6 +232,7 @@ export default function RoomWatch() {
         
 
         const handleLateJoin = (username) => {
+
             if (!video.current) return;
 
             const currenttime = video.current.currentTime;
@@ -205,6 +241,9 @@ export default function RoomWatch() {
 
             const prompt = "Give me a summary of " + localStorage.getItem("MovieName") + " movie for first " + currenttime + " seconds";
             fetching(prompt, username);
+
+            let promptForMessage = "Give me a summary of a group chat => "+JSON.stringify(allmessages);
+            fetchingMessageSummary(promptForMessage,username);
         };
 
         socket.on("latejoin", handleLateJoin);

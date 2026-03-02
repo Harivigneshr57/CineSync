@@ -729,6 +729,10 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("message-summary", (messageSummary, username) => {
+    socket.to(users[username]).emit("message-summary-server",messageSummary);
+  })
+
   socket.on("webrtcAnswer", ({ to, from, answer }) => {
     const targetSocket = users[to];
     if (targetSocket) {
@@ -1232,7 +1236,6 @@ app.post("/removeFavorite",(req,res)=>{
         room_name,
         room_code,
         sender_name,
-        reciever_name,
         receiver_name,
         movie_name,
         video,

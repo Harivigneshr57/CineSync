@@ -335,7 +335,7 @@ export default function RoomWatch() {
                 <div className="hostControlSetting">
                     <p>Host-only controls</p>
                     <button
-                        disabled={roomRole !== "Host"}
+                        style={{display:roomRole!== 'Host'?'none':'block'}}
                         onClick={toggleHostControl}
                         className={hostControlEnabled ? "enabled" : "disabled"}
                     >

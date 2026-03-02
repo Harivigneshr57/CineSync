@@ -15,11 +15,11 @@ export default function Room() {
     const [room, setRoom] = useState('');
     const [confirmDiv, setconfirmDiv] = useState(false);
     const [roomPassword, setRoomPassword] = useState('');
-    const {setAsRoom} = useEffect(UserContext);
+    // const {setAsRoom} = useEffect(UserContext);
 
-    useEffect(()=>{
-        setAsRoom(false);
-      },[])
+    // useEffect(()=>{
+    //     setAsRoom(false);
+    //   },[])
 
     function onSetMovie(movie) {
         setMovie(movie);

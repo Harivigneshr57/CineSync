@@ -24,7 +24,7 @@ export default function SideBar({ isinvite }) {
     }
     function logout(){
         navigate("/");
-        localStorage.setItem("UserName",'');
+        localStorage.clear();
         setShowExitDiv(false);
     }
     function confirmExit() {

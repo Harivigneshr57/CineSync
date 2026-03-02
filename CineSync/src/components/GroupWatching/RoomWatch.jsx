@@ -332,10 +332,9 @@ export default function RoomWatch() {
             <div className="roomWatch">
                 <SideBar></SideBar>
                 <TopBar></TopBar>
-                <div className="hostControlSetting">
+                <div className="hostControlSetting"  style={{display:roomRole!== 'Host'?'none':'block'}}>
                     <p>Host-only controls</p>
                     <button
-                        style={{display:roomRole!== 'Host'?'none':'block'}}
                         onClick={toggleHostControl}
                         className={hostControlEnabled ? "enabled" : "disabled"}
                     >

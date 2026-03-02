@@ -11,6 +11,7 @@ export default function SideBar({ isinvite }) {
 
     const [showExitModal, setShowExitModal] = useState(false);
     const [nextRoute, setNextRoute] = useState(null);
+    cons [exitVal,setExitVal]=useState(true);
 
     function handleNavigation(path) {
         if(!showExitDiv){
@@ -34,7 +35,16 @@ export default function SideBar({ isinvite }) {
         navigate(nextRoute);
     }
 
-
+    useEffect(()=>{
+        let user=localStorage.getItem("Username");
+        let host=localStorage.getItem("HostName");
+        if(user===host){
+         setExitVal(true)
+        } 
+        else{
+         setExitVal(false);
+        }
+       },[]);
     return (
         <>
             <aside>
@@ -87,9 +97,8 @@ export default function SideBar({ isinvite }) {
                         <div className="exit-modal-box">
                             <div className="exit-header">
                                 <i className="fa-solid fa-door-open exit-icon"></i>
-                                <h3>Leave Room?</h3>
+                                <h3>Leave Room</h3>
                             </div>
-
                             <p className="exit-text">
                                 If you leave now, you will exit the current watch party.
                             </p>

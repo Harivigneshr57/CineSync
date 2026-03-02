@@ -8,7 +8,7 @@ export default function TopBar() {
     const {setAsRoom} = useContext(UserContext);
   const nav = useNavigate();
   const [showExitPrompt, setShowExitPrompt] = useState(false);
-  cons [exitVal,setExitVal]=useState(true);
+  const [exitVal,setExitVal]=useState(true);
 
   function openExitPrompt() {
     setShowExitPrompt(true);

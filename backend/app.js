@@ -1388,22 +1388,31 @@ app.post("/getAllParticipants", (req, res) => {
 
 
 app.post("/addToRoom",(req,res)=>{
-  let {roomname,username,Role,status} =req.body;
-  console.log(roomname);
+  let {roomname, roomCode, username, Role, status} = req.body;
+  console.log(roomname || roomCode);
+
+  const roomLookupField = roomCode ? "RoomCode" : "RoomName";
+  const roomLookupValue = roomCode || roomname;
+
+  if (!roomLookupValue) {
+    return res.status(400).json({
+      error: "roomname or roomCode is required"
+    });
+  }
   
   // let joinroom = `INSERT INTO participants (RoomID,userID,status,chat,videocall,audiocall,emoji,predictionGame,Role) VALUES ((SELECT RoomID from Rooms where RoomName =?),(SELECT ROWID from users where username =?),?,(SELECT Chat from Rooms where RoomName = ?),(SELECT VideoCall from Rooms where RoomName = ?),(SELECT AudioCall from Rooms where RoomName = ?),(SELECT Emoji from Rooms where RoomName = ?),(SELECT PredictionGame from Rooms where RoomName = ?),?);`;
   let joinroom = `INSERT INTO participants (RoomID,userID,status,chat,videocall,audiocall,emoji,predictionGame,Role) VALUES 
-  ((SELECT RoomID from Rooms where RoomName = ?),
+  ((SELECT RoomID from Rooms where ${roomLookupField} = ?),
   (SELECT ROWID from users where username = ?),
   ?,
   1,
   1,
   1,
   1,
-  (SELECT PredictionGame from Rooms where RoomName = ?)
+  (SELECT PredictionGame from Rooms where ${roomLookupField} = ?)
   ,?);`;
 
-  db.query(joinroom,[roomname,username,status,roomname,Role],(err,result)=>{
+  db.query(joinroom,[roomLookupValue,username,status,roomLookupValue,Role],(err,result)=>{
     if(err){
       console.log(err);
       

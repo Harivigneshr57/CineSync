@@ -57,6 +57,7 @@ export default function JoinRoom() {
             const data = await response.json();
             if (data.roomname) {
             localStorage.setItem("Roomname", data.roomname);
+                    localStorage.setItem("RoomCode", roomId.trim());
                     localStorage.setItem('MovieImage',data.movie_poster);
                     localStorage.setItem('movieVideo',data.movie_url);
                     localStorage.setItem('MovieName',data.title)

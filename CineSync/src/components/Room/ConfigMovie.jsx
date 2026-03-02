@@ -109,13 +109,13 @@ export default function ConfigMovie({ setRoom, room, roomPassword, setRoomPasswo
                     <input type="password" name="roomPassword" id="roomPassword" value={roomPassword} onChange={(e) => setRoomPassword(e.target.value)} placeholder="Enter Room Password" />
                     <InteractiveFeatures hostControl={hostControl} setHostControl={setHostControl}></InteractiveFeatures>
                 </div>
-                <Button id='inviteFriends' onClick={check}>Continue to Invite Friends    <i class="fa-solid fa-arrow-right"></i></Button>
+                <Button id='inviteFriends' onClick={check}>Continue to invite friends    <i class="fa-solid fa-arrow-right"></i></Button>
             </div>
             <div style={{ display: confirmDiv ? "flex" : "none" }} id="confirmation">
                 <p>Do you want to confirm movie ?</p>
                 <div style={{ display: "flex" }} className="confirm">
-                    <button id="no" onClick={() => setconfirmDiv(false)}>No,I want to edit movie</button>
-                    <button id="yes" onClick={() => addRoom()}>Yes, Confirm</button>
+                    <button id="no" onClick={() => setconfirmDiv(false)}>No</button>
+                    <button id="yes" onClick={() => addRoom()}>Yes</button>
                 </div>
             </div>
         </>

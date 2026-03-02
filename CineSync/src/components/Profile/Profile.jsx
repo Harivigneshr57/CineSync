@@ -13,10 +13,10 @@ export default function Profile() {
   const[username,setuserName]=useState("");
   const[bio,setbio]=useState("");
   const[image,setimage]=useState("");
-  const {setAsRoom} = useContext(UserContext);
-  useEffect(()=>{
-    setAsRoom(false);
-  },[])
+  // const {setAsRoom} = useContext(UserContext);
+  // useEffect(()=>{
+  //   setAsRoom(false);
+  // },[])
 
   function displayedit(){
     setEdit(true);

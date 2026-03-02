@@ -153,7 +153,7 @@ export default function Login(){
                 <div className="login flex">
                     <h1>Watch Movies Together,<span style={{color:"#517692"}}><br/>Perfectly Synced</span></h1>
                     <h6>Host private rooms, share laughs in real-time, and experience premium cinema with friends anywhere.</h6>
-                    <input type="text" placeholder="Enter Your UserName" id="loginName" style={{width:"30rem"}}  value={username} onChange={(e) => setName(e.target.value)}/>
+                    <input type="text" placeholder="Create Your Username" id="loginName" style={{width:"30rem"}}  value={username} onChange={(e) => setName(e.target.value)}/>
                     <div className="loginPass flex">
                         <input type="password" placeholder="Enter Your Password" id="loginPassword" style={{width:"24rem"}} value={password} onChange={(e)=>{setPassword(e.target.value)}}/>
                         <Button className="bigbutton" onClick={loginCheck} disabled={loading}  id="signUp" ref={ref}>{loading?'Signuping...':'Sign Up'}</Button>

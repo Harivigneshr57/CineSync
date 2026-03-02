@@ -1244,15 +1244,15 @@ app.post("/removeFavorite",(req,res)=>{
     
       const invitationReceiver = receiver_name || reciever_name;
     
-      if (!room_name || !room_code || !sender_name || !invitationReceiver || !movie_name) {
+      if (!room_name || !sender_name || !invitationReceiver || !movie_name) {
         return res.status(400).json({
-          error: "room_name, room_code, sender_name, receiver_name and movie_name are required"
+          error: "room_name, sender_name, receiver_name and movie_name are required"
         });
       }
-    
-      const savenotification = "INSERT INTO RoomInvitations (sender_name, receiver_name,room_name,room_code,movie_name,video,image) VALUES (?,?,?,?,?,?,?);";
-    
-      db.query(savenotification, [sender_name, invitationReceiver, room_name, room_code, movie_name, video, image], (err, result) => {
+
+      const savenotification = "INSERT INTO RoomInvitations (sender_name, receiver_name,room_name,movie_name,video,image) VALUES (?,?,?,?,?,?);";
+
+      db.query(savenotification, [sender_name, invitationReceiver, room_name, movie_name, video, image], (err, result) => {
         if (err) {
           console.log("Error while inserting notification", err);
           return res.status(500).json({
@@ -1300,10 +1300,19 @@ app.post("/getInvitations", (req, res) => {
   }
 
   let getNotification = `
-  SELECT sender_name, room_name, room_code, movie_name, created_at,video,image
-    FROM RoomInvitations
-    WHERE receiver_name = ?
-    ORDER BY created_at DESC
+  SELECT 
+    ri.invite_id,
+    ri.sender_name,
+    ri.room_name,
+    r.RoomCode AS room_code,
+    ri.movie_name,
+    ri.created_at,
+    ri.video,
+    ri.image
+  FROM RoomInvitations ri
+  LEFT JOIN Rooms r ON r.RoomName = ri.room_name
+  WHERE ri.receiver_name = ?
+  ORDER BY ri.created_at DESC
   `;
 
   try {
@@ -1324,11 +1333,16 @@ app.post("/getInvitations", (req, res) => {
 
 
 app.post("/declineInvitation", (req, res) => {
-  let { invitation } = req.body;
-  let deleteInvitation = "DELETE FROM RoomInvitations WHERE room_code = ?";
+  let { invitation, invite_id } = req.body;
+  const invitationIdentifier = invite_id || invitation;
+  let deleteInvitation = "DELETE FROM RoomInvitations WHERE invite_id = ?";
+
+  if (!invitationIdentifier) {
+    return res.status(400).json({ error: "invite_id is required" });
+  }
 
   try {
-    db.query(deleteInvitation, [invitation], (err, result) => {
+    db.query(deleteInvitation, [invitationIdentifier], (err, result) => {
       if (err) {
         return res.json({
           error: err

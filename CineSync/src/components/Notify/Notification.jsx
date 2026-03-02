@@ -4,7 +4,7 @@ import {socket} from "../Home/socket";
 import { UserContext } from "../Login-SignIn/UserContext";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-export default function Notification({ roomName, roomCode, ownerName, movieName, moviestatus, timeStamp, image, video, onDecline }) {
+export default function Notification({ inviteId, roomName, roomCode, ownerName, movieName, moviestatus, timeStamp, image, video, onDecline }) {
     const { changeRoomVideo, setRoomName, setMovieName, setAsRoom } = useContext(UserContext);
     let nav = useNavigate();
 
@@ -15,14 +15,14 @@ export default function Notification({ roomName, roomCode, ownerName, movieName,
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ invitation: roomCode }),
+                body: JSON.stringify({ invite_id: inviteId }),
             });
 
             if (!response.ok) {
                 throw new Error("Failed to decline invitation");
             }
 
-            onDecline(roomCode);
+            onDecline(inviteId);
         } catch (err) {
             console.log("Error while declining invitation", err);
         }

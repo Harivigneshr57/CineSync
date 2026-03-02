@@ -13,8 +13,8 @@ export default function Notify() {
     const { roomDetails, setRoomDetails } = useContext(UserContext);
     const safeRoomDetails = Array.isArray(roomDetails) ? roomDetails : [];
 
-    function handleDeclineInvitation(roomCode) {
-        setRoomDetails((prev = []) => prev.filter((room) => room.room_code !== roomCode));
+    function handleDeclineInvitation(inviteId) {
+        setRoomDetails((prev = []) => prev.filter((room) => room.invite_id !== inviteId));
     }
     async function fetchInvitations() {
         const username = localStorage.getItem("Username");
@@ -78,6 +78,7 @@ export default function Notify() {
         socket.on("sendingInvite",(room_code,movie_name,sender_name,video,image)=>{
             setRoomDetails((prev = []) => [
                 {
+                    invite_id: `socket-${Date.now()}-${Math.random()}`,
                     room_code,
                     sender_name,
                     movie_name,
@@ -124,7 +125,7 @@ export default function Notify() {
                         else {
                             timestamp = hours + "h";
                         }
-                        return <Notification key={i} roomName={rooms.room_name} roomCode={rooms.room_code} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} image={rooms.image} video={rooms.video} onDecline={handleDeclineInvitation}></Notification>
+                        return <Notification key={rooms.invite_id || i} inviteId={rooms.invite_id} roomName={rooms.room_name} roomCode={rooms.room_code} ownerName={rooms.sender_name} movieName={rooms.movie_name} timeStamp={timestamp} image={rooms.image} video={rooms.video} onDecline={handleDeclineInvitation}></Notification>
                     })
                 )}
             </div>

@@ -353,15 +353,14 @@ h5{
 
 .exit-overlay {
   position: absolute;
-  width: 36rem;
-  /* height: 10rem; */
+  max-width: 35rem;
   background-color: #242222;
   color: var(--major);
-  border-radius: 15px;
-  border: 1px solid var(--major);
+  border-radius: 0.5rem;
+  border: 1px solid var(--white);
   padding: 1.5rem;
-  font-size: 2rem;
-  z-index: 2; 
+  font-size: 1.5rem;
+  z-index: 2;
 }
 .total-exit-div{
   background-color:rgba(0, 0, 0, 0.582);
@@ -385,11 +384,12 @@ h5{
 
 .cancel-btn{
   background-color: var(--major);
-  border: 0;
   padding: 1rem 2rem;
   font-size: 1rem;
-  border-radius: 1rem;
-  color: white
+  border-radius: 0.5rem;
+  color: #fff;
+  border: 1px solid;
+  font-weight: 600;
 }
 
 .confirm-btn{

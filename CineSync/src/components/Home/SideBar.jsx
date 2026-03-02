@@ -5,7 +5,7 @@ import logo from "../../assets/logo.png";
 import Button from "../Login-SignIn/Button";
 
 export default function SideBar({ isinvite }) {
-
+    const [showExitDiv,setShowExitDiv]=useState(false);
     const navigate = useNavigate();
     const { isRoom, setAsRoom } = useContext(UserContext);
 
@@ -13,23 +13,27 @@ export default function SideBar({ isinvite }) {
     const [nextRoute, setNextRoute] = useState(null);
 
     function handleNavigation(path) {
-        const hasActiveRoom = isRoom || Boolean(localStorage.getItem("Roomname"));
-
-        if (hasActiveRoom) {
-            setNextRoute(path);
-            setShowExitModal(true);
-        } else {
-            navigate(path);
+        if(!showExitDiv){
+            if (isRoom) {
+                setNextRoute(path);
+                setShowExitModal(true);
+            } else {
+                navigate(path);
+            }
         }
     }
-
+    function logout(){
+        navigate("/");
+        localStorage.setItem("UserName",'');
+        setShowExitDiv(false);
+    }
     function confirmExit() {
         setAsRoom(false);
         localStorage.removeItem("Roomname");
         setShowExitModal(false);
-        setNextRoute(null);
         navigate(nextRoute);
     }
+
 
     return (
         <>
@@ -71,6 +75,9 @@ export default function SideBar({ isinvite }) {
                     <Button icon={<i className="fa-solid fa-circle-user"></i>} onClick={() => handleNavigation("/profile")}>
                         Profile
                     </Button>
+                    <Button icon={<i class="fa-solid fa-arrow-right-from-bracket"></i>} onClick={() => setShowExitDiv(true)}>
+                        LogOut
+                    </Button>
                 </div>
             </aside>
 
@@ -100,6 +107,29 @@ export default function SideBar({ isinvite }) {
                     </div>
                 </div>
 
+            )}
+
+            {showExitDiv&&(
+                <div className="total-exit-div">
+                <div className="logout-overlay">
+                    <div className="logout-modal-box">
+                        <div className="exit-header">
+                            <i className="fa-solid fa-door-open exit-icon"></i>
+                            <h3>Are you sure to logout?</h3>
+                        </div>
+
+                        <div className="exit-buttons">
+                            <button className="cancel-btn" onClick={() => setShowExitDiv(false)}>
+                                Cancel
+                            </button>
+
+                            <button className="confirm-btn" onClick={logout}>
+                                Yes, Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             )}
         </>
     );

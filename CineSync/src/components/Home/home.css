@@ -39,6 +39,15 @@ aside:hover{
     width: 14rem;
     transition: .4s all ease-in-out;
 }
+
+.logout-overlay{
+  padding: 1.5rem;
+  background: var(--grey);
+  color: var(--white);
+  border-radius: 1rem;
+  border: 1px solid white;
+  font-size: 1.5rem;
+}
 aside:hover .logo {
     margin-left: 3rem;
     transition: .4s all ease-in-out;
@@ -385,11 +394,13 @@ h5{
 
 .confirm-btn{
   background-color: var(--major);
-  border: 0;
   padding: 1rem 2rem;
   font-size: 1rem;
-  border-radius: 1rem;
-  color: white
+  border-radius: 0.5rem;
+  color: #fff;
+  border: 1px solid;
+  font-weight: 600;
+
 }
 
 .exit-buttons{

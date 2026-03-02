@@ -2,7 +2,7 @@ import bgImage from "../../assets/image.png";
 import Button from "./Button";
 import { UserContext } from "./UserContext";
 import toast from "react-hot-toast";
-import { useState ,useContext, useRef} from "react";
+import { useState ,useContext, useRef, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Login(){
@@ -16,8 +16,11 @@ export default function Login(){
 
     const [username, setName] = useState("");
     const [password, setPassword] = useState("");
-    const {user,changeUser} = useContext(UserContext);
+    const {user,changeUser,setAsRoom} = useContext(UserContext);
     const [loading,setLoading] = useState(false);
+    useEffect(()=>{
+      setAsRoom(false);
+    },[])
     const toastErrorStyle = {
         style: {
           borderRadius: "1rem",

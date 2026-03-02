@@ -7,6 +7,7 @@ import SelectMovie from "./SelectMovie";
 import SelectedMovie from "./SelectedMovie";
 import './room.css';
 import HostView from "../WaitingRoom/Hostview";
+import { UserContext } from "../Login-SignIn/UserContext";
 export default function Room() {
     const [step, setStep] = useState(1);
     const [code, setCode] = useState("");
@@ -14,6 +15,11 @@ export default function Room() {
     const [room, setRoom] = useState('');
     const [confirmDiv, setconfirmDiv] = useState(false);
     const [roomPassword, setRoomPassword] = useState('');
+    const {setAsRoom} = useEffect(UserContext);
+
+    useEffect(()=>{
+        setAsRoom(false);
+      },[])
 
     function onSetMovie(movie) {
         setMovie(movie);

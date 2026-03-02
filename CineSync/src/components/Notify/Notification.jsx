@@ -28,6 +28,10 @@ export default function Notification({ roomName, roomCode, ownerName, movieName,
         }
     }
 
+    useEffect(()=>{
+        setAsRoom(false);
+      },[])
+
 
     async function acceptInvitation() {
         try {

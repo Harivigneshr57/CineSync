@@ -2,7 +2,7 @@ import SearchBar from "./SearchBar"
 import TopDisBar from "./TopDisBar"
 import MainMovieDiv from "./MainMovieDiv"
 import './discover.css'
-import { useContext, useRef, useState } from "react"
+import { useContext, useRef, useState, useEffect } from "react"
 import SideBar from "../Home/SideBar"
 import Button from "../Login-SignIn/Button"
 import OverView from "./Overview";
@@ -12,7 +12,7 @@ import { UserContext } from "../Login-SignIn/UserContext"
 export default function Discover(){
     const myRef = useRef(null);
     const myRef2 = useRef(null);
-    const {user}=useContext(UserContext);
+    const {user, setAsRoom}=useContext(UserContext);
     const [overview,setOverview] = useState(false);
     const [overviewMovie,setOverviewMovie] = useState({});
 
@@ -26,7 +26,10 @@ export default function Discover(){
         console.log(data);
       })
     }
-
+    
+    useEffect(()=>{
+      setAsRoom(false);
+    },[])
 
     const handleScroll = () => {
       

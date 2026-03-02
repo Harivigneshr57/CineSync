@@ -1,6 +1,12 @@
 import Button from "../Login-SignIn/Button"
 import { useNavigate } from "react-router-dom"
+import { UserContext } from "../Login-SignIn/UserContext";
+import { useContext } from "react";
 export default function CreateRoom(){
+    const {setAsRoom} = useContext(UserContext);
+    useEffect(()=>{
+        setAsRoom(false);
+      },[])
     let navigate = useNavigate();
     function createRoom(){
         navigate("/createRoom")

@@ -2,14 +2,14 @@ import bgImage from "../../assets/image.png";
 import logo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
-import { useState,useContext } from "react";
+import { useState,useContext,useEffect } from "react";
 import { UserContext } from "./UserContext";
 import toast from "react-hot-toast";
 
 export default function SignIn() {
     const [username,setName] = useState('');
     const [password,setPassword] = useState('');
-    const {user,changeUser} = useContext(UserContext);
+    const {user,changeUser,setAsRoom} = useContext(UserContext);
     const [loading, setLoading] = useState(false);
     const toastErrorStyle = {
       style: {
@@ -36,6 +36,11 @@ export default function SignIn() {
         secondary: "#16A34A"
       }
     };
+
+    useEffect(()=>{
+      setAsRoom(false);
+    },[])
+    
     async function signIn() {
       if (loading) return; // prevent double click
     

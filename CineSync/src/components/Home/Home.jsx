@@ -10,9 +10,11 @@ import { socket } from "./socket";
 
 
 export default function Home() {
-    const { changeRoomDetail } = useContext(UserContext);
+
+    const { changeRoomDetail, setAsRoom } = useContext(UserContext);
     const [isinvite,setMessage] = useState(false);
     useEffect(() => {
+        setAsRoom(false);
 
         async function rendernotification() {
             try {

@@ -5,7 +5,7 @@ function Members(props){
             <img className='memberImg' src={onnapak} alt="" />
             <div>
                 <p className='nameval'>{props.membername}</p>
-                <p className='statusval'>{props.status}</p>
+                {/* <p className='statusval'>{props.status}</p> */}
             </div>
         </div>
     </>

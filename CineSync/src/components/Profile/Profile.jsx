@@ -3,8 +3,9 @@ import RecentlyWatched from "./RecentlyWatched.jsx";
 import Favourites from "./Favourites.jsx";
 import './profile.css'
 import SideBar from "../Home/SideBar.jsx"; 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import EditProfile from "./EditProfile.jsx";
+import { UserContext } from "../Login-SignIn/UserContext.jsx";
 
 export default function Profile() {
 
@@ -12,6 +13,10 @@ export default function Profile() {
   const[username,setuserName]=useState("");
   const[bio,setbio]=useState("");
   const[image,setimage]=useState("");
+  const {setAsRoom} = useContext(UserContext);
+  useEffect(()=>{
+    setAsRoom(false);
+  },[])
 
   function displayedit(){
     setEdit(true);

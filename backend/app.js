@@ -580,7 +580,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on('joinRoom', (roomName, username) => {
-    let friend = username;
     socket.join(roomName);
     socket.data.username = username;
     socket.data.roomName = roomName;
@@ -588,12 +587,12 @@ io.on("connection", (socket) => {
       roomUsers[roomName] = [];
     }
     
-    if (!roomUsers[roomName].includes(username)) {
+    const isNewMember = !roomUsers[roomName].includes(username);
+
+    if (isNewMember) {
       roomUsers[roomName].push(username);
+      socket.to(roomName).emit("newJoin", username);
     }
-    console.log(username + ` joined room: ${roomName}`);
-    socket.to(roomName).emit("newJoin", username);
-    socket.to(roomName).emit("newJoin", friend);
     emitRoomUsers(roomName);
   });
 

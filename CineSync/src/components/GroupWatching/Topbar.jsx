@@ -45,7 +45,7 @@ export default function TopBar() {
 
             <div className="room-exit-actions">
               <Button id={"roomExitNo"} onClick={closeExitPrompt}>Cancel</Button>
-              <Button id={"roomExitYes"} onClick={confirmExitRoom}>{isHost ? "Close Room" : "Exit"}</Button>
+              <Button id={"roomExitYes"} onClick={confirmExitRoom}>{localStorage.getItem('RoomRole')=='Host' ? "Close Room" : "Exit"}</Button>
             </div>
           </div>
         </div>

@@ -13,7 +13,7 @@ export default function JoinRoom() {
     const [roomId, setRoomId] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    const { setAsRoom } = useContext(UserContext);
+    const { setAsRoom, setRoomName, setMovieName, changeRoomVideo } = useContext(UserContext);
 
     const toastErrorStyle = {
         style: {
@@ -62,6 +62,10 @@ export default function JoinRoom() {
                     localStorage.setItem('movieVideo',data.movie_url);
                     localStorage.setItem('MovieName',data.title)
                     localStorage.setItem('RoomRole', 'Member');
+                    setRoomName(data.roomname);
+                    setMovieName(data.title);
+                    changeRoomVideo(data.movie_url);
+
                     const roomHostControlEnabled = data.hostControl === undefined
                         ? false
                         : Number(data.hostControl) === 1;

@@ -16,9 +16,9 @@ export default function Chat({setmessage, chat, setChat, allmessages ,chatBoxRef
                 </div>
                 <div className="roomBody">
                     <div id="lobbyChatBox" ref={chatBoxRef}>
-                        {allmessages.map((msg, i) => (
+                        {allmessages.length>0?allmessages.map((msg, i) => (
                             <WaitingRoomMessages key={i} role={msg.role} message={msg.message} />
-                        ))}
+                        )):''}
                     </div>
                 </div>
                 <div className="roomFoot">
